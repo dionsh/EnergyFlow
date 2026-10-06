@@ -1,0 +1,42 @@
+# Render Blueprint for the EnergyFlow API (free web service, Docker).
+# Docker paths are relative to the repo ROOT, not rootDir.
+services:
+  - type: web
+    name: energyflow-api
+    runtime: docker
+    plan: free
+    region: frankfurt
+    rootDir: backend
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "0"
+      - key: SESSION_SECURE
+        value: "1"
+      - key: SESSION_TTL_DAYS
+        value: "7"
+      # Aiven for MySQL (free). Host and port come from the Aiven console.
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_NAME
+        value: defaultdb
+      - key: DB_USER
+        value: avnadmin
+      - key: DB_PASS
+        sync: false
+      # Paste the full Aiven CA certificate (ca.pem) here.
+      - key: DB_SSL_CA_CONTENT
+        sync: false
+      - key: CRON_SECRET
+        generateValue: true
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile

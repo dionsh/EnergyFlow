@@ -1,0 +1,8 @@
+# Normalise text files. Files that run inside the Linux container on Render
+# must keep LF endings or the shell/Apache will fail to parse them.
+* text=auto
+*.sh text eol=lf
+Dockerfile text eol=lf
+*.conf text eol=lf
+*.ini text eol=lf
+*.sql text eol=lf

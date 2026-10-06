@@ -1,0 +1,234 @@
+{
+  "app": {
+    "name": "EnergyFlow",
+    "tagline": "Inteligjencë energjetike për NVM-të në Kosovë"
+  },
+  "common": {
+    "save": "Ruaj",
+    "saving": "Duke ruajtur…",
+    "saved": "U ruajt.",
+    "cancel": "Anulo",
+    "retry": "Provo përsëri",
+    "loading": "Duke u ngarkuar…",
+    "optional": "opsionale",
+    "done": "Kryer",
+    "todo": "Për t'u bërë",
+    "open": "Hap"
+  },
+  "nav": {
+    "overview": "Përmbledhje",
+    "groups": {
+      "monitor": "Monitoro",
+      "optimize": "Optimizo",
+      "prove": "Dëshmo"
+    },
+    "live": "Live",
+    "machines": "Makineritë",
+    "devices": "Pajisjet",
+    "waste": "Humbjet & alarmet",
+    "opportunities": "Mundësitë",
+    "automations": "Automatizimet",
+    "impact": "Ndikimi",
+    "carbon": "Karboni & ESG",
+    "reports": "Raportet",
+    "settings": "Cilësimet",
+    "assistant": "Pyet EnergyFlow"
+  },
+  "topbar": {
+    "openMenu": "Hap menynë",
+    "closeMenu": "Mbyll menynë",
+    "notifications": "Njoftimet",
+    "noNotifications": "Ende nuk ka njoftime",
+    "language": "Gjuha",
+    "theme": "Pamja",
+    "themes": {
+      "light": "E çelët",
+      "dark": "E errët",
+      "system": "Sipas sistemit"
+    },
+    "account": "Llogaria",
+    "signOut": "Dil"
+  },
+  "roles": {
+    "owner": "Pronar",
+    "admin": "Administrator",
+    "manager": "Menaxher",
+    "viewer": "Shikues"
+  },
+  "auth": {
+    "brand": {
+      "headline": "Shih ku shkon energjia jote — dhe ku humbet.",
+      "points": [
+        "Konsumi live për çdo makineri, nga pajisjet EnergyFlow me kosto të ulët.",
+        "Humbjet e zbuluara në €, kWh dhe kg CO₂e, me veprime të sigurta me një klikim.",
+        "Raporte qëndrueshmërie të ndërtuara nga të dhëna të matura, jo nga vlerësime."
+      ]
+    },
+    "showPassword": "Shfaq fjalëkalimin",
+    "hidePassword": "Fshih fjalëkalimin",
+    "login": {
+      "title": "Kyçu",
+      "subtitle": "Mirë se u ktheve në EnergyFlow.",
+      "email": "Email-i",
+      "password": "Fjalëkalimi",
+      "submit": "Kyçu",
+      "noAccount": "I ri në EnergyFlow?",
+      "register": "Krijo llogari për kompaninë"
+    },
+    "register": {
+      "title": "Krijo llogarinë e kompanisë",
+      "subtitle": "Ti do të jesh pronari dhe mund ta ftosh ekipin më vonë.",
+      "fullName": "Emri i plotë",
+      "companyName": "Emri i kompanisë",
+      "city": "Qyteti",
+      "cityPlaceholder": "p.sh. Prishtinë",
+      "email": "Email-i i punës",
+      "password": "Fjalëkalimi",
+      "passwordHint": "Të paktën 10 karaktere.",
+      "submit": "Krijo llogarinë",
+      "haveAccount": "Ke tashmë llogari?",
+      "login": "Kyçu"
+    }
+  },
+  "errors": {
+    "generic": "Diçka shkoi keq.",
+    "network_error": "Serveri nuk u arrit. Kontrollo lidhjen dhe provo përsëri.",
+    "server_error": "Diçka shkoi keq nga ana jonë. Provo përsëri.",
+    "invalid_credentials": "Email-i ose fjalëkalimi është i pasaktë.",
+    "rate_limited": "Shumë përpjekje. Prit pak dhe provo përsëri.",
+    "unauthenticated": "Kyçu për të vazhduar.",
+    "forbidden": "Nuk ke leje për këtë veprim.",
+    "validation_failed": "Kontrollo fushat e shënuara."
+  },
+  "validation": {
+    "required": "Kjo fushë është e detyrueshme.",
+    "invalid_email": "Shkruaj një adresë email-i të vlefshme.",
+    "min_length": "Duhet të ketë të paktën {{count}} karaktere.",
+    "max_length": "Mund të ketë deri në {{count}} karaktere.",
+    "min": "Vlera minimale është {{count}}.",
+    "max": "Vlera maksimale është {{count}}.",
+    "invalid_choice": "Zgjidh një nga opsionet.",
+    "invalid_int": "Shkruaj një numër të plotë.",
+    "invalid_number": "Shkruaj një numër.",
+    "email_taken": "Ky email është tashmë i regjistruar.",
+    "incorrect_password": "Fjalëkalimi aktual nuk është i saktë."
+  },
+  "overview": {
+    "title": "Përmbledhje",
+    "subtitle": "Si e përdor energjinë {{company}}.",
+    "emptyTitle": "Ende nuk ka matje",
+    "emptyBody": "EnergyFlow fillon të matë sapo lidhet pajisja e parë. Ndërkohë, përfundo konfigurimin e kompanisë.",
+    "setup": {
+      "title": "Fillimi",
+      "progress": "{{done}} nga {{total}} të kryera",
+      "company": {
+        "title": "Profili i kompanisë",
+        "body": "Sektori, punonjësit dhe qarkullimi — përdoren në raportet e qëndrueshmërisë."
+      },
+      "schedule": {
+        "title": "Orari i punës",
+        "body": "Kur duhet të punojnë makineritë, që EnergyFlow të zbulojë humbjet pas orarit."
+      },
+      "tariff": {
+        "title": "Tarifa e energjisë",
+        "body": "Tarifat ditore dhe të natës, që çdo kWh të llogaritet saktë."
+      },
+      "device": {
+        "title": "Pajisja e parë",
+        "body": "Lidhe një EnergyFlow Node me një makineri ose panel elektrik."
+      }
+    }
+  },
+  "modules": {
+    "live": {
+      "description": "Fuqia në kohë reale për çdo makineri dhe rrjedha live e energjisë nga rrjeti.",
+      "emptyTitle": "Ende nuk ka të dhëna live",
+      "emptyBody": "Lidhe një pajisje EnergyFlow dhe matjet do të shfaqen këtu çdo disa sekonda."
+    },
+    "machines": {
+      "description": "Konsumi, kostoja, CO₂e, orari dhe gjurma energjetike e secilës makineri.",
+      "emptyTitle": "Ende nuk ka makineri",
+      "emptyBody": "Shto makineritë që dëshiron t'i monitorosh dhe lidhe secilën me një kanal të pajisjes."
+    },
+    "devices": {
+      "description": "Nyjet EnergyFlow, statusi i lidhjes dhe matjet elektrike.",
+      "emptyTitle": "Asnjë pajisje e lidhur",
+      "emptyBody": "Regjistro një EnergyFlow Node për të filluar matjen e tensionit, rrymës, fuqisë dhe energjisë."
+    },
+    "waste": {
+      "description": "Punë pas orarit, makineri në pritje dhe konsum jonormal — në kWh, € dhe CO₂e.",
+      "emptyTitle": "Ende nuk janë zbuluar humbje",
+      "emptyBody": "Humbjet shfaqen pasi EnergyFlow të ketë disa ditë matje për krahasim."
+    },
+    "opportunities": {
+      "description": "Mundësi kursimi të renditura sipas ndikimit në € dhe CO₂, me simulator \"po sikur\".",
+      "emptyTitle": "Ende nuk ka mundësi",
+      "emptyBody": "Rekomandimet gjenerohen nga historiku yt i konsumit."
+    },
+    "automations": {
+      "description": "Veprime automatike të sigurta dhe regjistër i plotë i çdo komande.",
+      "emptyTitle": "Ende nuk ka automatizime",
+      "emptyBody": "Pranimi i një mundësie krijon një automatizim që mund ta shqyrtosh këtu."
+    },
+    "impact": {
+      "description": "Dëshmi para/pas e kursimeve, e rregulluar sipas ditëve të punës dhe motit.",
+      "emptyTitle": "Ende s'ka çfarë të dëshmohet",
+      "emptyBody": "Kursimet e verifikuara shfaqen këtu pasi një veprim të ketë punuar të paktën 7 ditë."
+    },
+    "carbon": {
+      "description": "Emetimet Scope 1 dhe 2, intensiteti i karbonit dhe raportimi sipas VSME.",
+      "emptyTitle": "Ende nuk ka të dhëna për emetimet",
+      "emptyBody": "Emetimet llogariten nga energjia elektrike e matur me faktorin e rrjetit të Kosovës."
+    },
+    "reports": {
+      "description": "Raporte mujore qëndrueshmërie të gjeneruara nga të dhëna të matura.",
+      "emptyTitle": "Ende nuk ka raporte",
+      "emptyBody": "Raporti i parë mund të gjenerohet kur të ketë një muaj të dhënash."
+    },
+    "assistant": {
+      "description": "Bëj pyetje për energjinë, kostot dhe karbonin — përgjigjet vijnë nga të dhënat e tua.",
+      "emptyTitle": "Asistenti ka nevojë fillimisht për të dhëna",
+      "emptyBody": "Pasi EnergyFlow të ketë matje, mund të pyesësh p.sh. “Cila makineri na kushtoi më shumë këtë muaj?”"
+    }
+  },
+  "settings": {
+    "title": "Cilësimet",
+    "subtitle": "Profili i kompanisë, llogaria jote dhe preferencat.",
+    "tabs": {
+      "company": "Kompania",
+      "account": "Llogaria"
+    },
+    "company": {
+      "title": "Profili i kompanisë",
+      "hint": "Përdoret në raportet e qëndrueshmërisë (VSME B1) dhe për intensitetin e energjisë për punonjës dhe për € qarkullimi.",
+      "readOnly": "Vetëm pronarët dhe administratorët mund ta ndryshojnë profilin e kompanisë.",
+      "name": "Emri i kompanisë",
+      "legalForm": "Forma juridike",
+      "legalFormPlaceholder": "p.sh. Sh.p.k.",
+      "businessNumber": "Numri unik identifikues (NUI)",
+      "nace": "Sektori (kodi NACE)",
+      "nacePlaceholder": "p.sh. 22.22",
+      "employees": "Numri i punonjësve",
+      "turnover": "Qarkullimi vjetor (€)",
+      "city": "Qyteti"
+    },
+    "account": {
+      "profile": "Profili yt",
+      "fullName": "Emri i plotë",
+      "email": "Email-i",
+      "role": "Roli",
+      "language": "Gjuha",
+      "passwordTitle": "Ndrysho fjalëkalimin",
+      "passwordHint": "Ndryshimi i fjalëkalimit të çkyç nga të gjitha pajisjet e tjera.",
+      "currentPassword": "Fjalëkalimi aktual",
+      "newPassword": "Fjalëkalimi i ri",
+      "changePassword": "Ndrysho fjalëkalimin",
+      "passwordChanged": "Fjalëkalimi u ndryshua. Pajisjet e tjera u çkyçën."
+    }
+  },
+  "notFound": {
+    "title": "Faqja nuk u gjet",
+    "body": "Kjo faqe nuk ekziston ose është zhvendosur.",
+    "back": "Kthehu te përmbledhja"
+  }
+}

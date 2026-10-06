@@ -1,0 +1,234 @@
+{
+  "app": {
+    "name": "EnergyFlow",
+    "tagline": "Energy intelligence for Kosovo SMEs"
+  },
+  "common": {
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved.",
+    "cancel": "Cancel",
+    "retry": "Try again",
+    "loading": "Loading…",
+    "optional": "optional",
+    "done": "Done",
+    "todo": "To do",
+    "open": "Open"
+  },
+  "nav": {
+    "overview": "Overview",
+    "groups": {
+      "monitor": "Monitor",
+      "optimize": "Optimize",
+      "prove": "Prove"
+    },
+    "live": "Live",
+    "machines": "Machines",
+    "devices": "Devices",
+    "waste": "Waste & Alerts",
+    "opportunities": "Opportunities",
+    "automations": "Automations",
+    "impact": "Impact",
+    "carbon": "Carbon & ESG",
+    "reports": "Reports",
+    "settings": "Settings",
+    "assistant": "Ask EnergyFlow"
+  },
+  "topbar": {
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "notifications": "Notifications",
+    "noNotifications": "No notifications yet",
+    "language": "Language",
+    "theme": "Theme",
+    "themes": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "account": "Account",
+    "signOut": "Sign out"
+  },
+  "roles": {
+    "owner": "Owner",
+    "admin": "Admin",
+    "manager": "Manager",
+    "viewer": "Viewer"
+  },
+  "auth": {
+    "brand": {
+      "headline": "See where your energy goes — and where it's wasted.",
+      "points": [
+        "Live consumption per machine, from low-cost EnergyFlow devices.",
+        "Waste detected in €, kWh and kg CO₂e, with safe one-tap actions.",
+        "Sustainability reports built from measured data, not estimates."
+      ]
+    },
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "login": {
+      "title": "Sign in",
+      "subtitle": "Welcome back to EnergyFlow.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "noAccount": "New to EnergyFlow?",
+      "register": "Create a company account"
+    },
+    "register": {
+      "title": "Create your company account",
+      "subtitle": "You'll be the owner and can invite your team later.",
+      "fullName": "Full name",
+      "companyName": "Company name",
+      "city": "City",
+      "cityPlaceholder": "e.g. Prishtinë",
+      "email": "Work email",
+      "password": "Password",
+      "passwordHint": "At least 10 characters.",
+      "submit": "Create account",
+      "haveAccount": "Already have an account?",
+      "login": "Sign in"
+    }
+  },
+  "errors": {
+    "generic": "Something went wrong.",
+    "network_error": "Couldn't reach the server. Check your connection and try again.",
+    "server_error": "Something went wrong on our side. Please try again.",
+    "invalid_credentials": "The email or password is incorrect.",
+    "rate_limited": "Too many attempts. Please wait a moment and try again.",
+    "unauthenticated": "Please sign in to continue.",
+    "forbidden": "You don't have permission to do this.",
+    "validation_failed": "Please check the highlighted fields."
+  },
+  "validation": {
+    "required": "This field is required.",
+    "invalid_email": "Enter a valid email address.",
+    "min_length": "Must be at least {{count}} characters.",
+    "max_length": "Must be at most {{count}} characters.",
+    "min": "The minimum is {{count}}.",
+    "max": "The maximum is {{count}}.",
+    "invalid_choice": "Choose one of the options.",
+    "invalid_int": "Enter a whole number.",
+    "invalid_number": "Enter a number.",
+    "email_taken": "This email is already registered.",
+    "incorrect_password": "The current password is not correct."
+  },
+  "overview": {
+    "title": "Overview",
+    "subtitle": "How {{company}} is using energy.",
+    "emptyTitle": "No measurements yet",
+    "emptyBody": "EnergyFlow starts measuring as soon as the first device is connected. Meanwhile, finish setting up your company.",
+    "setup": {
+      "title": "Getting started",
+      "progress": "{{done}} of {{total}} done",
+      "company": {
+        "title": "Company profile",
+        "body": "Sector, employees and turnover — used in your sustainability reports."
+      },
+      "schedule": {
+        "title": "Working hours",
+        "body": "When your machines should run, so EnergyFlow can spot after-hours waste."
+      },
+      "tariff": {
+        "title": "Electricity tariff",
+        "body": "Your day and night rates, so every kWh is costed correctly."
+      },
+      "device": {
+        "title": "First device",
+        "body": "Connect an EnergyFlow Node to a machine or electrical panel."
+      }
+    }
+  },
+  "modules": {
+    "live": {
+      "description": "Real-time power for every machine and the live energy flow from the grid.",
+      "emptyTitle": "No live data yet",
+      "emptyBody": "Connect an EnergyFlow device and readings will appear here every few seconds."
+    },
+    "machines": {
+      "description": "Each machine's consumption, cost, CO₂e, schedule and energy fingerprint.",
+      "emptyTitle": "No machines yet",
+      "emptyBody": "Add the machines you want to monitor and link each one to a device channel."
+    },
+    "devices": {
+      "description": "EnergyFlow nodes, their connection status and electrical readings.",
+      "emptyTitle": "No devices connected",
+      "emptyBody": "Provision an EnergyFlow Node to start measuring voltage, current, power and energy."
+    },
+    "waste": {
+      "description": "After-hours running, idle machines and abnormal consumption — in kWh, € and CO₂e.",
+      "emptyTitle": "No waste detected yet",
+      "emptyBody": "Waste events appear once EnergyFlow has a few days of measurements to compare against."
+    },
+    "opportunities": {
+      "description": "Savings opportunities ranked by € and CO₂ impact, with a what-if simulator.",
+      "emptyTitle": "No opportunities yet",
+      "emptyBody": "Recommendations are generated from your own consumption history."
+    },
+    "automations": {
+      "description": "Safe automatic actions and a complete log of every command.",
+      "emptyTitle": "No automations yet",
+      "emptyBody": "Accepting an opportunity creates an automation you can review here."
+    },
+    "impact": {
+      "description": "Before/after proof of savings, adjusted for working days and weather.",
+      "emptyTitle": "Nothing to prove yet",
+      "emptyBody": "Verified savings appear here once an action has been running for at least 7 days."
+    },
+    "carbon": {
+      "description": "Scope 1 and 2 emissions, carbon intensity and VSME-aligned reporting.",
+      "emptyTitle": "No emissions data yet",
+      "emptyBody": "Emissions are calculated from metered electricity using Kosovo's grid factor."
+    },
+    "reports": {
+      "description": "Monthly sustainability reports generated from measured data.",
+      "emptyTitle": "No reports yet",
+      "emptyBody": "Your first report can be generated once there is a month of data."
+    },
+    "assistant": {
+      "description": "Ask questions about your energy, costs and carbon — answered from your data.",
+      "emptyTitle": "The assistant needs data first",
+      "emptyBody": "Once EnergyFlow has measurements, you can ask things like “Which machine cost us the most this month?”"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Company profile, your account and preferences.",
+    "tabs": {
+      "company": "Company",
+      "account": "Account"
+    },
+    "company": {
+      "title": "Company profile",
+      "hint": "Used in sustainability reports (VSME B1) and for energy intensity per employee and per € of turnover.",
+      "readOnly": "Only owners and admins can change the company profile.",
+      "name": "Company name",
+      "legalForm": "Legal form",
+      "legalFormPlaceholder": "e.g. Sh.p.k.",
+      "businessNumber": "Business number (NUI)",
+      "nace": "Sector (NACE code)",
+      "nacePlaceholder": "e.g. 22.22",
+      "employees": "Employees",
+      "turnover": "Annual turnover (€)",
+      "city": "City"
+    },
+    "account": {
+      "profile": "Your profile",
+      "fullName": "Full name",
+      "email": "Email",
+      "role": "Role",
+      "language": "Language",
+      "passwordTitle": "Change password",
+      "passwordHint": "Changing your password signs you out on every other device.",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "changePassword": "Change password",
+      "passwordChanged": "Password changed. Other devices were signed out."
+    }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "This page doesn't exist or has moved.",
+    "back": "Back to overview"
+  }
+}

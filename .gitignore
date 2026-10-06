@@ -1,0 +1,21 @@
+# Dependencies and builds
+node_modules/
+frontend/dist/
+
+# Secrets and local configuration — never commit
+.env
+.env.*
+!.env.example
+*.pem
+
+# Logs and OS files
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors and tooling
+.vscode/
+.idea/
+.vercel/
+.claude/

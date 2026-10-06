@@ -1,0 +1,93 @@
+-- Recommendations, automation policies, device commands and impact verification (M and V).
+
+CREATE TABLE recommendations (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  company_id INT UNSIGNED NOT NULL,
+  machine_id INT UNSIGNED NULL,
+  generator VARCHAR(40) NOT NULL,
+  dedupe_key VARCHAR(120) NOT NULL,
+  title_key VARCHAR(80) NOT NULL,
+  params JSON NOT NULL,
+  evidence JSON NOT NULL,
+  proposed_policy JSON NULL,
+  impact_tag ENUM('eur','co2','eur_co2','peak') NOT NULL,
+  est_kwh_month DECIMAL(10,1) NULL,
+  est_eur_month DECIMAL(10,2) NULL,
+  est_co2_kg_month DECIMAL(10,1) NULL,
+  est_peak_kw DECIMAL(8,2) NULL,
+  effort ENUM('low','medium','high') NOT NULL,
+  capex ENUM('none','low','medium','high') NOT NULL DEFAULT 'none',
+  confidence DECIMAL(3,2) NOT NULL,
+  priority_score DECIMAL(6,2) NOT NULL,
+  priority_band ENUM('high','medium','optimization') NOT NULL,
+  status ENUM('proposed','accepted','implemented','verified','dismissed') NOT NULL DEFAULT 'proposed',
+  dismissed_reason VARCHAR(200) NULL,
+  suppressed_until DATETIME NULL,
+  accepted_by INT UNSIGNED NULL,
+  accepted_at DATETIME NULL,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NULL,
+  UNIQUE KEY uq_recommendations_dedupe (company_id, dedupe_key),
+  KEY idx_recommendations_rank (company_id, status, priority_score)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE automation_policies (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  company_id INT UNSIGNED NOT NULL,
+  machine_id INT UNSIGNED NOT NULL,
+  recommendation_id INT UNSIGNED NULL,
+  type ENUM('auto_off_after_schedule','idle_standby','tou_shift','stagger_start') NOT NULL,
+  params JSON NOT NULL,
+  mode ENUM('notify','approve','auto') NOT NULL,
+  is_active TINYINT(1) NOT NULL DEFAULT 1,
+  effective_from DATETIME NOT NULL,
+  created_by INT UNSIGNED NOT NULL,
+  created_at DATETIME NOT NULL,
+  KEY idx_policies_company (company_id, is_active)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE device_commands (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  company_id INT UNSIGNED NOT NULL,
+  machine_id INT UNSIGNED NOT NULL,
+  device_id INT UNSIGNED NOT NULL,
+  channel_no TINYINT UNSIGNED NOT NULL,
+  command ENUM('turn_off','turn_on','standby') NOT NULL,
+  source ENUM('user','policy') NOT NULL,
+  policy_id INT UNSIGNED NULL,
+  requested_by INT UNSIGNED NULL,
+  status ENUM('queued','sent','acknowledged','executed','verified','failed','cancelled') NOT NULL DEFAULT 'queued',
+  requested_at DATETIME NOT NULL,
+  sent_at DATETIME NULL,
+  executed_at DATETIME NULL,
+  verified_at DATETIME NULL,
+  expires_at DATETIME NOT NULL,
+  verification JSON NULL,
+  failure_reason VARCHAR(200) NULL,
+  KEY idx_commands_device (device_id, status),
+  KEY idx_commands_company (company_id, requested_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE impact_verifications (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  company_id INT UNSIGNED NOT NULL,
+  policy_id INT UNSIGNED NULL,
+  recommendation_id INT UNSIGNED NULL,
+  machine_id INT UNSIGNED NOT NULL,
+  method VARCHAR(60) NOT NULL,
+  baseline_start DATE NOT NULL,
+  baseline_end DATE NOT NULL,
+  reporting_start DATE NOT NULL,
+  reporting_end DATE NOT NULL,
+  adjusted_baseline_kwh DECIMAL(12,2) NOT NULL,
+  actual_kwh DECIMAL(12,2) NOT NULL,
+  savings_kwh DECIMAL(12,2) NOT NULL,
+  savings_ci90_kwh DECIMAL(12,2) NOT NULL,
+  savings_eur DECIMAL(12,2) NOT NULL,
+  savings_co2_kg DECIMAL(12,2) NOT NULL,
+  is_verified TINYINT(1) NOT NULL,
+  details JSON NOT NULL,
+  computed_at DATETIME NOT NULL,
+  UNIQUE KEY uq_impact_policy_period (policy_id, reporting_end),
+  KEY idx_impact_company (company_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

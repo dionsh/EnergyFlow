@@ -1,0 +1,168 @@
+@import "tailwindcss";
+
+/* Dark mode follows the data-theme attribute on <html> (set by ThemeProvider). */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/*
+ * Design tokens — see docs/06-ux-design.md §4.
+ * Colour carries meaning: brand green for actions, status colours only for status
+ * (always paired with an icon + label), series colours only for chart identity.
+ */
+:root {
+  color-scheme: light;
+
+  --bg: #f6f7f5;
+  --surface: #ffffff;
+  --surface-2: #f0f2ef;
+  --border: #e2e5e1;
+  --border-strong: #cdd2cc;
+  --text: #14201b;
+  --text-2: #4a5751;
+  --text-3: #78837d;
+
+  --brand: #0f7b5a;
+  --brand-hover: #0b6649;
+  --brand-subtle: #e6f2ec;
+  --on-brand: #ffffff;
+
+  --good: #0ca30c;
+  --good-text: #006300;
+  --good-subtle: #e5f5e5;
+  --warning: #fab219;
+  --warning-text: #8a5a00;
+  --warning-subtle: #fef3d9;
+  --critical: #d03b3b;
+  --critical-text: #a32020;
+  --critical-subtle: #fcebea;
+  --info: #1c5cab;
+  --info-text: #1c5cab;
+  --info-subtle: #e6eef8;
+
+  /* Machine series — fixed order, validated (docs/06 §4.3). */
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --series-4: #4a3aa7;
+  --series-5: #e87ba4;
+  --series-other: #9a9893;
+
+  --shadow-overlay: 0 8px 24px rgb(16 24 20 / 0.12);
+  --focus: #0f7b5a;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #0e1412;
+  --surface: #151c19;
+  --surface-2: #1b2420;
+  --border: #26302b;
+  --border-strong: #34403a;
+  --text: #e7ece9;
+  --text-2: #a9b5af;
+  --text-3: #7c8882;
+
+  --brand: #3fb984;
+  --brand-hover: #5cc99a;
+  --brand-subtle: #12291f;
+  --on-brand: #06120d;
+
+  --good-text: #0ca30c;
+  --good-subtle: #10301a;
+  --warning-text: #fab219;
+  --warning-subtle: #3a2c0e;
+  --critical-text: #f08a8a;
+  --critical-subtle: #3a1a1a;
+  --info-text: #86b6ef;
+  --info-subtle: #14243a;
+
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --series-4: #9085e9;
+  --series-5: #d55181;
+  --series-other: #6f6e69;
+
+  --shadow-overlay: 0 8px 24px rgb(0 0 0 / 0.45);
+  --focus: #3fb984;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --color-ink: var(--text);
+  --color-ink-2: var(--text-2);
+  --color-ink-3: var(--text-3);
+
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-subtle: var(--brand-subtle);
+  --color-on-brand: var(--on-brand);
+
+  --color-good: var(--good);
+  --color-good-text: var(--good-text);
+  --color-good-subtle: var(--good-subtle);
+  --color-warning: var(--warning);
+  --color-warning-text: var(--warning-text);
+  --color-warning-subtle: var(--warning-subtle);
+  --color-critical: var(--critical);
+  --color-critical-text: var(--critical-text);
+  --color-critical-subtle: var(--critical-subtle);
+  --color-info: var(--info);
+  --color-info-text: var(--info-text);
+  --color-info-subtle: var(--info-subtle);
+
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  --shadow-overlay: var(--shadow-overlay);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--brand-subtle);
+  }
+}
+
+@layer utilities {
+  /* Aligned digits for table columns and axis ticks only (not for stat values). */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
