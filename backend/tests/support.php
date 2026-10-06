@@ -88,9 +88,11 @@ final class Client
     /** @return array{status: int, body: mixed} */
     public function call(string $method, string $path, ?array $json = null, array $headers = ['x-ef-client' => 'web']): array
     {
+        parse_str((string) parse_url($path, PHP_URL_QUERY), $query);
         $request = new Request(
             method: $method,
-            path: '/api/v1' . $path,
+            path: '/api/v1' . parse_url($path, PHP_URL_PATH),
+            query: array_map('strval', $query),
             headers: $headers + ['content-type' => 'application/json'],
             cookies: $this->cookies,
             body: $json === null ? '' : json_encode($json, JSON_UNESCAPED_UNICODE),

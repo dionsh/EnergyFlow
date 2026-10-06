@@ -230,5 +230,249 @@
     "title": "Faqja nuk u gjet",
     "body": "Kjo faqe nuk ekziston ose është zhvendosur.",
     "back": "Kthehu te përmbledhja"
+  },
+  "units": {
+    "d": "d",
+    "h": "orë",
+    "min": "min"
+  },
+  "machineState": {
+    "running": "Punon",
+    "idle": "Në pritje",
+    "off": "Fikur",
+    "unknown": "Pa të dhëna",
+    "abnormal": "Jonormale"
+  },
+  "machineTypes": {
+    "compressor": "Kompresor ajri",
+    "injection_moulding": "Makinë injektimi",
+    "cnc": "Makinë CNC",
+    "hvac": "Ngrohje dhe klimatizim",
+    "chiller": "Ftohës (chiller)",
+    "refrigeration": "Frigorifer industrial",
+    "pump": "Pompë",
+    "lighting": "Ndriçim",
+    "oven": "Furrë",
+    "office": "Zyra dhe IT",
+    "incomer": "Matësi kryesor",
+    "other": "Tjetër"
+  },
+  "controlModes": {
+    "monitor": "Vetëm monitorim",
+    "notify": "Njoftim",
+    "approve": "Miratim i veprimeve",
+    "auto": "Automatik"
+  },
+  "criticality": {
+    "critical": "Kritike — nuk fiket kurrë",
+    "normal": "Normale",
+    "flexible": "Ngarkesë fleksibile"
+  },
+  "demo": {
+    "badge": "Demo · kompani fiktive",
+    "explore": "Eksploro kompaninë demo",
+    "exploreHint": "Turne vetëm për lexim në një prodhues fiktiv plastike në Prishtinë.",
+    "director": "Drejtuesi i demos",
+    "virtualTime": "Ora virtuale",
+    "advanceHour": "+1 orë",
+    "advanceDay": "+1 ditë",
+    "advanceWeek": "+7 ditë",
+    "reset": "Rifillo historinë",
+    "resetHint": "Rindërton 75 ditë të dhëna që përfundojnë një ditë pune në 21:40.",
+    "working": "Duke punuar…",
+    "open": "Hap drejtuesin e demos",
+    "close": "Mbyll"
+  },
+  "live": {
+    "subtitle": "Fuqia në kohë reale për çdo makineri.",
+    "updated": "Përditësuar {{ago}}",
+    "sitePower": "Fuqia e fabrikës tani",
+    "monitored": "{{kw}} në nën-matës",
+    "devicesOnline": "{{online}} nga {{total}} pajisje online",
+    "runningCount": "{{count}} të ndezura",
+    "tariffHigh": "Tarifa e ditës (e lartë)",
+    "tariffLow": "Tarifa e natës (e ulët)",
+    "wasteTitle_one": "{{count}} makineri punon pas orarit",
+    "wasteTitle_other": "{{count}} makineri punojnë pas orarit",
+    "wasteBody": "{{kwh}} · {{eur}} · {{co2}} që nga {{time}}",
+    "flowTitle": "Ku shkon energjia tani",
+    "flowGrid": "Rrjeti · matësi kryesor",
+    "unmonitored": "Ngarkesa të pamonitoruara",
+    "stale": "Të dhënat live janë vonuar — matja e fundit {{ago}}",
+    "table": {
+      "machine": "Makineria",
+      "state": "Gjendja",
+      "power": "Fuqia",
+      "pf": "PF",
+      "temp": "Temp.",
+      "today": "Sot",
+      "schedule": "Orari",
+      "afterHours": "Pas orarit"
+    },
+    "scheduled": "Në orar",
+    "offSchedule": "Jashtë orarit",
+    "noData": "Pa të dhëna live"
+  },
+  "overviewData": {
+    "now": "Fuqia tani",
+    "today": "Sot",
+    "month": "Këtë muaj",
+    "bill": "Fatura e parashikuar",
+    "billContext": "Parashikim për fund të muajit, pa TVSH",
+    "co2": "CO₂e këtë muaj",
+    "running": "Makineri të ndezura",
+    "devices": "{{online}}/{{total}} pajisje online",
+    "vsLastMonth": "{{value}} krahasuar me muajin e kaluar",
+    "soFar": "{{eur}} deri tani",
+    "chartTitle": "Sot krahasuar me një {{dayType}} tipike",
+    "dayTypes": {
+      "working": "ditë pune",
+      "saturday": "të shtunë",
+      "closed": "ditë pushimi"
+    },
+    "legendToday": "Sot",
+    "legendTypical": "Tipike (mediana e 4 të fundit)",
+    "legendRange": "Diapazoni tipik",
+    "billTitle": "Ky muaj deri tani",
+    "billLines": {
+      "energy_high": "Energjia · tarifa e ditës",
+      "energy_low": "Energjia · tarifa e natës",
+      "engaged_power": "Fuqia e angazhuar (maksimumi {{kw}} kW)",
+      "reactive_energy": "Energjia reaktive mbi cos φ 0,95",
+      "fixed_fee": "Tarifa fikse mujore"
+    },
+    "subtotal": "Nëntotali pa TVSH",
+    "projection": "Parashikimi për fund të muajit: {{eur}} · {{kwh}}",
+    "tariffSource": "Tarifa: {{name}}",
+    "runningNow": "Punojnë tani",
+    "monitoringSince": "Monitorim që nga {{date}}",
+    "factor": "Faktori i rrjetit {{value}} kg CO₂e/kWh · {{source}}",
+    "viewAll": "Shiko të gjitha"
+  },
+  "machinesPage": {
+    "subtitle": "Konsumi, kostoja dhe CO₂e për çdo makineri këtë muaj.",
+    "type": "Lloji",
+    "now": "Tani",
+    "monthKwh": "Këtë muaj",
+    "monthEur": "Kostoja",
+    "co2": "CO₂e",
+    "share": "Pjesa e fabrikës",
+    "empty": "Ende nuk ka makineri"
+  },
+  "machineDetail": {
+    "back": "Të gjitha makineritë",
+    "now": "Fuqia tani",
+    "today": "Sot",
+    "month": "Këtë muaj",
+    "co2Month": "CO₂e këtë muaj",
+    "outside": "Jashtë orarit",
+    "outsideContext": "orë në 7 ditët e fundit",
+    "chartTitle": "Fuqia dhe energjia",
+    "ranges": {
+      "24h": "24 orë",
+      "7d": "7 ditë",
+      "30d": "30 ditë"
+    },
+    "kw": "Fuqia (kW)",
+    "kwh": "Energjia në ditë (kWh)",
+    "info": "Detajet",
+    "schedule": "Orari",
+    "department": "Departamenti",
+    "rated": "Fuqia nominale",
+    "phases": "Fazat",
+    "control": "Mënyra e kontrollit",
+    "criticalityLabel": "Rëndësia",
+    "device": "Nyja EnergyFlow",
+    "afterHours": "Po punon {{duration}} pasi mbaroi orari: {{kwh}}, {{eur}} dhe {{co2}} deri tani.",
+    "notFound": "Makineria nuk u gjet"
+  },
+  "devicesPage": {
+    "subtitle": "Nyjet EnergyFlow, lidhja dhe matjet elektrike live.",
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "provisioned": "Ende e palidhur"
+    },
+    "simulated": "E simuluar",
+    "hardware": "Harduer",
+    "lastReading": "Matja e fundit {{ago}}",
+    "channels": "Kanalet",
+    "firmware": "Firmware {{version}}",
+    "signal": "Sinjali {{dbm}} dBm",
+    "back": "Të gjitha pajisjet",
+    "modes": {
+      "single_phase": "1-fazore",
+      "three_ct": "3-fazore · 3 CT",
+      "single_ct_balanced": "3-fazore · 1 CT",
+      "modbus_meter": "Matës Modbus"
+    },
+    "relay": "Rele (STOP në distancë)",
+    "table": {
+      "channel": "Kanali",
+      "machine": "Makineria",
+      "voltage": "Tensioni",
+      "current": "Rryma",
+      "power": "Fuqia",
+      "pf": "PF",
+      "frequency": "Frekuenca",
+      "temp": "Temp."
+    },
+    "simulatedNote": "Nyje e simuluar: matjet vijnë nga simulatori i EnergyFlow dhe kalojnë nëpër të njëjtin proces si harduerin."
+  },
+  "calendar": {
+    "months": [
+      "janar",
+      "shkurt",
+      "mars",
+      "prill",
+      "maj",
+      "qershor",
+      "korrik",
+      "gusht",
+      "shtator",
+      "tetor",
+      "nëntor",
+      "dhjetor"
+    ],
+    "monthsShort": [
+      "jan",
+      "shk",
+      "mar",
+      "pri",
+      "maj",
+      "qer",
+      "korr",
+      "gush",
+      "sht",
+      "tet",
+      "nën",
+      "dhj"
+    ],
+    "weekdays": [
+      "e hënë",
+      "e martë",
+      "e mërkurë",
+      "e enjte",
+      "e premte",
+      "e shtunë",
+      "e diel"
+    ],
+    "weekdaysShort": [
+      "hën",
+      "mar",
+      "mër",
+      "enj",
+      "pre",
+      "sht",
+      "die"
+    ]
+  },
+  "time": {
+    "justNow": "tani",
+    "secondsAgo": "{{count}} sekonda më parë",
+    "minutesAgo": "{{count}} min më parë",
+    "hoursAgo": "{{count}} orë më parë",
+    "daysAgo_one": "{{count}} ditë më parë",
+    "daysAgo_other": "{{count}} ditë më parë"
   }
 }

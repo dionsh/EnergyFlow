@@ -35,6 +35,8 @@ export function AuthProvider({ children }) {
     [setSession],
   )
 
+  const loginDemo = useCallback(async () => setSession((await api.post('/auth/demo')).data), [setSession])
+
   const register = useCallback(
     async (details) => setSession((await api.post('/auth/register', { ...details, locale: i18n.language })).data),
     [setSession],
@@ -58,10 +60,11 @@ export function AuthProvider({ children }) {
       company: me.data?.company ?? null,
       setSession,
       login,
+      loginDemo,
       register,
       logout,
     }),
-    [me.isPending, me.isError, me.error, me.refetch, me.data, setSession, login, register, logout],
+    [me.isPending, me.isError, me.error, me.refetch, me.data, setSession, login, loginDemo, register, logout],
   )
 
   return <AuthContext value={value}>{children}</AuthContext>

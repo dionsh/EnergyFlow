@@ -1,0 +1,256 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1010" width="1800" height="1010" font-family="IBM Plex Sans, Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#2b3a33"/>
+    </marker>
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#2a78d6"/>
+    </marker>
+    <marker id="arr-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#b8860b"/>
+    </marker>
+    <style>
+      .title { font-size: 34px; font-weight: 700; fill: #14201b; letter-spacing: -0.4px; }
+      .subtitle { font-size: 17px; fill: #4a5751; }
+      .section { font-size: 12px; font-weight: 700; fill: #78837d; letter-spacing: 1.6px; }
+      .label { font-size: 14px; font-weight: 700; fill: #14201b; }
+      .small { font-size: 12px; fill: #4a5751; }
+      .tiny { font-size: 10.5px; fill: #78837d; }
+      .mono { font-family: IBM Plex Mono, Consolas, monospace; }
+      .phase { stroke-width: 3.2; fill: none; }
+      .box { fill: #ffffff; stroke: #2b3a33; stroke-width: 1.8; }
+      .soft { fill: #f6f7f5; stroke: #cdd2cc; stroke-width: 1.4; }
+      .wire { stroke: #2b3a33; stroke-width: 2; fill: none; }
+    </style>
+  </defs>
+  <rect width="1800" height="1010" fill="#ffffff"/>
+
+  <!-- header -->
+  <g transform="translate(40 26)">
+    <rect width="40" height="40" rx="8" fill="#0f7b5a"/>
+    <path d="M7 26.5c4.5 0 4.5-12 9-12s4.5 12 9 12 4.5-12 7.8-12" fill="none" stroke="#fff" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="94" y="58" class="title">EF-N3 on a 3-phase machine — installation &amp; safe control</text>
+  <text x="94" y="86" class="subtitle">Example: screw air compressor (CMP-01) at a plastics SME. Clamp-on measurement, remote STOP only, data every 10 s.</text>
+
+  <!-- ===================== POWER CIRCUIT ===================== -->
+  <text x="40" y="132" class="section">1 · POWER CIRCUIT (MEASUREMENT IS NON-INVASIVE)</text>
+  <!-- distribution board -->
+  <rect x="40" y="150" width="170" height="320" rx="6" class="soft"/>
+  <text x="125" y="176" text-anchor="middle" class="label">Distribution board</text>
+  <text x="125" y="194" text-anchor="middle" class="tiny">machine feeder</text>
+  <!-- breaker -->
+  <rect x="130" y="222" width="46" height="150" rx="4" fill="#ffffff" stroke="#2b3a33" stroke-width="1.6"/>
+  <text x="153" y="390" text-anchor="middle" class="tiny">MCB 3P</text>
+  <!-- phases -->
+  <path d="M176 240 H720" class="phase" stroke="#8b5a2b"/>
+  <path d="M176 290 H720" class="phase" stroke="#2b2b2b"/>
+  <path d="M176 340 H720" class="phase" stroke="#7d8682"/>
+  <path d="M176 400 H560" stroke="#2a78d6" stroke-width="2.4" fill="none"/>
+  <path d="M176 440 H560" stroke="#3c9a3c" stroke-width="2.4" stroke-dasharray="10 6" fill="none"/>
+  <path d="M176 440 H560" stroke="#e3c22c" stroke-width="2.4" stroke-dasharray="6 10" stroke-dashoffset="-8" fill="none"/>
+  <g class="mono small" font-weight="600">
+    <text x="190" y="234">L1</text><text x="190" y="284">L2</text><text x="190" y="334">L3</text>
+    <text x="190" y="394">N</text><text x="190" y="434">PE</text>
+  </g>
+  <!-- contactor power contacts -->
+  <g>
+    <rect x="452" y="214" width="76" height="152" rx="5" fill="#ffffff" stroke="#2b3a33" stroke-width="1.6"/>
+    <g fill="#ffffff" stroke="#2b3a33" stroke-width="2">
+      <path d="M462 240 H476 M504 240 H518" /><path d="M476 240 L502 228"/>
+      <path d="M462 290 H476 M504 290 H518" /><path d="M476 290 L502 278"/>
+      <path d="M462 340 H476 M504 340 H518" /><path d="M476 340 L502 328"/>
+    </g>
+    <path d="M490 228 V350" stroke="#2b3a33" stroke-width="1.4" stroke-dasharray="4 3"/>
+    <text x="490" y="204" text-anchor="middle" class="small" font-weight="700">K · contactor (existing)</text>
+  </g>
+  <!-- CT clamps with one lead each, running down to the node -->
+  <g fill="none" stroke="#eb6834" stroke-width="2">
+    <path d="M307 240 H290 V500"/>
+    <path d="M307 290 H296 V500"/>
+    <path d="M307 340 H302 V500"/>
+  </g>
+  <g fill="none" stroke="#eb6834" stroke-width="5">
+    <ellipse cx="320" cy="240" rx="13" ry="20"/>
+    <ellipse cx="320" cy="290" rx="13" ry="20"/>
+    <ellipse cx="320" cy="340" rx="13" ry="20"/>
+  </g>
+  <g fill="#eb6834" class="mono" font-size="12" font-weight="700">
+    <text x="342" y="226">CT1</text><text x="342" y="276">CT2</text><text x="342" y="326">CT3</text>
+  </g>
+  <text x="80" y="490" class="tiny">3 × CT leads (3.5 mm jacks)</text>
+  <!-- motor -->
+  <circle cx="780" cy="290" r="62" fill="#ffffff" stroke="#2b3a33" stroke-width="2.4"/>
+  <text x="780" y="286" text-anchor="middle" font-size="26" font-weight="700" fill="#14201b">M</text>
+  <text x="780" y="312" text-anchor="middle" font-size="16" fill="#14201b">3~</text>
+  <text x="780" y="378" text-anchor="middle" class="label">Screw compressor</text>
+  <text x="780" y="395" text-anchor="middle" class="tiny">11 kW motor (example)</text>
+  <!-- vibe probe -->
+  <path d="M836 248 C 905 300, 905 470, 760 520 S 420 565, 300 565" stroke="#4a3aa7" stroke-width="2.2" stroke-dasharray="7 5" fill="none"/>
+  <circle cx="824" cy="240" r="14" fill="#2b3a33"/><circle cx="824" cy="240" r="6" fill="#c9a227"/>
+  <text x="824" y="192" text-anchor="middle" class="small" font-weight="700" fill="#4a3aa7">VibeProbe</text>
+  <text x="824" y="208" text-anchor="middle" class="tiny">magnet on housing</text>
+
+  <!-- EF-N3 node -->
+  <g transform="translate(70 500)">
+    <rect width="230" height="150" rx="12" fill="#151917" stroke="#2c322f" stroke-width="2"/>
+    <rect x="16" y="16" width="120" height="58" rx="4" fill="#06120d"/>
+    <text x="24" y="38" class="mono" font-size="10" fill="#7cf2c2">CMP-01  RUN</text>
+    <text x="24" y="62" class="mono" font-size="18" font-weight="700" fill="#b8ffe4">10.9 kW</text>
+    <circle cx="160" cy="28" r="6" fill="#22c55e"/><circle cx="182" cy="28" r="6" fill="#3b82f6"/><circle cx="204" cy="28" r="6" fill="#f59e0b"/>
+    <rect x="160" y="46" width="48" height="36" rx="5" fill="#d4d9d6"/><circle cx="184" cy="64" r="12" fill="#0f7b5a"/>
+    <text x="184" y="98" text-anchor="middle" class="mono" font-size="9" font-weight="700" fill="#e8ece9">HOLD</text>
+    <text x="16" y="102" font-size="15" font-weight="700" fill="#f2f5f3" letter-spacing="1">ENERGYFLOW</text>
+    <text x="16" y="120" class="mono" font-size="10" fill="#c9cfcc">EF-N3 · 3Φ clamp-on</text>
+    <text x="16" y="137" class="mono" font-size="10" fill="#c9cfcc">DIN rail / magnet</text>
+  </g>
+  <!-- adapters -->
+  <g transform="translate(40 690)">
+    <rect width="130" height="54" rx="6" class="soft"/>
+    <text x="65" y="23" text-anchor="middle" class="small" font-weight="700">9 VAC adapter</text>
+    <text x="65" y="40" text-anchor="middle" class="tiny">→ VREF (voltage)</text>
+    <rect x="150" y="0" width="130" height="54" rx="6" class="soft"/>
+    <text x="215" y="23" text-anchor="middle" class="small" font-weight="700">5 V USB-C PSU</text>
+    <text x="215" y="40" text-anchor="middle" class="tiny">→ power + last-gasp</text>
+  </g>
+  <path d="M105 690 V650 M255 690 V650" class="wire"/>
+  <text x="40" y="766" class="tiny">Both plug into an ordinary 230 V socket on the same supply. If the socket loses power, the node records an outage.</text>
+
+  <!-- ===================== CONTROL CIRCUIT ===================== -->
+  <text x="930" y="132" class="section">2 · CONTROL CIRCUIT — EF-N3 IS A REMOTE STOP</text>
+  <rect x="930" y="150" width="420" height="470" rx="8" class="soft"/>
+  <!-- rails -->
+  <path d="M960 190 V400" stroke="#8b5a2b" stroke-width="3"/>
+  <path d="M1320 190 V400" stroke="#2a78d6" stroke-width="3"/>
+  <text x="960" y="182" text-anchor="middle" class="tiny">L (control)</text>
+  <text x="1320" y="182" text-anchor="middle" class="tiny">N</text>
+  <!-- rung -->
+  <path d="M960 290 H982" class="wire"/>
+  <!-- STOP NC pushbutton -->
+  <path d="M982 290 H990 M1014 290 H1022" class="wire"/>
+  <path d="M990 290 V278 M1014 290 V278" class="wire"/><path d="M986 282 L1018 274" class="wire"/>
+  <path d="M1002 270 V256 M994 256 H1010" class="wire"/>
+  <text x="1002" y="248" text-anchor="middle" class="tiny">STOP</text>
+  <text x="1002" y="312" text-anchor="middle" class="tiny">NC</text>
+  <path d="M1022 290 H1046" class="wire"/>
+  <!-- EF ACT NC -->
+  <rect x="1046" y="258" width="78" height="64" rx="6" fill="#e6f2ec" stroke="#0f7b5a" stroke-width="2"/>
+  <path d="M1052 290 H1066 M1090 290 H1118" stroke="#0f7b5a" stroke-width="2.4" fill="none"/>
+  <path d="M1066 290 V278 M1090 290 V278" stroke="#0f7b5a" stroke-width="2.4"/><path d="M1062 282 L1094 274" stroke="#0f7b5a" stroke-width="2.4"/>
+  <text x="1085" y="340" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0b6649">EF-N3 ACT (NC)</text>
+  <path d="M1124 290 H1150" class="wire"/>
+  <circle cx="1150" cy="290" r="3.5" fill="#2b3a33"/>
+  <!-- START NO -->
+  <path d="M1150 290 H1166 M1190 290 H1206" class="wire"/>
+  <path d="M1166 290 V280 M1190 290 V280 M1166 274 H1190" class="wire"/>
+  <path d="M1178 274 V258 M1170 258 H1186" class="wire"/>
+  <text x="1178" y="250" text-anchor="middle" class="tiny">START</text>
+  <text x="1178" y="312" text-anchor="middle" class="tiny">NO</text>
+  <circle cx="1206" cy="290" r="3.5" fill="#2b3a33"/>
+  <!-- self-hold aux -->
+  <path d="M1150 290 V360 H1166 M1190 360 H1206 V290" class="wire"/>
+  <path d="M1166 360 V350 M1190 360 V350 M1166 344 H1190" class="wire"/>
+  <text x="1178" y="382" text-anchor="middle" class="tiny">K aux (self-hold)</text>
+  <!-- coil -->
+  <path d="M1206 290 H1240" class="wire"/>
+  <circle cx="1262" cy="290" r="22" fill="#ffffff" stroke="#2b3a33" stroke-width="2"/>
+  <text x="1262" y="295" text-anchor="middle" font-size="14" font-weight="700" fill="#14201b">K</text>
+  <path d="M1284 290 H1320" class="wire"/>
+  <text x="1262" y="330" text-anchor="middle" class="tiny">contactor coil</text>
+  <!-- notes -->
+  <g class="small">
+    <text x="950" y="430" font-weight="700" fill="#0b6649">How EnergyFlow switches a machine off</text>
+    <text x="950" y="452">ACT opens its NC contact — exactly like pressing STOP.</text>
+    <text x="950" y="472">The self-hold drops out, so the machine can only</text>
+    <text x="950" y="492">restart with its own START button. EF-N3 never starts it.</text>
+    <text x="950" y="522" font-weight="700" fill="#0b6649">Fail-safe</text>
+    <text x="950" y="544">Node unpowered or crashed → relay releases → NC closes</text>
+    <text x="950" y="564">→ the machine behaves exactly as before installation.</text>
+    <text x="950" y="594" fill="#a32020" font-weight="700">The emergency-stop circuit is never touched.</text>
+  </g>
+
+  <!-- AUX in signal -->
+  <text x="40" y="808" class="section">AUX IN (OPTIONAL)</text>
+  <text x="40" y="830" class="small">24 V DC “running / cycle” signal from the machine (e.g. moulding cycle lamp or PLC output)</text>
+  <text x="40" y="850" class="small">→ opto-isolated input → EnergyFlow counts cycles: <tspan font-weight="700" fill="#0b6649">kWh per produced part</tspan>.</text>
+
+  <!-- ===================== DATA PATH ===================== -->
+  <text x="1400" y="132" class="section">3 · DATA &amp; COMMAND PATH</text>
+  <g>
+    <rect x="1400" y="150" width="360" height="62" rx="7" class="box"/>
+    <text x="1418" y="176" class="label">EF-N3 node</text>
+    <text x="1418" y="196" class="small">10 s batches · signed (HMAC) · buffered offline</text>
+    <path d="M1520 212 V252" stroke="#2a78d6" stroke-width="2.2" marker-end="url(#arr-blue)"/>
+    <text x="1530" y="238" class="tiny">Wi-Fi (primary)</text>
+    <path d="M1680 212 V252" stroke="#eb6834" stroke-width="2.2" stroke-dasharray="6 4" marker-end="url(#arr)"/>
+    <text x="1690" y="238" class="tiny">LTE fallback</text>
+    <rect x="1400" y="256" width="360" height="74" rx="7" class="box"/>
+    <text x="1418" y="282" class="label">EnergyFlow API · Render</text>
+    <text x="1418" y="302" class="small mono" font-size="11">POST /api/v1/ingest/readings</text>
+    <text x="1418" y="320" class="small">validate → store → state → live rules</text>
+    <path d="M1580 330 V364" class="wire" marker-end="url(#arr)"/>
+    <rect x="1400" y="368" width="360" height="56" rx="7" class="box"/>
+    <text x="1418" y="392" class="label">MySQL · Aiven</text>
+    <text x="1418" y="412" class="small">readings, waste events, carbon ledger</text>
+    <path d="M1580 424 V458" class="wire" marker-end="url(#arr)"/>
+    <rect x="1400" y="462" width="360" height="56" rx="7" class="box"/>
+    <text x="1418" y="486" class="label">Dashboard · Vercel</text>
+    <text x="1418" y="506" class="small">live kW, waste in €, alerts, Turn Off</text>
+    <!-- command loop -->
+    <path d="M1772 490 H1786 V181 H1772" stroke="#b8860b" stroke-width="2.2" fill="none" marker-end="url(#arr-amber)"/>
+    <rect x="1400" y="538" width="360" height="82" rx="7" fill="#fdf6e3" stroke="#b8860b" stroke-width="1.5"/>
+    <text x="1418" y="562" class="label" fill="#8a5a00">Turn Off loop (verified)</text>
+    <text x="1418" y="582" class="small">click → command queued → node polls → ACT opens</text>
+    <text x="1418" y="602" class="small">→ meter sees ≈0 kW → “verified by meter in 10 s”</text>
+  </g>
+
+  <!-- ===================== INSTALL STEPS ===================== -->
+  <text x="930" y="660" class="section">INSTALL IN 6 STEPS (≈10 MIN MEASUREMENT · CONTROL WIRING BY ELECTRICIAN)</text>
+  <g>
+    <g transform="translate(930 676)">
+      <rect width="270" height="96" rx="8" class="soft"/>
+      <circle cx="24" cy="24" r="13" fill="#0f7b5a"/><text x="24" y="29" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">1</text>
+      <text x="46" y="29" class="label">Mount the node</text>
+      <text x="14" y="58" class="small">DIN rail in the panel, or the</text>
+      <text x="14" y="76" class="small">magnetic back plate nearby.</text>
+    </g>
+    <g transform="translate(1214 676)">
+      <rect width="270" height="96" rx="8" class="soft"/>
+      <circle cx="24" cy="24" r="13" fill="#0f7b5a"/><text x="24" y="29" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">2</text>
+      <text x="46" y="29" class="label">Clamp CT1–CT3</text>
+      <text x="14" y="58" class="small">Around L1, L2, L3, with the arrow</text>
+      <text x="14" y="76" class="small">pointing to the machine.</text>
+    </g>
+    <g transform="translate(1498 676)">
+      <rect width="270" height="96" rx="8" class="soft"/>
+      <circle cx="24" cy="24" r="13" fill="#0f7b5a"/><text x="24" y="29" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">3</text>
+      <text x="46" y="29" class="label">Plug in the adapters</text>
+      <text x="14" y="58" class="small">9 VAC (voltage reference) and</text>
+      <text x="14" y="76" class="small">5 V USB-C (power).</text>
+    </g>
+    <g transform="translate(930 784)">
+      <rect width="270" height="96" rx="8" class="soft"/>
+      <circle cx="24" cy="24" r="13" fill="#0f7b5a"/><text x="24" y="29" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">4</text>
+      <text x="46" y="29" class="label">Attach the VibeProbe</text>
+      <text x="14" y="58" class="small">Magnet on the motor housing,</text>
+      <text x="14" y="76" class="small">near the bearing.</text>
+    </g>
+    <g transform="translate(1214 784)">
+      <rect width="270" height="96" rx="8" class="soft"/>
+      <circle cx="24" cy="24" r="13" fill="#b8860b"/><text x="24" y="29" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">5</text>
+      <text x="46" y="29" class="label">Optional: ACT + AUX</text>
+      <text x="14" y="58" class="small">Electrician wires ACT (NC) in series</text>
+      <text x="14" y="76" class="small">with STOP; AUX to the run signal.</text>
+    </g>
+    <g transform="translate(1498 784)">
+      <rect width="270" height="96" rx="8" class="soft"/>
+      <circle cx="24" cy="24" r="13" fill="#0f7b5a"/><text x="24" y="29" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">6</text>
+      <text x="46" y="29" class="label">Connect</text>
+      <text x="14" y="58" class="small">Join the setup hotspot, pick Wi-Fi;</text>
+      <text x="14" y="76" class="small">the node appears in Devices.</text>
+    </g>
+  </g>
+
+  <text x="40" y="990" class="tiny" font-size="11">Prototype documentation — not a certified product. Values marked “example” are illustrative. Work on electrical panels and control circuits must be carried out by a licensed electrician following the machine's risk assessment.</text>
+  <text x="1760" y="990" text-anchor="end" class="tiny" font-size="11">hardware/blueprint/ef-n3-installation.svg · rev 1.0</text>
+</svg>

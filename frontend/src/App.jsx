@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { Activity, Cpu, Factory, FileText, Leaf, Lightbulb, TrendingDown, TriangleAlert, Workflow } from 'lucide-react'
+import { FileText, Leaf, Lightbulb, TrendingDown, TriangleAlert, Workflow } from 'lucide-react'
 import { AuthProvider } from './providers/AuthProvider'
 import { ThemeProvider } from './providers/ThemeProvider'
 import { AppShell } from './components/layout/AppShell'
@@ -8,6 +8,11 @@ import { GuestOnly, RequireAuth } from './components/layout/RouteGuards'
 import { LoginPage } from './features/auth/LoginPage'
 import { RegisterPage } from './features/auth/RegisterPage'
 import { OverviewPage } from './features/overview/OverviewPage'
+import { LivePage } from './features/live/LivePage'
+import { MachinesPage } from './features/machines/MachinesPage'
+import { MachineDetailPage } from './features/machines/MachineDetailPage'
+import { DevicesPage } from './features/devices/DevicesPage'
+import { DeviceDetailPage } from './features/devices/DeviceDetailPage'
 import { ModulePage } from './features/modules/ModulePage'
 import { SettingsPage } from './features/settings/SettingsPage'
 import { NotFoundPage } from './features/NotFoundPage'
@@ -18,15 +23,13 @@ const queryClient = new QueryClient({
       staleTime: 30_000,
       retry: (failureCount, error) => error?.status >= 500 && failureCount < 2,
       refetchOnWindowFocus: false,
+      refetchIntervalInBackground: false,
     },
   },
 })
 
-// Modules whose data pipeline lands in the next milestones. Each shows an honest empty state.
+// Modules whose pipeline lands in the next milestones. Each shows an honest empty state.
 const MODULES = [
-  ['live', Activity],
-  ['machines', Factory],
-  ['devices', Cpu],
   ['waste', TriangleAlert],
   ['opportunities', Lightbulb],
   ['automations', Workflow],
@@ -49,6 +52,11 @@ export default function App() {
               <Route element={<RequireAuth />}>
                 <Route element={<AppShell />}>
                   <Route index element={<OverviewPage />} />
+                  <Route path="live" element={<LivePage />} />
+                  <Route path="machines" element={<MachinesPage />} />
+                  <Route path="machines/:id" element={<MachineDetailPage />} />
+                  <Route path="devices" element={<DevicesPage />} />
+                  <Route path="devices/:id" element={<DeviceDetailPage />} />
                   {MODULES.map(([module, icon]) => (
                     <Route key={module} path={module} element={<ModulePage module={module} icon={icon} />} />
                   ))}

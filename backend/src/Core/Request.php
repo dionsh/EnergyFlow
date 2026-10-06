@@ -53,6 +53,12 @@ final class Request
         );
     }
 
+    /** Exact request body (needed to verify device signatures). */
+    public function rawBody(): string
+    {
+        return $this->body;
+    }
+
     public function header(string $name): ?string
     {
         return $this->headers[strtolower($name)] ?? null;

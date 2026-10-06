@@ -6,6 +6,7 @@ import { useAuth } from '../../providers/AuthProvider'
 import { IconButton } from '../ui/Button'
 import { Sidebar } from './Sidebar'
 import { LanguageSwitch, NotificationsButton, ThemeMenu, UserMenu } from './TopBarControls'
+import { DemoDirector } from '../../features/demo/DemoDirector'
 
 export function AppShell() {
   const { t } = useTranslation()
@@ -48,6 +49,7 @@ export function AppShell() {
           <Outlet />
         </main>
       </div>
+      <DemoDirector />
     </div>
   )
 }

@@ -36,6 +36,12 @@ services:
         sync: false
       - key: CRON_SECRET
         generateValue: true
+      # Root of the derived device secrets. Never change it after devices are provisioned.
+      - key: APP_KEY
+        generateValue: true
+      # Optional: fixed password for the demo owner account (owner@ylli-plast.demo).
+      - key: DEMO_OWNER_PASSWORD
+        sync: false
       - key: GROQ_API_KEY
         sync: false
       - key: GROQ_MODEL

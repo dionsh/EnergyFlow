@@ -107,6 +107,8 @@ EnergyFlow/
 
 ## 3. Hardware concept: EnergyFlow devices
 
+> **Update (7 Oct):** the concrete device is now the **EF-N3 node**: clamp-on 3-phase metering, the EF VibeProbe, a remote-STOP relay, an operator HOLD button, an outage black box, AUX production input, and Wi-Fi with an LTE Cat-1 fallback. The full blueprint, BOM, safety design and prototype plan are in [`hardware/README.md`](../hardware/README.md). The family table below remains the conceptual roadmap.
+
 ### 3.1 Product family
 
 | Device | For | Core components (concept) | Measures |

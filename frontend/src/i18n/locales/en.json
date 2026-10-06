@@ -230,5 +230,249 @@
     "title": "Page not found",
     "body": "This page doesn't exist or has moved.",
     "back": "Back to overview"
+  },
+  "units": {
+    "d": "d",
+    "h": "h",
+    "min": "min"
+  },
+  "machineState": {
+    "running": "Running",
+    "idle": "Idle",
+    "off": "Off",
+    "unknown": "No data",
+    "abnormal": "Abnormal"
+  },
+  "machineTypes": {
+    "compressor": "Air compressor",
+    "injection_moulding": "Injection moulding",
+    "cnc": "CNC machine",
+    "hvac": "HVAC",
+    "chiller": "Chiller",
+    "refrigeration": "Refrigeration",
+    "pump": "Pump",
+    "lighting": "Lighting",
+    "oven": "Oven",
+    "office": "Office & IT",
+    "incomer": "Main incomer",
+    "other": "Other"
+  },
+  "controlModes": {
+    "monitor": "Monitor only",
+    "notify": "Notify",
+    "approve": "Approve actions",
+    "auto": "Automatic"
+  },
+  "criticality": {
+    "critical": "Critical — never switched",
+    "normal": "Normal",
+    "flexible": "Flexible load"
+  },
+  "demo": {
+    "badge": "Demo · fictional company",
+    "explore": "Explore the demo company",
+    "exploreHint": "Read-only tour of a fictional plastics manufacturer in Prishtina.",
+    "director": "Demo Director",
+    "virtualTime": "Virtual time",
+    "advanceHour": "+1 hour",
+    "advanceDay": "+1 day",
+    "advanceWeek": "+7 days",
+    "reset": "Reset story",
+    "resetHint": "Rebuilds 75 days of data ending on a weekday at 21:40.",
+    "working": "Working…",
+    "open": "Open Demo Director",
+    "close": "Close"
+  },
+  "live": {
+    "subtitle": "Real-time power for every machine.",
+    "updated": "Updated {{ago}}",
+    "sitePower": "Site power now",
+    "monitored": "{{kw}} on sub-meters",
+    "devicesOnline": "{{online}} of {{total}} devices online",
+    "runningCount": "{{count}} on",
+    "tariffHigh": "Day tariff (high)",
+    "tariffLow": "Night tariff (low)",
+    "wasteTitle_one": "{{count}} machine is running after hours",
+    "wasteTitle_other": "{{count}} machines are running after hours",
+    "wasteBody": "{{kwh}} · {{eur}} · {{co2}} since {{time}}",
+    "flowTitle": "Where the power goes now",
+    "flowGrid": "Grid · main incomer",
+    "unmonitored": "Unmonitored loads",
+    "stale": "Live data delayed — last reading {{ago}}",
+    "table": {
+      "machine": "Machine",
+      "state": "State",
+      "power": "Power",
+      "pf": "PF",
+      "temp": "Temp.",
+      "today": "Today",
+      "schedule": "Schedule",
+      "afterHours": "After hours"
+    },
+    "scheduled": "Scheduled",
+    "offSchedule": "Outside schedule",
+    "noData": "No live data"
+  },
+  "overviewData": {
+    "now": "Power now",
+    "today": "Today",
+    "month": "This month",
+    "bill": "Estimated bill",
+    "billContext": "Month-end projection, excl. VAT",
+    "co2": "CO₂e this month",
+    "running": "Machines on",
+    "devices": "{{online}}/{{total}} devices online",
+    "vsLastMonth": "{{value}} vs last month",
+    "soFar": "{{eur}} so far",
+    "chartTitle": "Today vs a typical {{dayType}}",
+    "dayTypes": {
+      "working": "working day",
+      "saturday": "Saturday",
+      "closed": "closed day"
+    },
+    "legendToday": "Today",
+    "legendTypical": "Typical (median of last 4)",
+    "legendRange": "Typical range",
+    "billTitle": "This month so far",
+    "billLines": {
+      "energy_high": "Energy · day tariff",
+      "energy_low": "Energy · night tariff",
+      "engaged_power": "Engaged power (peak {{kw}} kW)",
+      "reactive_energy": "Reactive energy above cos φ 0.95",
+      "fixed_fee": "Fixed monthly fee"
+    },
+    "subtotal": "Subtotal excl. VAT",
+    "projection": "Projected month-end: {{eur}} · {{kwh}}",
+    "tariffSource": "Tariff: {{name}}",
+    "runningNow": "Running now",
+    "monitoringSince": "Monitoring since {{date}}",
+    "factor": "Grid factor {{value}} kg CO₂e/kWh · {{source}}",
+    "viewAll": "View all"
+  },
+  "machinesPage": {
+    "subtitle": "Consumption, cost and CO₂e per machine this month.",
+    "type": "Type",
+    "now": "Now",
+    "monthKwh": "This month",
+    "monthEur": "Cost",
+    "co2": "CO₂e",
+    "share": "Share of site",
+    "empty": "No machines yet"
+  },
+  "machineDetail": {
+    "back": "All machines",
+    "now": "Power now",
+    "today": "Today",
+    "month": "This month",
+    "co2Month": "CO₂e this month",
+    "outside": "Outside schedule",
+    "outsideContext": "hours in the last 7 days",
+    "chartTitle": "Power and energy",
+    "ranges": {
+      "24h": "24 hours",
+      "7d": "7 days",
+      "30d": "30 days"
+    },
+    "kw": "Power (kW)",
+    "kwh": "Energy per day (kWh)",
+    "info": "Details",
+    "schedule": "Schedule",
+    "department": "Department",
+    "rated": "Rated power",
+    "phases": "Phases",
+    "control": "Control mode",
+    "criticalityLabel": "Criticality",
+    "device": "EnergyFlow node",
+    "afterHours": "Running for {{duration}} after the schedule ended: {{kwh}}, {{eur}} and {{co2}} so far.",
+    "notFound": "Machine not found"
+  },
+  "devicesPage": {
+    "subtitle": "EnergyFlow nodes, their connection and live electrical readings.",
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "provisioned": "Not connected yet"
+    },
+    "simulated": "Simulated",
+    "hardware": "Hardware",
+    "lastReading": "Last reading {{ago}}",
+    "channels": "Channels",
+    "firmware": "Firmware {{version}}",
+    "signal": "Signal {{dbm}} dBm",
+    "back": "All devices",
+    "modes": {
+      "single_phase": "1-phase",
+      "three_ct": "3-phase · 3 CTs",
+      "single_ct_balanced": "3-phase · 1 CT",
+      "modbus_meter": "Modbus meter"
+    },
+    "relay": "Relay (remote STOP)",
+    "table": {
+      "channel": "Channel",
+      "machine": "Machine",
+      "voltage": "Voltage",
+      "current": "Current",
+      "power": "Power",
+      "pf": "PF",
+      "frequency": "Frequency",
+      "temp": "Temp."
+    },
+    "simulatedNote": "Simulated node: its readings come from the EnergyFlow simulator and go through exactly the same ingest pipeline as hardware."
+  },
+  "calendar": {
+    "months": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ],
+    "monthsShort": [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ],
+    "weekdays": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "weekdaysShort": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun"
+    ]
+  },
+  "time": {
+    "justNow": "just now",
+    "secondsAgo": "{{count}} s ago",
+    "minutesAgo": "{{count}} min ago",
+    "hoursAgo": "{{count}} h ago",
+    "daysAgo_one": "{{count}} day ago",
+    "daysAgo_other": "{{count}} days ago"
   }
 }

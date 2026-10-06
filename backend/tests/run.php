@@ -17,6 +17,8 @@ use EnergyFlow\Core\Migrator;
 putenv('DB_NAME=energyflow_test');
 putenv('APP_DEBUG=1');
 putenv('SESSION_SECURE=0');
+putenv('APP_KEY=' . str_repeat('ab', 32));
+putenv('DEMO_OWNER_PASSWORD=test-owner-password');
 
 require dirname(__DIR__) . '/src/bootstrap.php';
 require __DIR__ . '/support.php';
