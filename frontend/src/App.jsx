@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { FileText, Leaf, Lightbulb, TrendingDown, TriangleAlert, Workflow } from 'lucide-react'
+import { Leaf, Lightbulb, TrendingDown, TriangleAlert, Workflow } from 'lucide-react'
 import { AuthProvider } from './providers/AuthProvider'
 import { ThemeProvider } from './providers/ThemeProvider'
 import { AppShell } from './components/layout/AppShell'
@@ -8,6 +8,7 @@ import { GuestOnly, RequireAuth } from './components/layout/RouteGuards'
 import { LoginPage } from './features/auth/LoginPage'
 import { RegisterPage } from './features/auth/RegisterPage'
 import { OverviewPage } from './features/overview/OverviewPage'
+import { ReportsPage } from './features/reports/ReportsPage'
 import { LivePage } from './features/live/LivePage'
 import { MachinesPage } from './features/machines/MachinesPage'
 import { MachineDetailPage } from './features/machines/MachineDetailPage'
@@ -35,7 +36,6 @@ const MODULES = [
   ['automations', Workflow],
   ['impact', TrendingDown],
   ['carbon', Leaf],
-  ['reports', FileText],
 ]
 
 export default function App() {
@@ -57,6 +57,7 @@ export default function App() {
                   <Route path="machines/:id" element={<MachineDetailPage />} />
                   <Route path="devices" element={<DevicesPage />} />
                   <Route path="devices/:id" element={<DeviceDetailPage />} />
+                  <Route path="reports" element={<ReportsPage />} />
                   {MODULES.map(([module, icon]) => (
                     <Route key={module} path={module} element={<ModulePage module={module} icon={icon} />} />
                   ))}

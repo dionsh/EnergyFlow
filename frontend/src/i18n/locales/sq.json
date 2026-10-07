@@ -349,6 +349,24 @@
     "factor": "Faktori i rrjetit {{value}} kg CO₂e/kWh · {{source}}",
     "viewAll": "Shiko të gjitha"
   },
+  "report": {
+    "title": "Raporti mujor i energjisë",
+    "month": "Muaji",
+    "company": "Kompania",
+    "totalEnergy": "Konsumi",
+    "totalCost": "Kostoja e vlerësuar",
+    "totalCo2": "Emetimet",
+    "byMachine": "Ndarja sipas makinerive",
+    "machine": "Makina",
+    "energy": "Konsumi (kWh)",
+    "cost": "Kostoja",
+    "co2": "CO₂e",
+    "costNote": "Kostoja e përgjithshme është vlerësimi i faturës pa TVSH.",
+    "noMachines": "Nuk ka të dhëna për makineri.",
+    "waitingForData": "Raportet aktivizohen pasi të pranohen matjet e para.",
+    "csv": "CSV",
+    "pdf": "PDF"
+  },
   "machinesPage": {
     "subtitle": "Konsumi, kostoja dhe CO₂e për çdo makineri këtë muaj.",
     "type": "Lloji",

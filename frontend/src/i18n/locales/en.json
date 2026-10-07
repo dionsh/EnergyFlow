@@ -349,6 +349,24 @@
     "factor": "Grid factor {{value}} kg CO₂e/kWh · {{source}}",
     "viewAll": "View all"
   },
+  "report": {
+    "title": "Monthly energy report",
+    "month": "Month",
+    "company": "Company",
+    "totalEnergy": "Consumption",
+    "totalCost": "Estimated cost",
+    "totalCo2": "Emissions",
+    "byMachine": "Breakdown by machine",
+    "machine": "Machine",
+    "energy": "Consumption (kWh)",
+    "cost": "Cost",
+    "co2": "CO₂e",
+    "costNote": "The total cost is the estimated bill subtotal, excluding VAT.",
+    "noMachines": "No machine data available.",
+    "waitingForData": "Reports will be enabled when the first measurements arrive.",
+    "csv": "CSV",
+    "pdf": "PDF"
+  },
   "machinesPage": {
     "subtitle": "Consumption, cost and CO₂e per machine this month.",
     "type": "Type",
