@@ -11,6 +11,7 @@ import { StateBadge } from '../../components/ui/StateBadge'
 import { Callout, EmptyState, ErrorState, Skeleton } from '../../components/ui/States'
 import { useMachine, useMachineSeries } from '../data'
 import { TurnOffButton } from '../control/TurnOff'
+import { AskButton } from '../assistant/AskButton'
 import { MachineFindings } from '../waste/InsightCards'
 import { MachineChart } from './MachineChart'
 
@@ -64,7 +65,10 @@ export function MachineDetailPage() {
             </p>
           </div>
         </div>
-        {live && <TurnOffButton machine={live} />}
+        <div className="flex flex-wrap items-center gap-2">
+          <AskButton size="md" question={t('assistant.explain.machine', { code: machine.code })} context={{ machine_id: machine.id }} />
+          {live && <TurnOffButton machine={live} />}
+        </div>
       </div>
 
       {live?.after_hours && (

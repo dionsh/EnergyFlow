@@ -13,6 +13,7 @@ import { EmptyState, ErrorState, Skeleton } from '../../components/ui/States'
 import { Segmented, Tabs } from '../../components/ui/Tabs'
 import { useAlerts, useLive, useWasteEvents, useWasteSummary } from '../data'
 import { TurnOffButton } from '../control/TurnOff'
+import { AskButton } from '../assistant/AskButton'
 import { AlertsPanel } from './AlertsPanel'
 import { DailyWasteChart } from './WasteCharts'
 import { StatusBadge, WasteDrawer } from './WasteDrawer'
@@ -211,7 +212,12 @@ export function WastePage() {
         actions={(event) => {
           // An episode that is still going on can be ended right here.
           const machine = live.data?.data?.machines.find((m) => m.id === event.machine.id)
-          return event.ongoing && event.type !== 'excess_vs_baseline' && machine ? <TurnOffButton machine={machine} /> : null
+          return (
+            <>
+              {event.ongoing && event.type !== 'excess_vs_baseline' && machine && <TurnOffButton machine={machine} />}
+              <AskButton question={t('assistant.explain.waste')} context={{ waste_event_id: event.id }} onBeforeAsk={() => update({ event: null })} />
+            </>
+          )
         }}
       />
     </>

@@ -40,6 +40,28 @@ npm run dev
 
 Open http://localhost:5173. Vite proxies `/api` to the PHP server, so the browser sees one origin, exactly like production.
 
+To load the demo company (a fictional plastics SME with a 75-day energy story ending at 21:40 on a weekday):
+
+```powershell
+php backend/bin/seed-demo.php            # or --scene=now, --days=30
+```
+
+The owner signs in as `owner@ylli-plast.demo` with `DEMO_OWNER_PASSWORD` from `backend/.env`; anyone can use **Explore the demo** (read-only).
+
+## What's built
+
+| Module | What it does |
+|---|---|
+| Live · Machines · Devices | Power per machine every few seconds, consumption, cost and CO₂e per machine, device health |
+| Waste & Alerts | After-hours and idle episodes, compressed-air leak signature, efficiency drift (CUSUM), offline devices; quantified in kWh, € and CO₂e |
+| Opportunities | Ranked recommendations, each quantified by replaying the machine's own data; a What-if simulator |
+| Turn Off & Automations | A command loop to the relay, verified only by the meter; policies such as "off 15 min after the shift" |
+| Impact | Before/after proof per action: adjusted baseline, 90 % confidence interval (IPMVP-inspired) |
+| Carbon & ESG | Scope 2 from metered electricity, Scope 1 from declarations, VSME B3 datapoints, readiness checklist, methodology |
+| Reports | Monthly energy and sustainability report, frozen figures, AI-drafted text checked against them, A4 PDF |
+| Ask EnergyFlow | Assistant (Ctrl/⌘ K): data questions answered straight from MySQL; open questions by Groq over a data snapshot, every number checked; off-topic questions refused; Turn Off only after the user confirms |
+| Hardware bridge | `tools/hw-bridge`: real smart relays (Shelly Gen2) speak the same signed device protocol as the EF-N3 nodes |
+
 ## Checks
 
 ```powershell

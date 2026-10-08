@@ -1210,6 +1210,58 @@
     "mvLine": "Kursimet verifikohen me një bazë të rregulluar dhe interval besueshmërie 90 % (i frymëzuar nga IPMVP, Opsioni B). Nuk është M&V e certifikuar.",
     "simulatedLine": "Ky raport përshkruan një kompani demo fiktive me makineri të simuluara. Metodat janë të njëjtat si për matës realë.",
     "footer": "EnergyFlow · inteligjencë energjetike për NVM-të e Kosovës",
-    "periodPartial": "(deri tani në muaj)"
+    "periodPartial": "(deri tani në muaj)",
+    "vsmeScope": "Të dhëna vjetore për vitin kalendarik {{year}}, të matura nga {{from}} deri më {{to}} (kur u krijua ky raport) — jo vetëm për këtë muaj."
+  },
+  "assistant": {
+    "title": "Pyet EnergyFlow",
+    "subtitle": "Përgjigje nga matësit tuaj",
+    "button": "Pyet EnergyFlow",
+    "shortcut": "Ctrl K",
+    "placeholder": "Pyet për energjinë, kostot, humbjet ose CO₂…",
+    "send": "Dërgo",
+    "newChat": "Bisedë e re",
+    "history": "Bisedat",
+    "noHistory": "Ende nuk ka biseda.",
+    "deleteChat": "Fshi bisedën",
+    "backToChat": "Kthehu te biseda",
+    "thinking": "Po kontrolloj të dhënat…",
+    "welcomeTitle": "Çfarë dëshironi të dini?",
+    "welcomeBody": "Përgjigjem nga matësit e kompanisë suaj: konsumi, kostot, humbjet, karboni dhe kursimet. Mund të hap edhe faqe dhe, pasi ta konfirmoni, të fik një makineri.",
+    "scope": "Vetëm energjia, kostot, karboni juaj dhe EnergyFlow. Numrat vijnë nga të dhënat tuaja dhe nuk vlerësohen kurrë përafërsisht.",
+    "source": {
+      "data": "Nga të dhënat tuaja",
+      "ai": "AI · e kontrolluar me të dhënat tuaja",
+      "aiUnverified": "AI · jo plotësisht e verifikuar",
+      "refusal": "Jashtë fushës",
+      "fallback": "Përgjigje e kufizuar"
+    },
+    "sourceHint": {
+      "data": "Përgjigje direkt nga matjet tuaja, pa model gjuhësor.",
+      "ai": "Shkruar nga një model gjuhësor (Groq) mbi të dhënat tuaja; çdo numër u kontrollua me to.",
+      "aiUnverified": "Disa numra në këtë përgjigje nuk u përputhën me të dhënat tuaja. Kontrollojini te faqet e lidhura para se të veproni.",
+      "refusal": "Asistenti mbulon vetëm energjinë, kostot, karbonin tuaj dhe EnergyFlow.",
+      "fallback": "Modeli gjuhësor nuk ishte i disponueshëm, ndaj tani mund t'u përgjigjem vetëm pyetjeve për të dhënat."
+    },
+    "sources": "Burimet",
+    "openPage": "Hap {{page}}",
+    "openMachine": "Hap {{code}}",
+    "turnOff": {
+      "yes": "Po, fike",
+      "no": "Jo",
+      "cancelled": "U anulua. Asgjë nuk u dërgua.",
+      "sent": "Komanda u dërgua te {{code}}",
+      "reason": "Kërkuar përmes Pyet EnergyFlow"
+    },
+    "error": "Asistenti nuk arriti të përgjigjet. Provoni përsëri.",
+    "retry": "Provo përsëri",
+    "chars": "{{count}} / 1000",
+    "askAbout": "Pyet EnergyFlow",
+    "explain": {
+      "waste": "Shpjego këtë humbje: pse ndodhi dhe çfarë të bëjmë",
+      "machine": "Shpjego konsumin e {{code}} këtë muaj",
+      "opportunity": "Shpjego këtë mundësi dhe si u llogarit kursimi"
+    },
+    "footer": "Përgjigjet e AI kontrollohen me të dhënat tuaja. Makineritë fiken vetëm pasi ta konfirmoni."
   }
 }

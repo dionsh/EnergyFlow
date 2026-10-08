@@ -145,6 +145,7 @@ final class ReportBuilder
         $impact = ImpactService::summary($companyId);
         $year = (int) $time->format($period->from + 43200, 'Y');
         $carbon = CarbonReport::summary($companyId, $period);
+        $vsme = CarbonReport::vsmeB3($companyId, $year);
         $devices = Database::one('SELECT COUNT(*) AS total, SUM(is_simulated) AS simulated FROM devices WHERE company_id = ? AND archived_at IS NULL', [$companyId]);
         $monitoringSince = Database::value('SELECT UNIX_TIMESTAMP(MIN(bucket_start)) FROM readings_15m WHERE company_id = ?', [$companyId]);
         $iso = static fn (int $ts): string => (string) Time::iso(gmdate('Y-m-d H:i:s', $ts));
@@ -198,7 +199,9 @@ final class ReportBuilder
                 'title_key' => $r['title_key'], 'params' => $r['params'], 'machine' => $r['machine']['code'] ?? null, 'impact_tag' => $r['impact_tag'],
                 'eur_month' => $r['per_month']['eur'], 'kwh_month' => $r['per_month']['kwh'], 'co2_kg_month' => $r['per_month']['co2_kg'], 'effort' => $r['effort'],
             ], Recommendations::list($companyId, 'open')), 0, 5),
-            'vsme_b3' => CarbonReport::vsmeB3($companyId, $year)['rows'],
+            'vsme_b3' => $vsme['rows'],
+            // VSME datapoints are annual: the calendar year so far, not this month.
+            'vsme_b3_scope' => ['year' => $year, 'from' => $vsme['from'], 'to' => $vsme['to']],
             'readiness' => CarbonReport::readiness($companyId)['score'],
             'data_quality' => [
                 'coverage' => $carbon['coverage'],

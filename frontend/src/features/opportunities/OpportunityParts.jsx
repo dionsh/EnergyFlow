@@ -19,6 +19,7 @@ import { Callout, ErrorState, Skeleton } from '../../components/ui/States'
 import { useRecommendation } from '../data'
 import { oppText } from './oppText'
 import { Assumptions, ReplayChart } from './WhatIfParts'
+import { AskButton } from '../assistant/AskButton'
 
 const dayIso = (date) => `${date}T12:00:00Z`
 
@@ -234,7 +235,12 @@ export function OpportunityDrawer({ id, onClose, onSimulate }) {
           {rec.evidence?.method && <MethodChip method={rec.evidence.method} />}
         </>
       )}
-      footer={rec && <OpportunityActions rec={rec} onSimulate={onSimulate && ((r) => { onClose(); onSimulate(r) })} size="md" />}
+      footer={rec && (
+        <>
+          <AskButton size="md" question={t('assistant.explain.opportunity')} context={{ recommendation_id: rec.id }} onBeforeAsk={onClose} />
+          <OpportunityActions rec={rec} onSimulate={onSimulate && ((r) => { onClose(); onSimulate(r) })} size="md" />
+        </>
+      )}
     >
       {query.isPending ? (
         <Skeleton className="h-80" />

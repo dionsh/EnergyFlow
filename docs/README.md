@@ -1,6 +1,6 @@
 # EnergyFlow — Planning Documents
 
-**Status:** analysis and design complete (6 Oct 2026). **No application code yet.** Implementation starts after the team confirms the decisions in [07-roadmap.md §6](07-roadmap.md#6-decisions-needed-from-the-team-before-coding-starts).
+**Status (8 Oct 2026):** the full loop is implemented: measure → detect waste → recommend (what-if) → act (Turn Off, automations) → prove (M&V) → report (carbon, VSME B3, PDF), plus the Ask EnergyFlow assistant and the hardware bridge. See the [root README](../README.md#whats-built) and the decisions log below. These documents remain the design reference; where the implementation differs, the decisions log says so.
 
 **Target:** GPEK Digital Green Innovation Competition 2026 · Challenge Areas **01** (energy efficiency and real-time monitoring) + **06** (carbon tracking and ESG reporting) · **Demo Day 15 Nov 2026**.
 
@@ -46,3 +46,14 @@
 - **Hardware:** a prototype only, in the same spirit as SproutSync. The team will provide a reference image.
 - **AI:** "trained" the DS Banking way: a knowledge base, a strict scope prompt, deterministic data intents and a data snapshot, on Groq's free tier.
 - **Local toolchain:** Laravel Herd PHP 8.4 + Composer, and XAMPP MariaDB 10.4 for the local database. Docker Desktop is not used: this machine has no admin rights, WSL2 or hypervisor, and Render builds the image itself.
+
+**8 Oct 2026, made during implementation:**
+- **Groq models:** `openai/gpt-oss-120b`, falling back to `openai/gpt-oss-20b` (both with low reasoning effort), set in env `GROQ_MODEL` / `GROQ_MODEL_FALLBACK`. `llama-3.3-70b-versatile` is not available to this key (404).
+- **Assistant pipeline** (03-architecture §9): no separate guard model. Off-topic questions are refused by a keyword check and by the main model (tagged `SCOPE: out`). Data questions are answered deterministically. Open questions get a data snapshot with **only the sections the question needs**, which keeps prompts at about 3–4K tokens, inside the free tier's 8K tokens/minute. The model replies in a tagged plain-text format (not JSON mode, whose strict validation rejected markdown answers).
+- **Grounding:** every number, and every percentage however small, must be in the data or the knowledge base. Derived differences, sums and % changes are accepted only between numbers that belong together (the same object, or the same field across a list). Otherwise one retry, then the answer is marked "not fully verified".
+- **Assistant actions:** the assistant never acts. A Turn Off is a card; **Yes** calls the same `POST /machines/{id}/commands` as the Live button. The demo's shared guest account keeps conversations per browser session.
+- **Turn Off and automations:** policies act through the same command loop as people, verified only by meter telemetry. Simulated history commands are labelled.
+- **PDF reports:** the browser's print engine (A4 `@page` CSS, "Save as PDF"), not a PDF library: vector text, same fonts, no extra dependency.
+- **Scope 1:** no fuel factors are seeded until DEFRA/DESNZ 2025 values are verified. Scope 1 shows "not reported" or "declared none", never an estimate.
+- **Frontend bundle:** every page is its own chunk, libraries are in named vendor chunks, and the chart library loads only with chart pages. Initial load went from 1,040 kB (300 kB gzip) to about 500 kB (159 kB gzip), with idle prefetch of the main pages.
+- **Assistant panel layout:** docked beside the page from 1536 px wide; narrower, it overlays the right side, so page layouts aren't squeezed.

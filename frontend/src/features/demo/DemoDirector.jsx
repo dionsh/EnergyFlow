@@ -46,7 +46,7 @@ export function DemoDirector() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-4 right-4 z-30 inline-flex h-10 items-center gap-2 rounded-md border border-line-strong bg-surface px-3.5 text-sm font-medium text-ink shadow-overlay hover:bg-surface-2"
+        className="fixed bottom-4 right-4 z-30 inline-flex h-10 sm:right-[calc(1rem+var(--assistant-offset,0px))] items-center gap-2 rounded-md border border-line-strong bg-surface px-3.5 text-sm font-medium text-ink shadow-overlay hover:bg-surface-2"
         aria-label={t('demo.open')}
       >
         <Clapperboard className="size-4" aria-hidden="true" />
@@ -56,7 +56,7 @@ export function DemoDirector() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-30 w-80 rounded-lg border border-line bg-surface shadow-overlay" role="dialog" aria-label={t('demo.director')}>
+    <div className="fixed bottom-4 right-4 z-30 w-80 rounded-lg sm:right-[calc(1rem+var(--assistant-offset,0px))] border border-line bg-surface shadow-overlay" role="dialog" aria-label={t('demo.director')}>
       <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
         <p className="flex items-center gap-2 text-sm font-semibold text-ink">
           <Clapperboard className="size-4" aria-hidden="true" />

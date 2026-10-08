@@ -227,6 +227,15 @@ function ReportDocument({ report, editing, draft, setDraft }) {
       </Section>
 
       <Section number="9" title={T('report.sections.vsme')} className="page-break">
+        {s.vsme_b3_scope && (
+          <p className="mb-3 text-[12.5px] text-ink-2">
+            {T('report.vsmeScope', {
+              year: s.vsme_b3_scope.year,
+              from: f.formatDate(s.data_quality.monitoring_since && s.data_quality.monitoring_since > s.vsme_b3_scope.from ? s.data_quality.monitoring_since : s.vsme_b3_scope.from),
+              to: f.formatDate(s.vsme_b3_scope.to),
+            })}
+          </p>
+        )}
         <Table
           head={[T('carbonPage.vsmeTable.datapoint'), T('carbonPage.vsmeTable.value'), T('carbonPage.vsmeTable.status')]}
           align={['left', 'right', 'left']}

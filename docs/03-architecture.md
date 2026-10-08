@@ -470,6 +470,22 @@ sequenceDiagram
 - The key lives only in backend env (`GROQ_API_KEY`) and is never sent to the browser.
 - Every message logs tokens, latency, model, tools used and the refusal flag (`ai_messages`).
 
+### 9.6 As implemented (8 Oct 2026)
+
+Code: `backend/src/Services/Assistant/` and `frontend/src/features/assistant/`.
+
+| Step | Class | What it does |
+|---|---|---|
+| Language | `Lang` | Answers in the language of the question (sq/en), else the interface language |
+| Intents | `Intents`, `MachineMatcher` | Deterministic EN/SQ detection: off-topic → refusal; greeting/help; **Turn Off** (a card to confirm); **open a page**; data questions (consumption, top consumers, waste incl. after-hours only, running now, alerts, opportunities, verified savings, CO₂, month-end forecast) with periods (today, yesterday, 7 days, this/last month, month names, this year). "Why…", "explain…" and definitions go to the model. |
+| Data answers | `DataAnswers`, `Say` | Built from the same services as the pages, so the numbers match the screens; formatted like the UI in both languages; each with sources (page links) and follow-up questions |
+| Snapshot | `Snapshot` | Only the sections the question needs (live, month to date, 3-month history with estimated bills, machines, waste, alerts, opportunities, verified savings, carbon, automations, tariff), plus page context (machine, waste event, opportunity). Alerts and opportunities are filtered to the machines the question is about. |
+| Model | `GroqClient` | `gpt-oss-120b` → `gpt-oss-20b`; strict scope prompt + `Knowledge` (product facts and sourced Kosovo facts); tagged output `SCOPE / SOURCES / PAGE / FOLLOW_UPS / ANSWER` |
+| Check | `Grounding` | Numbers and percentages must be in the data or the knowledge base; derived numbers only within related groups; one retry, then flagged |
+| Limits | `RateLimiter` | 120 messages/h per user and IP; model calls 30/h per user and IP and `ASSISTANT_DAILY_LIMIT` (200) per company per day. Data answers cost nothing. |
+
+The UI is a 420 px panel (Ctrl/⌘ K, "Ask EnergyFlow" in the top bar and on waste events, opportunities and machine pages) with a method chip on every answer (*From your data* / *AI · checked* / *not fully verified* / *Out of scope*), sources, follow-up chips and the Turn Off confirmation with the live command timeline.
+
 ---
 
 ## 10. Optimization and actions

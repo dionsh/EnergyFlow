@@ -1,3 +1,4 @@
+import { lazy } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from './providers/AuthProvider'
@@ -7,21 +8,26 @@ import { AppShell } from './components/layout/AppShell'
 import { GuestOnly, RequireAuth } from './components/layout/RouteGuards'
 import { LoginPage } from './features/auth/LoginPage'
 import { RegisterPage } from './features/auth/RegisterPage'
-import { OverviewPage } from './features/overview/OverviewPage'
-import { LivePage } from './features/live/LivePage'
-import { MachinesPage } from './features/machines/MachinesPage'
-import { MachineDetailPage } from './features/machines/MachineDetailPage'
-import { DevicesPage } from './features/devices/DevicesPage'
-import { DeviceDetailPage } from './features/devices/DeviceDetailPage'
-import { WastePage } from './features/waste/WastePage'
-import { AutomationsPage } from './features/control/AutomationsPage'
-import { OpportunitiesPage } from './features/opportunities/OpportunitiesPage'
-import { ImpactPage } from './features/impact/ImpactPage'
-import { CarbonPage } from './features/carbon/CarbonPage'
-import { ReportsPage } from './features/reports/ReportsPage'
-import { ReportView } from './features/reports/ReportView'
-import { SettingsPage } from './features/settings/SettingsPage'
-import { NotFoundPage } from './features/NotFoundPage'
+import { pageLoaders } from './app/pageLoaders'
+
+const page = (load, name) => lazy(() => load().then((module) => ({ default: module[name] })))
+
+// Pages load on demand (the shell shows a skeleton meanwhile, see AppShell).
+const OverviewPage = page(pageLoaders.overview, 'OverviewPage')
+const LivePage = page(pageLoaders.live, 'LivePage')
+const MachinesPage = page(pageLoaders.machines, 'MachinesPage')
+const MachineDetailPage = page(pageLoaders.machineDetail, 'MachineDetailPage')
+const DevicesPage = page(pageLoaders.devices, 'DevicesPage')
+const DeviceDetailPage = page(pageLoaders.deviceDetail, 'DeviceDetailPage')
+const WastePage = page(pageLoaders.waste, 'WastePage')
+const OpportunitiesPage = page(pageLoaders.opportunities, 'OpportunitiesPage')
+const AutomationsPage = page(pageLoaders.automations, 'AutomationsPage')
+const ImpactPage = page(pageLoaders.impact, 'ImpactPage')
+const CarbonPage = page(pageLoaders.carbon, 'CarbonPage')
+const ReportsPage = page(pageLoaders.reports, 'ReportsPage')
+const ReportView = page(pageLoaders.reportView, 'ReportView')
+const SettingsPage = page(pageLoaders.settings, 'SettingsPage')
+const NotFoundPage = page(pageLoaders.notFound, 'NotFoundPage')
 
 const queryClient = new QueryClient({
   defaultOptions: {

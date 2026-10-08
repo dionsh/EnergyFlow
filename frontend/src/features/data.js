@@ -153,6 +153,20 @@ export function useNotifications() {
   return useQuery({ queryKey: ['notifications'], queryFn: () => get('/notifications'), refetchInterval: OVERVIEW_MS })
 }
 
+export function useConversation(id) {
+  return useQuery({ queryKey: ['assistant', 'conversation', id], queryFn: () => get(`/assistant/conversations/${id}`), enabled: Boolean(id), retry: false })
+}
+
+export function useConversations(enabled) {
+  return useQuery({ queryKey: ['assistant', 'conversations'], queryFn: () => get('/assistant/conversations'), enabled })
+}
+
+/** Starter questions for the page the user is on and what is happening right now. */
+export function useAssistantSuggestions(context, language) {
+  const params = { page: context.page, machine_id: context.machine_id, language }
+  return useQuery({ queryKey: ['assistant', 'suggestions', params], queryFn: () => get(`/assistant/suggestions${query(params)}`), staleTime: 60_000 })
+}
+
 /**
  * Seconds since the last reading, measured on the company's clock (the demo runs
  * on virtual time): age at fetch time + time elapsed since the fetch.

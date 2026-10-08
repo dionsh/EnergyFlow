@@ -9,7 +9,7 @@ use EnergyFlow\Services\Calendar\LocalTime;
 use EnergyFlow\Utils\Time;
 
 /**
- * Period parameters (docs/05-api.md): today | 7d | 30d | mtd | month:YYYY-MM | ytd | year:YYYY,
+ * Period parameters (docs/05-api.md): today | yesterday | 7d | 30d | mtd | month:YYYY-MM | ytd | year:YYYY,
  * resolved in the company's local time. Each period knows the equally long
  * period before it, for "vs last month" comparisons.
  */
@@ -48,6 +48,7 @@ final class Period
 
         return match ($value) {
             'today' => new self($value, $day, $now, $day - 86400, $now - 86400),
+            'yesterday' => new self($value, $time->startOfDay($day - 43200), $day, $time->startOfDay($day - 129600), $time->startOfDay($day - 43200)),
             '7d' => new self($value, $now - 7 * 86400, $now, $now - 14 * 86400, $now - 7 * 86400),
             '30d' => new self($value, $now - 30 * 86400, $now, $now - 60 * 86400, $now - 30 * 86400),
             'ytd' => self::ytd($now, $time),

@@ -152,10 +152,11 @@ Roles: **V** viewer, **M** manager, **A** admin, **O** owner. Each role includes
 
 | Method | Path | Role | Purpose |
 |---|---|---|---|
-| GET / POST | `/assistant/conversations` | V | List / create |
-| GET | `/assistant/conversations/{id}` | V | Messages |
-| POST | `/assistant/conversations/{id}/messages` `{content, context?}` | V | Answer (rate-limited). `context` = optional page context (e.g. `{machine_id: 3}`) for "Explain this". |
-| POST | `/assistant/explain` `{kind: alert\|chart\|recommendation, id}` | V | Short grounded explanation of one item |
+| GET / POST | `/assistant/conversations` | V | List / create (own conversations; the shared demo guest's are per browser session) |
+| GET / DELETE | `/assistant/conversations/{id}` | V | Messages / delete |
+| POST | `/assistant/conversations/{id}/messages` `{content, language?, context?}` | V | Answer (rate-limited). `context` = page context: `{page, machine_id?, waste_event_id?, recommendation_id?}`. "Explain this" buttons send a question with the item's id as context (no separate `/assistant/explain`). |
+| POST | `/assistant/messages/{id}/action` `{state: confirmed\|cancelled, command_id?}` | V | Records the answer to a Turn Off card. The Turn Off itself is `POST /machines/{id}/commands` (manager+), never the assistant. |
+| GET | `/assistant/suggestions?page=&machine_id=&language=` | V | Starter questions for the page and what is happening now |
 
 ## Demo (demo company only, guarded by `companies.is_demo`)
 
@@ -200,32 +201,32 @@ Roles: **V** viewer, **M** manager, **A** admin, **O** owner. Each role includes
 *(Illustrative values. Real responses come from the simulator and database.)*
 
 ### `POST /assistant/conversations/{id}/messages`
+Answer from data (no model call), with a Turn Off card the user must confirm:
 ```json
 {
   "data": {
-    "answer_markdown": "Your compressor (CMP-01) was the largest consumer in September: **3,412 kWh, 27 % of the site**. It also ran **14.5 h outside working hours** …",
-    "sources": [
-      { "tool": "get_energy_summary", "label": "Energy by machine · 1–30 Sep 2026" },
-      { "tool": "get_waste_summary", "label": "After-hours waste · 1–30 Sep 2026" }
-    ],
-    "suggested_actions": [ { "type": "open_recommendation", "id": 12, "label_key": "assistant.action.view_recommendation" } ],
-    "refused": false, "grounded": true, "language": "en"
+    "user": { "id": 81, "role": "user", "content": "turn off the compressor", "language": "en", "created_at": "2026-10-08T19:40:12Z" },
+    "assistant": {
+      "id": 82, "role": "assistant", "language": "en",
+      "source": "data", "intent": "turn_off", "grounded": null,
+      "content": "Turn off **Screw air compressor · 11 kW (CMP-01)** now? It is drawing 10.7 kW.
+
+It has run 0 h 40 min after hours: 7.1 kWh, €0.52, 6.4 kg CO₂e so far. …",
+      "sources": [ { "label": "Live readings · 21:40", "to": "/live" } ],
+      "actions": [ { "type": "turn_off", "state": "pending", "machine": { "id": 112, "code": "CMP-01", "name": "Screw air compressor · 11 kW" }, "needs_confirm": null } ],
+      "latency_ms": 31, "created_at": "2026-10-08T19:40:12Z"
+    },
+    "conversation": { "id": 10, "title": "turn off the compressor" }
   }
 }
 ```
-
-### Refusal (no main-model call)
-```json
-{ "data": { "answer_markdown": "I can only help with your company's energy, costs, carbon and sustainability data…",
-  "refused": true, "scope_category": "off_topic",
-  "suggestions": ["Which machine cost us the most this month?", "How much did we waste after working hours this week?", "What should we change tomorrow?"] } }
-```
+An LLM answer has `"source": "ai"`, `"grounded": true|false`, sources named after the data sections it used, and `actions` of type `navigate` (`{to, page}`) and `ask` (follow-up questions). Off-topic questions get `"source": "refusal"` with the exact localised sentence and three `ask` suggestions; without a configured model, open questions get `"source": "fallback"`. Illustrative values.
 
 ## Rate limits (initial)
 
 | Bucket | Limit |
 |---|---|
 | Login | 5 / min per IP + email |
-| Assistant | 30 messages / hour per user; 200 / day per company |
+| Assistant | 120 messages / hour per user and IP; model calls 30 / hour per user and IP and 200 / day per company (`ASSISTANT_DAILY_LIMIT`). Data answers don't use the model. |
 | Ingest | 30 requests / min per device |
 | Report generation | 10 / hour per company |

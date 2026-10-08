@@ -32,7 +32,7 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext value={value}>
       {children}
-      <div className="pointer-events-none fixed bottom-4 right-4 z-[70] flex print:hidden w-[min(360px,calc(100vw-2rem))] flex-col gap-2" aria-live="polite">
+      <div className="pointer-events-none fixed bottom-4 right-4 z-[70] flex print:hidden sm:right-[calc(1rem+var(--assistant-offset,0px))] w-[min(360px,calc(100vw-2rem))] flex-col gap-2" aria-live="polite">
         {toasts.map(({ id, tone, title, body }) => {
           const style = TONES[tone] ?? TONES.info
           const Icon = style.icon

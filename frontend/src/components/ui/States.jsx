@@ -40,6 +40,23 @@ export function Skeleton({ className }) {
   return <div className={cn('animate-pulse rounded-sm bg-surface-2', className)} aria-hidden="true" />
 }
 
+/** While a page's code loads: the page's usual shape (header, a row of tiles, a large card) inside the app shell. */
+export function PageSkeleton() {
+  const { t } = useTranslation()
+  return (
+    <div role="status" aria-label={t('common.loading')}>
+      <div className="mb-6">
+        <Skeleton className="h-6 w-48" />
+        <Skeleton className="mt-2 h-4 w-80 max-w-full" />
+      </div>
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-24 rounded-lg" />)}
+      </div>
+      <Skeleton className="mt-4 h-72 rounded-lg" />
+    </div>
+  )
+}
+
 export function FullPageSpinner() {
   const { t } = useTranslation()
   return (

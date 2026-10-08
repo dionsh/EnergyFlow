@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Bell, Check, ChevronDown, CircleAlert, CircleCheck, Info, LogOut, Monitor, Moon, Sun, TriangleAlert } from 'lucide-react'
+import { Bell, Check, ChevronDown, CircleAlert, CircleCheck, Info, LogOut, MessageSquareText, Monitor, Moon, Sun, TriangleAlert } from 'lucide-react'
 import { api } from '../../lib/api'
 import { cn } from '../../lib/cn'
 import { formatDate } from '../../lib/format'
@@ -12,6 +12,7 @@ import { LANGUAGES } from '../../i18n/languages'
 import { useAuth } from '../../providers/AuthProvider'
 import { useTheme } from '../../providers/ThemeProvider'
 import { useDismiss } from '../../hooks/useDismiss'
+import { useAssistant } from '../../features/assistant/AssistantProvider'
 import { IconButton } from '../ui/Button'
 
 function Popover({ open, onClose, align = 'right', className, children }) {
@@ -126,6 +127,30 @@ const CATEGORY_ICONS = {
   warning: { icon: TriangleAlert, className: 'text-warning-text' },
   insight: { icon: Info, className: 'text-info-text' },
   achievement: { icon: CircleCheck, className: 'text-good-text' },
+}
+
+const IS_MAC = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform)
+
+/** "Ask EnergyFlow" (Ctrl/⌘ K) opens the assistant panel. */
+export function AssistantButton() {
+  const { t } = useTranslation()
+  const { open, setOpen } = useAssistant()
+  return (
+    <button
+      type="button"
+      onClick={() => setOpen(!open)}
+      aria-pressed={open}
+      title={`${t('assistant.button')} (${IS_MAC ? '⌘K' : t('assistant.shortcut')})`}
+      className={cn(
+        'inline-flex h-9 items-center gap-2 rounded-sm border px-2.5 text-sm transition-colors',
+        open ? 'border-brand bg-brand-subtle text-ink' : 'border-line-strong bg-surface text-ink-2 hover:bg-surface-2 hover:text-ink',
+      )}
+    >
+      <MessageSquareText className="size-[18px] text-brand" aria-hidden="true" />
+      <span className="hidden md:inline">{t('assistant.button')}</span>
+      <kbd className="hidden rounded-sm border border-line px-1 font-mono text-[10.5px] leading-4 text-ink-3 lg:inline">{IS_MAC ? '⌘K' : t('assistant.shortcut')}</kbd>
+    </button>
+  )
 }
 
 export function NotificationsButton() {

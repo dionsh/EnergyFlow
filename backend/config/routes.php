@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use EnergyFlow\Controllers\AlertController;
+use EnergyFlow\Controllers\AssistantController;
 use EnergyFlow\Controllers\AuthController;
 use EnergyFlow\Controllers\CommandController;
 use EnergyFlow\Controllers\CompanyController;
@@ -97,6 +98,13 @@ $router->group('/api/v1', [], static function (Router $r): void {
             $r->get('/alerts', [AlertController::class, 'index']);
             $r->post('/alerts/{id}/acknowledge', [AlertController::class, 'acknowledge'], [new RequireRole('manager')]);
             $r->post('/alerts/{id}/resolve', [AlertController::class, 'resolve'], [new RequireRole('manager')]);
+            $r->get('/assistant/conversations', [AssistantController::class, 'index']);
+            $r->post('/assistant/conversations', [AssistantController::class, 'create']);
+            $r->get('/assistant/conversations/{id}', [AssistantController::class, 'show']);
+            $r->delete('/assistant/conversations/{id}', [AssistantController::class, 'destroy']);
+            $r->post('/assistant/conversations/{id}/messages', [AssistantController::class, 'message']);
+            $r->post('/assistant/messages/{id}/action', [AssistantController::class, 'action']);
+            $r->get('/assistant/suggestions', [AssistantController::class, 'suggestions']);
             $r->get('/notifications', [NotificationController::class, 'index']);
             $r->post('/notifications/read-all', [NotificationController::class, 'readAll']);
             $r->post('/notifications/{id}/read', [NotificationController::class, 'read']);

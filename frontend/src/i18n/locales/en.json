@@ -1210,6 +1210,58 @@
     "mvLine": "Savings are verified against an adjusted baseline with a 90 % confidence interval (IPMVP-inspired, Option B). This is not a certified M&V.",
     "simulatedLine": "This report describes a fictional demo company with simulated machines. The methods are the same as for real meters.",
     "footer": "EnergyFlow · energy intelligence for Kosovo SMEs",
-    "periodPartial": "(month to date)"
+    "periodPartial": "(month to date)",
+    "vsmeScope": "Annual datapoints for the calendar year {{year}}, measured from {{from}} to {{to}} (when this report was generated) — not only this month."
+  },
+  "assistant": {
+    "title": "Ask EnergyFlow",
+    "subtitle": "Answers from your meters",
+    "button": "Ask EnergyFlow",
+    "shortcut": "Ctrl K",
+    "placeholder": "Ask about energy, costs, waste or CO₂…",
+    "send": "Send",
+    "newChat": "New conversation",
+    "history": "Conversations",
+    "noHistory": "No conversations yet.",
+    "deleteChat": "Delete conversation",
+    "backToChat": "Back to the conversation",
+    "thinking": "Checking your data…",
+    "welcomeTitle": "What would you like to know?",
+    "welcomeBody": "I answer from your company's meters: consumption, costs, waste, carbon and savings. I can also open pages and, after you confirm, switch a machine off.",
+    "scope": "Only your energy, costs, carbon and EnergyFlow. Numbers come from your data and are never estimated.",
+    "source": {
+      "data": "From your data",
+      "ai": "AI · checked against your data",
+      "aiUnverified": "AI · not fully verified",
+      "refusal": "Out of scope",
+      "fallback": "Limited answer"
+    },
+    "sourceHint": {
+      "data": "Answered directly from your measurements, without a language model.",
+      "ai": "Written by a language model (Groq) from your data; every number was checked against it.",
+      "aiUnverified": "Some numbers in this answer could not be matched to your data. Check them on the linked pages before acting.",
+      "refusal": "The assistant only covers your energy, costs, carbon and EnergyFlow.",
+      "fallback": "The language model was unavailable, so only data questions can be answered right now."
+    },
+    "sources": "Sources",
+    "openPage": "Open {{page}}",
+    "openMachine": "Open {{code}}",
+    "turnOff": {
+      "yes": "Yes, turn it off",
+      "no": "No",
+      "cancelled": "Cancelled. Nothing was sent.",
+      "sent": "Command sent to {{code}}",
+      "reason": "Requested via Ask EnergyFlow"
+    },
+    "error": "The assistant couldn't answer. Try again.",
+    "retry": "Retry",
+    "chars": "{{count}} / 1000",
+    "askAbout": "Ask EnergyFlow",
+    "explain": {
+      "waste": "Explain this waste event: why it happened and what to do",
+      "machine": "Explain the consumption of {{code}} this month",
+      "opportunity": "Explain this opportunity and how its saving was calculated"
+    },
+    "footer": "AI answers are checked against your data. Machines are only switched off after you confirm."
   }
 }
