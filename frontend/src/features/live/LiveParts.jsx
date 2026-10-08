@@ -7,6 +7,7 @@ import { MachineIcon } from '../../lib/machineTypes'
 import { Badge } from '../../components/ui/Badge'
 import { Callout } from '../../components/ui/States'
 import { StateBadge } from '../../components/ui/StateBadge'
+import { TurnOffButton } from '../control/TurnOff'
 
 export function UpdatedLabel({ age }) {
   const { t } = useTranslation()
@@ -44,6 +45,9 @@ export function WasteNow({ waste }) {
           co2: formatCo2(waste.co2_kg),
           time: formatTime(waste.since),
         })}
+        <Link to="/waste" className="ml-2 font-medium text-ink underline-offset-2 hover:underline">
+          {t('live.review')} →
+        </Link>
       </p>
     </Callout>
   )
@@ -108,7 +112,7 @@ export function MachineTable({ machines }) {
   const { t } = useTranslation()
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[760px] border-collapse text-[13px]">
+      <table className="w-full min-w-[860px] border-collapse text-[13px]">
         <thead>
           <tr className="border-b border-line text-left text-xs font-medium text-ink-3">
             <th className="px-4 py-2.5 font-medium">{t('live.table.machine')}</th>
@@ -118,7 +122,8 @@ export function MachineTable({ machines }) {
             <th className="px-3 py-2.5 text-right font-medium">{t('live.table.temp')} (°C)</th>
             <th className="px-3 py-2.5 text-right font-medium">{t('live.table.today')} (kWh)</th>
             <th className="px-3 py-2.5 font-medium">{t('live.table.schedule')}</th>
-            <th className="px-4 py-2.5 font-medium">{t('live.table.afterHours')}</th>
+            <th className="px-3 py-2.5 font-medium">{t('live.table.afterHours')}</th>
+            <th className="px-4 py-2.5 text-right font-medium"><span className="sr-only">{t('control.turnOff')}</span></th>
           </tr>
         </thead>
         <tbody>
@@ -140,7 +145,7 @@ export function MachineTable({ machines }) {
                 <td className="px-3 py-2.5 text-right tabular text-ink-2">{m.temperature_c === null ? '—' : formatNumber(m.temperature_c, 1)}</td>
                 <td className="px-3 py-2.5 text-right tabular text-ink">{formatNumber(m.today_kwh, 1)}</td>
                 <td className="px-3 py-2.5 text-ink-2">{m.scheduled_now ? t('live.scheduled') : t('live.offSchedule')}</td>
-                <td className="px-4 py-2.5">
+                <td className="px-3 py-2.5">
                   {m.after_hours ? (
                     <span className="inline-flex items-center gap-1.5 text-warning-text">
                       <TriangleAlert className="size-3.5" aria-hidden="true" />
@@ -150,6 +155,7 @@ export function MachineTable({ machines }) {
                     <span className="text-ink-3">—</span>
                   )}
                 </td>
+                <td className="px-4 py-2 text-right"><TurnOffButton machine={m} variant="compact" /></td>
               </tr>
             )
           })}

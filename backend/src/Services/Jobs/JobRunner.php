@@ -41,6 +41,10 @@ final class JobRunner
             }
             $companyId = (int) $row['company_id'];
             $summary['rollup_buckets'] += self::attempt($summary, 'rollup', static fn (): int => RollupService::run($companyId, Clock::now($companyId)));
+            if (!DemoClock::isDemo($companyId)) {
+                // The demo company runs its pipeline inside the catch-up above.
+                self::attempt($summary, 'analytics', static fn (): int => array_sum(AnalyticsPipeline::run($companyId, Clock::now($companyId))));
+            }
         }
 
         foreach (Database::all('SELECT DISTINCT company_id FROM machine_live') as $row) {

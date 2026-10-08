@@ -16,7 +16,7 @@ export function AppShell() {
   return (
     <div className="min-h-svh bg-bg">
       {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 border-r border-line bg-surface lg:block">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 border-r border-line bg-surface lg:block print:hidden">
         <Sidebar />
       </aside>
 
@@ -31,8 +31,8 @@ export function AppShell() {
         </div>
       )}
 
-      <div className="lg:pl-60">
-        <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-line bg-surface/95 px-4 backdrop-blur-sm sm:px-6">
+      <div className="lg:pl-60 print:pl-0">
+        <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-line bg-surface/95 px-4 backdrop-blur-sm sm:px-6 print:hidden">
           <IconButton label={t('topbar.openMenu')} icon={Menu} className="-ml-1.5 lg:hidden" onClick={() => setMobileOpen(true)} />
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-ink">{company?.name}</p>
@@ -45,11 +45,13 @@ export function AppShell() {
             <UserMenu />
           </div>
         </header>
-        <main className="mx-auto w-full max-w-[1440px] px-4 py-6 sm:px-6">
+        <main className="mx-auto w-full max-w-[1440px] px-4 py-6 sm:px-6 print:max-w-none print:p-0">
           <Outlet />
         </main>
       </div>
-      <DemoDirector />
+      <div className="print:hidden">
+        <DemoDirector />
+      </div>
     </div>
   )
 }

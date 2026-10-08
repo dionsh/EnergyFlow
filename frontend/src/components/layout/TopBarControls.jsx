@@ -1,8 +1,13 @@
 import { useCallback, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Bell, Check, ChevronDown, LogOut, Monitor, Moon, Sun } from 'lucide-react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Bell, Check, ChevronDown, CircleAlert, CircleCheck, Info, LogOut, Monitor, Moon, Sun, TriangleAlert } from 'lucide-react'
 import { api } from '../../lib/api'
 import { cn } from '../../lib/cn'
+import { formatDate } from '../../lib/format'
+import { useNotifications } from '../../features/data'
+import { notificationText } from '../../features/waste/alertText'
 import { LANGUAGES } from '../../i18n/languages'
 import { useAuth } from '../../providers/AuthProvider'
 import { useTheme } from '../../providers/ThemeProvider'
@@ -116,16 +121,77 @@ export function ThemeMenu() {
   )
 }
 
+const CATEGORY_ICONS = {
+  critical: { icon: CircleAlert, className: 'text-critical-text' },
+  warning: { icon: TriangleAlert, className: 'text-warning-text' },
+  insight: { icon: Info, className: 'text-info-text' },
+  achievement: { icon: CircleCheck, className: 'text-good-text' },
+}
+
 export function NotificationsButton() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
   const close = useCallback(() => setOpen(false), [])
+  const notifications = useNotifications()
+  const refresh = () => queryClient.invalidateQueries({ queryKey: ['notifications'] })
+  const read = useMutation({ mutationFn: (id) => api.post(`/notifications/${id}/read`), onSuccess: refresh })
+  const readAll = useMutation({ mutationFn: () => api.post('/notifications/read-all'), onSuccess: refresh })
+  const { items = [], unread = 0 } = notifications.data?.data ?? {}
+
   return (
     <div className="relative">
-      <IconButton label={t('topbar.notifications')} icon={Bell} aria-expanded={open} onClick={() => setOpen((v) => !v)} />
-      <Popover open={open} onClose={close} className="w-72 p-0">
-        <p className="border-b border-line px-4 py-3 text-sm font-semibold text-ink">{t('topbar.notifications')}</p>
-        <p className="px-4 py-6 text-center text-sm text-ink-3">{t('topbar.noNotifications')}</p>
+      <IconButton
+        label={unread > 0 ? `${t('topbar.notifications')} (${unread})` : t('topbar.notifications')}
+        icon={Bell}
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      />
+      {unread > 0 && (
+        <span className="pointer-events-none absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[10px] font-semibold tabular text-on-brand" aria-hidden="true">
+          {unread > 9 ? '9+' : unread}
+        </span>
+      )}
+      <Popover open={open} onClose={close} className="w-[min(22rem,calc(100vw-2rem))] p-0">
+        <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
+          <p className="text-sm font-semibold text-ink">{t('topbar.notifications')}</p>
+          {unread > 0 && (
+            <button type="button" onClick={() => readAll.mutate()} className="text-[12.5px] font-medium text-brand hover:underline">
+              {t('notifications.markAllRead')}
+            </button>
+          )}
+        </div>
+        {items.length === 0 ? (
+          <p className="px-4 py-6 text-center text-sm text-ink-3">{t('topbar.noNotifications')}</p>
+        ) : (
+          <ul className="max-h-96 divide-y divide-line overflow-y-auto">
+            {items.map((item) => {
+              const style = CATEGORY_ICONS[item.category] ?? CATEGORY_ICONS.insight
+              const Icon = style.icon
+              return (
+                <li key={item.id}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!item.read) read.mutate(item.id)
+                      close()
+                      if (item.link) navigate(item.link)
+                    }}
+                    className="flex w-full items-start gap-2.5 px-4 py-3 text-left hover:bg-surface-2"
+                  >
+                    <Icon className={cn('mt-0.5 size-4 shrink-0', style.className)} aria-hidden="true" />
+                    <span className="min-w-0 flex-1">
+                      <span className={cn('block text-[13px]', item.read ? 'text-ink-2' : 'font-medium text-ink')}>{notificationText(t, item)}</span>
+                      <span className="mt-0.5 block text-xs tabular text-ink-3">{formatDate(item.created_at, 'dateTime')}</span>
+                    </span>
+                    {!item.read && <span className="mt-1.5 size-2 shrink-0 rounded-full bg-brand" aria-label="unread" />}
+                  </button>
+                </li>
+              )
+            })}
+          </ul>
+        )}
       </Popover>
     </div>
   )

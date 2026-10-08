@@ -9,6 +9,8 @@ use EnergyFlow\Core\HttpException;
 use EnergyFlow\Core\Request;
 use EnergyFlow\Core\Response;
 use EnergyFlow\Services\Clock;
+use EnergyFlow\Services\Control\CommandService;
+use EnergyFlow\Services\Devices\DeviceGateway;
 use EnergyFlow\Utils\Time;
 
 final class DeviceController
@@ -37,7 +39,11 @@ final class DeviceController
             [(int) $params['id'], $companyId],
         ) ?? throw HttpException::notFound('device_not_found', 'Device not found.');
         $channels = $this->channels([(int) $device['id']]);
-        return Response::ok($this->present($device, $channels[(int) $device['id']] ?? [], Clock::now($companyId)));
+        return Response::ok($this->present($device, $channels[(int) $device['id']] ?? [], Clock::now($companyId)) + [
+            // How the node is connected (simulated vs. the signed pull protocol of real hardware) and its command queue.
+            'connection' => DeviceGateway::driverFor($device)->describe(),
+            'commands' => CommandService::list($companyId, ['device_id' => (int) $device['id']], 10),
+        ]);
     }
 
     /** @return array<int, list<array>> device_id => channels with the live electrical readings */

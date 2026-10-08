@@ -6,6 +6,7 @@ namespace EnergyFlow\Services\Calendar;
 
 use DateTimeImmutable;
 use DateTimeZone;
+use EnergyFlow\Core\Database;
 
 /**
  * Fast UTC → company-local conversion for tight loops (simulation, rollups).
@@ -22,6 +23,11 @@ final class LocalTime
     public function __construct(string $timezone)
     {
         $this->zone = new DateTimeZone($timezone);
+    }
+
+    public static function forCompany(int $companyId): self
+    {
+        return new self((string) (Database::value('SELECT timezone FROM companies WHERE id = ?', [$companyId]) ?? 'Europe/Belgrade'));
     }
 
     public function zone(): DateTimeZone

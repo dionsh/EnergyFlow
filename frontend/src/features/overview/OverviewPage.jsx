@@ -14,6 +14,8 @@ import { StateBadge } from '../../components/ui/StateBadge'
 import { EmptyState, ErrorState, Skeleton } from '../../components/ui/States'
 import { useLive, useOverview } from '../data'
 import { WasteNow } from '../live/LiveParts'
+import { OpenAlertsCard } from '../waste/InsightCards'
+import { TopOpportunitiesCard } from '../opportunities/TopOpportunitiesCard'
 import { TodayChart } from './TodayChart'
 
 const STEP_META = {
@@ -157,17 +159,21 @@ function Dashboard({ overview, live }) {
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,8fr)_minmax(0,4fr)]">
         {live ? <RunningNow live={live} /> : <div />}
-        <Card>
-          <CardBody className="flex flex-col gap-2 py-4 text-[12.5px] text-ink-2">
-            {overview.monitoring_since && <p>{t('overviewData.monitoringSince', { date: formatDate(overview.monitoring_since) })}</p>}
-            <p>
-              {t('overviewData.factor', {
-                value: formatNumber(overview.emission_factor.value, 3),
-                source: `${overview.emission_factor.source_name}`,
-              })}
-            </p>
-          </CardBody>
-        </Card>
+        <div className="flex flex-col gap-6">
+          <OpenAlertsCard />
+          <TopOpportunitiesCard />
+          <Card>
+            <CardBody className="flex flex-col gap-2 py-4 text-[12.5px] text-ink-2">
+              {overview.monitoring_since && <p>{t('overviewData.monitoringSince', { date: formatDate(overview.monitoring_since) })}</p>}
+              <p>
+                {t('overviewData.factor', {
+                  value: formatNumber(overview.emission_factor.value, 3),
+                  source: `${overview.emission_factor.source_name}`,
+                })}
+              </p>
+            </CardBody>
+          </Card>
+        </div>
       </div>
     </div>
   )

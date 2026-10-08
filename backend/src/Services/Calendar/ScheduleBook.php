@@ -138,6 +138,21 @@ final class ScheduleBook
         return null;
     }
 
+    /**
+     * The next moment the machine is scheduled to work after $ts (searching ahead
+     * up to $maxLookahead seconds in 5-minute steps), or null if none in range.
+     */
+    public function nextScheduledStart(?int $scheduleId, int $ts, ?int $machineId = null, int $maxLookahead = 259200): ?int
+    {
+        $step = 300;
+        for ($t = $ts - ($ts % $step) + $step; $t <= $ts + $maxLookahead; $t += $step) {
+            if ($this->isScheduled($scheduleId, $t, $machineId)) {
+                return $t;
+            }
+        }
+        return null;
+    }
+
     public function isClosedDay(int $ts): bool
     {
         return isset($this->closedDates[$this->time->date($ts)]);

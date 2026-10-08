@@ -156,6 +156,96 @@
   .tabular {
     font-variant-numeric: tabular-nums;
   }
+
+  /* Overlay motion: 150–200 ms ease-out (docs/06 §4.8). */
+  .animate-drawer {
+    animation: ef-drawer 180ms ease-out;
+  }
+  .animate-pop {
+    animation: ef-pop 150ms ease-out;
+  }
+  .animate-fade {
+    animation: ef-fade 150ms ease-out;
+  }
+}
+
+/*
+ * Reports print as A4 documents ("Save as PDF"): always the light palette, no app
+ * chrome, sections kept whole where possible.
+ */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 14mm 16mm;
+  }
+
+  :root,
+  [data-theme="dark"] {
+    color-scheme: light;
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-2: #f0f2ef;
+    --border: #e2e5e1;
+    --border-strong: #cdd2cc;
+    --text: #14201b;
+    --text-2: #4a5751;
+    --text-3: #6b766f;
+    --brand: #0f7b5a;
+    --brand-subtle: #e6f2ec;
+    --good-text: #006300;
+    --good-subtle: #e5f5e5;
+    --warning-text: #8a5a00;
+    --warning-subtle: #fef3d9;
+    --critical-text: #a32020;
+    --info-text: #1c5cab;
+    --info-subtle: #e6eef8;
+    --series-1: #2a78d6;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    font-size: 10.5pt;
+  }
+
+  .report-sheet {
+    max-width: none !important;
+    border: 0 !important;
+    padding: 0 !important;
+  }
+
+  .avoid-break {
+    break-inside: avoid;
+  }
+
+  .page-break {
+    break-before: page;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+@keyframes ef-drawer {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+}
+
+@keyframes ef-pop {
+  from {
+    transform: translateY(6px) scale(0.98);
+    opacity: 0;
+  }
+}
+
+@keyframes ef-fade {
+  from {
+    opacity: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

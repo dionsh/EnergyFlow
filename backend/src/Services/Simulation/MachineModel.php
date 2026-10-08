@@ -48,9 +48,12 @@ final class MachineModel
                 if ($mode === 'off') {
                     return $this->off($mode, $this->indoor($ts) + 3.0);
                 }
+                // Leaks waste air whenever the network is pressurised; a repair (scenario) removes part of them.
+                $repair = $this->ctx->scenario('leak_repair', $m['id'], $ts);
+                $leak = $p['leak'] * (1 - (float) ($repair['params']['repair_share'] ?? 0.0));
                 $load = $mode === 'scheduled'
-                    ? self::clamp($p['prod_demand'] + $p['leak'] + 0.08 * Noise::smooth($seed, $ts, 1800) + 0.04 * Noise::smooth($seed + 7, $ts, 240), 0.15, 0.97)
-                    : self::clamp($p['leak'] + 0.03 * Noise::smooth($seed + 3, $ts, 900), 0.08, 0.45);
+                    ? self::clamp($p['prod_demand'] + $leak + 0.08 * Noise::smooth($seed, $ts, 1800) + 0.04 * Noise::smooth($seed + 7, $ts, 240), 0.15, 0.97)
+                    : self::clamp($leak + 0.03 * Noise::smooth($seed + 3, $ts, 900), 0.04, 0.45);
                 $loadedKw = $load * $p['loaded_kw'];
                 $unloadedKw = (1 - $load) * $p['unloaded_kw'];
                 $kw = $loadedKw + $unloadedKw;
@@ -150,9 +153,13 @@ final class MachineModel
 
         switch ($p['model']) {
             case 'compressor':
-                $period = 3600 / max(1.0, $e['cycles_h']);
-                $phase = fmod($ts + ($seed % 997) * 13, $period) / $period;
-                $loaded = $phase < $e['run'];
+                // Rhythm from the air demand at the start of the current 10-minute window, so the
+                // load/unload cycle is continuous (re-deriving the period every sample turns the phase into noise).
+                $window = $ts - ($ts % 600);
+                $w = $this->expected($m, $window);
+                $period = 3600 / max(1.0, $w['cycles_h']);
+                $phase = fmod($ts - $window + ($seed % 997) * 13, $period) / $period;
+                $loaded = $phase < ($w['kw'] > 0.0 ? $w['run'] : $e['run']);
                 return [
                     'kw' => ($loaded ? $p['loaded_kw'] : $p['unloaded_kw']) * $jitter,
                     'pf' => $loaded ? $p['pf_loaded'] : $p['pf_unloaded'],
@@ -180,12 +187,13 @@ final class MachineModel
         return $kw < $off ? self::OFF : ($kw < $idle ? self::IDLE : self::RUNNING);
     }
 
-    /** Machine forgotten after the shift (scenario), unless an auto-off policy now prevents it. */
+    /**
+     * Machine forgotten after the shift (scenario). Auto-off policies don't change
+     * this: like in a real plant, the machine is left on and the policy's Turn Off
+     * command stops it (a forced-off interval in the context).
+     */
     private function leftOn(array $m, int $ts): bool
     {
-        if ($this->ctx->hasPolicy($m['id'], 'auto_off_after_schedule', $ts)) {
-            return false;
-        }
         $scenario = $this->ctx->scenario('left_on', $m['id'], $ts);
         if ($scenario === null) {
             return false;

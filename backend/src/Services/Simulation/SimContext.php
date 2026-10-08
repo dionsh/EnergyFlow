@@ -11,15 +11,15 @@ use EnergyFlow\Services\Weather\WeatherService;
 
 /**
  * Everything the simulator needs to know about one company, loaded once:
- * machines + profiles, schedules, scenarios, accepted policies, executed
- * commands and weather. The simulator itself is a pure function of this context.
+ * machines + profiles, schedules, scenarios, executed commands (including the
+ * ones automation policies sent) and weather. The simulator itself is a pure
+ * function of this context.
  */
 final class SimContext
 {
     /**
      * @param array<int, array<string, mixed>> $machines id => row (+ 'profile')
      * @param list<array{scenario: string, machine_id: ?int, params: array, start: int, end: ?int}> $scenarios
-     * @param array<int, list<array{type: string, params: array, from: int}>> $policies
      * @param array<int, list<array{0: int, 1: int}>> $forcedOff machine_id => [[start, end]]
      * @param array<int, float> $weather hour ts => °C
      */
@@ -29,7 +29,6 @@ final class SimContext
         public readonly ScheduleBook $schedule,
         public readonly array $machines,
         private readonly array $scenarios,
-        private readonly array $policies,
         private readonly array $forcedOff,
         private readonly array $weather,
     ) {
@@ -48,8 +47,13 @@ final class SimContext
 
         $machines = [];
         foreach (Database::all(
-            'SELECT id, kind, code, type_code, schedule_id, phases, rated_power_kw, idle_threshold_kw, off_threshold_kw, sim_profile
-               FROM machines WHERE company_id = ? AND archived_at IS NULL ORDER BY kind, id',
+            // Machines measured by real hardware are never simulated: their data comes from the device.
+            'SELECT m.id, m.kind, m.code, m.type_code, m.schedule_id, m.phases, m.rated_power_kw, m.idle_threshold_kw, m.off_threshold_kw, m.sim_profile
+               FROM machines m
+              WHERE m.company_id = ? AND m.archived_at IS NULL
+                AND NOT EXISTS (SELECT 1 FROM device_channels dc JOIN devices d ON d.id = dc.device_id
+                                 WHERE dc.machine_id = m.id AND dc.valid_to IS NULL AND d.is_simulated = 0)
+              ORDER BY m.kind, m.id',
             [$companyId],
         ) as $row) {
             $profile = json_decode((string) $row['sim_profile'], true) ?: [];
@@ -76,19 +80,6 @@ final class SimContext
             ),
         );
 
-        $policies = [];
-        foreach (Database::all(
-            'SELECT machine_id, type, params, UNIX_TIMESTAMP(effective_from) AS from_ts
-               FROM automation_policies WHERE company_id = ? AND is_active = 1',
-            [$companyId],
-        ) as $p) {
-            $policies[(int) $p['machine_id']][] = [
-                'type' => $p['type'],
-                'params' => json_decode((string) $p['params'], true) ?: [],
-                'from' => (int) $p['from_ts'],
-            ];
-        }
-
         // A machine switched off by EnergyFlow stays off until its next scheduled start
         // (the operator restarts it with its own START button).
         $forcedOff = [];
@@ -113,7 +104,7 @@ final class SimContext
         $siteId = Database::value('SELECT site_id FROM machines WHERE company_id = ? LIMIT 1', [$companyId]);
         $weather = $siteId === null ? [] : WeatherService::series((int) $siteId, $from, $to);
 
-        return new self($companyId, $seed, $schedule, $machines, $scenarios, $policies, $forcedOff, $weather);
+        return new self($companyId, $seed, $schedule, $machines, $scenarios, $forcedOff, $weather);
     }
 
     public function temperature(int $ts): float
@@ -144,16 +135,6 @@ final class SimContext
             }
         }
         return $match;
-    }
-
-    public function hasPolicy(int $machineId, string $type, int $ts): bool
-    {
-        foreach ($this->policies[$machineId] ?? [] as $policy) {
-            if ($policy['type'] === $type && $ts >= $policy['from']) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public function isForcedOff(int $machineId, int $ts): bool

@@ -13,7 +13,10 @@
     "optional": "optional",
     "done": "Done",
     "todo": "To do",
-    "open": "Open"
+    "open": "Open",
+    "close": "Close",
+    "viewAll": "View all",
+    "confirm": "Confirm"
   },
   "nav": {
     "overview": "Overview",
@@ -98,7 +101,21 @@
     "rate_limited": "Too many attempts. Please wait a moment and try again.",
     "unauthenticated": "Please sign in to continue.",
     "forbidden": "You don't have permission to do this.",
-    "validation_failed": "Please check the highlighted fields."
+    "validation_failed": "Please check the highlighted fields.",
+    "machine_critical": "This is a critical machine — EnergyFlow never switches it.",
+    "control_monitor_only": "This machine is set to monitor only.",
+    "no_relay": "No remote-STOP relay is wired to this machine.",
+    "already_off": "The machine is already off.",
+    "command_pending": "A command for this machine is already in progress.",
+    "machine_scheduled": "This machine is scheduled to run now. Confirm that production has finished.",
+    "no_live_data": "No live data from this machine right now.",
+    "not_controllable": "This meter cannot be switched.",
+    "recommendation_state": "This opportunity was already decided.",
+    "not_enough_data": "There is not enough history for this machine yet.",
+    "no_leak_data": "The compressor hasn't run without production long enough to measure leaks.",
+    "action_not_applicable": "This change doesn't apply to this machine.",
+    "report_final": "This report is final and can't be changed.",
+    "invalid_period": "That month hasn't started yet."
   },
   "validation": {
     "required": "This field is required.",
@@ -311,7 +328,8 @@
     },
     "scheduled": "Scheduled",
     "offSchedule": "Outside schedule",
-    "noData": "No live data"
+    "noData": "No live data",
+    "review": "Review"
   },
   "overviewData": {
     "now": "Power now",
@@ -417,7 +435,12 @@
       "frequency": "Frequency",
       "temp": "Temp."
     },
-    "simulatedNote": "Simulated node: its readings come from the EnergyFlow simulator and go through exactly the same ingest pipeline as hardware."
+    "simulatedNote": "Simulated node: its readings come from the EnergyFlow simulator and go through exactly the same ingest pipeline as hardware.",
+    "connection": "Connection",
+    "connectionSimulated": "Simulated node on the EnergyFlow server. Commands take the same path as on hardware and are verified from the readings.",
+    "connectionPull": "Signed device protocol v1: HMAC-SHA256, uplink every {{seconds}} s, commands pulled by the device (works behind NAT).",
+    "commandQueue": "Command queue",
+    "noCommandsDevice": "No commands sent to this device yet."
   },
   "calendar": {
     "months": [
@@ -474,5 +497,719 @@
     "hoursAgo": "{{count}} h ago",
     "daysAgo_one": "{{count}} day ago",
     "daysAgo_other": "{{count}} days ago"
+  },
+  "periods": {
+    "today": "Today",
+    "7d": "7 days",
+    "mtd": "This month",
+    "30d": "30 days",
+    "ytd": "This year"
+  },
+  "severity": {
+    "critical": "Critical",
+    "warning": "Warning",
+    "info": "Info"
+  },
+  "method": {
+    "rule": "Rule",
+    "statistical": "Statistical",
+    "pattern": "Pattern",
+    "ml": "ML",
+    "llm": "LLM",
+    "data": "Data"
+  },
+  "wasteTypes": {
+    "after_hours": "After hours",
+    "idle": "Idle in production",
+    "excess_vs_baseline": "Efficiency drift"
+  },
+  "wastePage": {
+    "subtitle": "Where energy was wasted, why, and what it cost.",
+    "tabs": {
+      "waste": "Waste",
+      "alerts": "Alerts"
+    },
+    "tiles": {
+      "kwh": "Waste",
+      "eur": "Cost of waste",
+      "co2": "CO₂e from waste",
+      "share": "Share of consumption"
+    },
+    "shareContext": "of {{kwh}} used",
+    "eventsContext_one": "{{count}} event",
+    "eventsContext_other": "{{count}} events",
+    "vsPrevious": "{{value}} vs previous period",
+    "dailyTitle": "Waste per day",
+    "byType": "By type",
+    "byMachine": "By machine",
+    "eventsTitle": "Waste events",
+    "table": {
+      "machine": "Machine",
+      "type": "Type",
+      "when": "When",
+      "duration": "Duration",
+      "energy": "Energy",
+      "cost": "Cost",
+      "co2": "CO₂e",
+      "severity": "Severity",
+      "status": "Status"
+    },
+    "status": {
+      "ongoing": "Ongoing",
+      "ended": "Ended",
+      "acted": "Acted on",
+      "dismissed": "Dismissed"
+    },
+    "emptyTitle": "No waste in this period",
+    "emptyBody": "Nothing ran outside its schedule, idled in production or drifted from its reference.",
+    "running": "Running for {{duration}}"
+  },
+  "wasteDetail": {
+    "title": {
+      "after_hours": "{{machine}} ran after hours",
+      "idle": "{{machine}} idled during production",
+      "excess_vs_baseline": "{{machine}} needs more power for the same work"
+    },
+    "ongoing": "Still running · {{duration}} since the shift ended at {{time}}",
+    "ongoingIdle": "Still idle · for {{duration}}",
+    "ended": "{{from}} – {{to}} · {{duration}}",
+    "drift": "Since {{date}} · running power {{pct}} above its reference",
+    "projection": "If it keeps running until {{time}}: {{kwh}} · {{eur}} · {{co2}}",
+    "energy": "Energy",
+    "cost": "Cost",
+    "co2": "CO₂e",
+    "chartPower": "Power (kW)",
+    "chartRunning": "Running power per day (kW)",
+    "shiftEnd": "Shift ended",
+    "reference": "Reference",
+    "why": "Why am I seeing this?",
+    "rule": {
+      "after_hours": "Power above {{kw}} outside the working schedule for at least {{min}} minutes. Logged extra shifts count as working time.",
+      "idle": "Standby for at least {{min}} minutes during production hours, outside the first {{warmup}} minutes of a shift (warm-up).",
+      "cusum": "Average power while fully running, compared with this machine's first {{days}} days of data. A one-sided CUSUM test (k = {{k}}, h = {{h}}) confirms the rise is sustained, not noise."
+    },
+    "observed": "Average power {{kw}} · peak {{max}}",
+    "leak": "Loaded {{share}} of the time with no production demand, cycling {{cycles}} times per hour. This is the typical signature of compressed-air leaks.",
+    "tariff": "Priced at the marginal tariff: {{high}} × {{rateHigh}} (day) + {{low}} × {{rateLow}} (night), excl. VAT.",
+    "factor": "CO₂e uses {{value}} kg/kWh · {{source}}.",
+    "referenceLine": "Reference {{ref}} ({{from}} – {{to}}) · last 7 days {{recent}}",
+    "cusum": "The increase started around {{onset}} and was statistically confirmed on {{alarm}}.",
+    "openMachine": "Open machine",
+    "dismiss": "Dismiss…",
+    "dismissTitle": "Dismiss this event?",
+    "dismissReason": "Reason",
+    "dismissHint": "For example a planned maintenance run. Dismissed events no longer count as waste.",
+    "dismissConfirm": "Dismiss event",
+    "dismissed": "Dismissed: {{reason}}",
+    "acted": "Switched off by EnergyFlow.",
+    "readOnly": "Your role can view but not change this event.",
+    "titleOngoing": {
+      "after_hours": "{{machine}} is running after hours",
+      "idle": "{{machine}} is idling during production",
+      "excess_vs_baseline": "{{machine}} needs more power for the same work"
+    },
+    "seeOpportunity": "See the fix"
+  },
+  "alertsTab": {
+    "filters": {
+      "active": "Active",
+      "resolved": "Resolved",
+      "all": "All"
+    },
+    "table": {
+      "severity": "Severity",
+      "alert": "Alert",
+      "opened": "Opened",
+      "status": "Status"
+    },
+    "status": {
+      "open": "Open",
+      "acknowledged": "Acknowledged",
+      "resolved": "Resolved"
+    },
+    "acknowledge": "Acknowledge",
+    "acknowledgedBy": "by {{name}}",
+    "emptyTitle": "No alerts here",
+    "emptyBody": "EnergyFlow raises an alert when something needs attention: a machine running after hours, an efficiency drift or a device that stopped reporting."
+  },
+  "alertText": {
+    "after_hours": "{{machine}} ran after hours",
+    "after_hours_detail": "{{duration}} · {{kwh}} · {{eur}}",
+    "leak": "air-leak signature",
+    "idle": "{{machine}} idled during production",
+    "idle_detail": "{{duration}} · {{kwh}} · {{eur}}",
+    "drift": "{{machine}}: running power {{pct}} above its reference",
+    "drift_detail": "Since {{date}} · {{kwh}} · {{eur}} extra",
+    "device_offline": "{{serial}} stopped reporting",
+    "device_offline_detail": "Last reading {{date}}",
+    "command_failed": "Turn Off not confirmed for {{machine}}",
+    "command_failed_detail": "{{serial}} · {{reason}}"
+  },
+  "notifications": {
+    "markAllRead": "Mark all as read",
+    "alert_after_hours": "{{machine}} is running after hours",
+    "alert_after_hours_escalated": "{{machine}} after hours: now {{eur}}",
+    "alert_idle": "{{machine}} is idling during production",
+    "alert_idle_escalated": "{{machine}} idle: now {{eur}}",
+    "alert_drift": "{{machine}} needs {{pct}} more power while running",
+    "alert_drift_escalated": "{{machine}} drift is now {{pct}}",
+    "alert_device_offline": "{{serial}} stopped reporting",
+    "alert_device_offline_escalated": "{{serial}} is still offline",
+    "command_verified": "{{machine}} switched off · verified by the meter",
+    "impact_verified": "Savings verified on {{code}}: {{kwh}} · {{eur}} over {{days}} days"
+  },
+  "overviewAlerts": {
+    "title": "Open alerts",
+    "empty": "No open alerts. EnergyFlow will tell you when something needs attention."
+  },
+  "machineInsights": {
+    "title": "What EnergyFlow sees",
+    "empty": "Nothing unusual in the last 30 days.",
+    "afterHoursWeek": "Ran {{duration}} outside its schedule in the last 7 days: {{eur}}.",
+    "open": "Open"
+  },
+  "control": {
+    "turnOff": "Turn off",
+    "turnOffMachine": "Turn off {{machine}}",
+    "dialogTitle": "Turn off {{machine}}?",
+    "consequence": {
+      "compressor": "Compressed air stops for the whole hall.",
+      "injection_moulding": "The moulder stops. Its heater bands cool down and need a warm-up before the next shot.",
+      "lighting": "The hall lights switch off.",
+      "pump": "Process water stops circulating.",
+      "chiller": "Mould cooling stops.",
+      "hvac": "Heating and cooling for the office and warehouse stop.",
+      "default": "The machine stops."
+    },
+    "afterHours": "Schedule ended at {{time}} · running {{duration}} after hours · {{eur}} so far.",
+    "projection": "Left on until {{time}} it would cost about {{eur}} more.",
+    "scheduledWarning": "This machine is scheduled to run now. Turn it off only if production has finished.",
+    "confirmScheduled": "Production on this machine has finished",
+    "safety": "EnergyFlow opens the remote-STOP contact on {{serial}} · CH{{channel}}. It can only stop the machine: restarting is done with the machine's own START button.",
+    "simulatedNode": "Simulated node: the command takes the same path and is verified the same way as on hardware.",
+    "sending": "Turning off…",
+    "verifiedToast": "{{machine}} is off",
+    "verifiedToastBody": "Command sent · verified by meter in {{seconds}} s",
+    "failedToast": "{{machine}} did not turn off",
+    "done": "Done",
+    "inProgress": "Turning off",
+    "verifiedIn": "Verified in {{seconds}} s",
+    "reasons": {
+      "machine_critical": "Critical machine — EnergyFlow never switches it.",
+      "control_monitor_only": "Monitor-only: EnergyFlow may not act on this machine.",
+      "no_relay": "No remote-STOP relay is wired to this machine.",
+      "already_off": "The machine is already off.",
+      "command_pending": "A command is already in progress.",
+      "no_live_data": "No live data from this machine right now.",
+      "not_controllable": "The main incomer cannot be switched.",
+      "read_only": "Your role can view but not act."
+    }
+  },
+  "commandSteps": {
+    "queued": "Command queued",
+    "sent": "Picked up by {{serial}}",
+    "executed": "Relay opened (remote STOP)",
+    "verified": "Meter confirms {{kw}}",
+    "waitingSent": "Waiting for the node's next uplink",
+    "waitingExecuted": "Waiting for the relay",
+    "waitingVerified": "Waiting for the meter to confirm",
+    "failed": "Not confirmed: {{reason}}"
+  },
+  "commandStatus": {
+    "queued": "Queued",
+    "sent": "Sent",
+    "acknowledged": "Acknowledged",
+    "executed": "Executed",
+    "verified": "Verified",
+    "failed": "Failed",
+    "cancelled": "Cancelled"
+  },
+  "commandFailure": {
+    "power_did_not_drop": "the power did not drop",
+    "no_readings": "no readings after the stop",
+    "no_response": "the device did not respond",
+    "device_offline": "the device is offline",
+    "device_reported": "the device reported a fault"
+  },
+  "automationsPage": {
+    "subtitle": "What EnergyFlow may do on its own, and every command it sent — with the meter's confirmation.",
+    "policies": "Policies",
+    "commands": "Command log",
+    "policyTable": {
+      "machine": "Machine",
+      "rule": "Rule",
+      "mode": "Mode",
+      "since": "Since",
+      "triggered": "Times triggered",
+      "savings": "Verified savings",
+      "active": "Active"
+    },
+    "rule": {
+      "auto_off_after_schedule": "Turn off {{min}} min after the schedule ends",
+      "idle_standby": "Standby after idling",
+      "tou_shift": "Run in the night tariff",
+      "stagger_start": "Stagger starts"
+    },
+    "modes": {
+      "auto": "Automatic",
+      "approve": "Ask first",
+      "notify": "Notify only"
+    },
+    "collecting": "Collecting data",
+    "noPolicies": "No automations yet. Accepting an opportunity creates one here.",
+    "commandTable": {
+      "time": "Time",
+      "machine": "Machine",
+      "command": "Command",
+      "source": "Source",
+      "status": "Status",
+      "power": "Power before → after"
+    },
+    "sourcePolicy": "Policy · auto-off",
+    "sourceUser": "{{name}}",
+    "simulatedHistory": "simulated history",
+    "noCommands": "No commands yet. Turn Off actions and policy commands will appear here with their verification.",
+    "toggleOn": "Enable policy",
+    "toggleOff": "Pause policy"
+  },
+  "opportunities": {
+    "subtitle": "Savings ranked by € and CO₂, each one calculated by replaying your own data.",
+    "potential": "Open potential",
+    "potentialValue": "{{eur}} · {{kwh}} · {{co2}} per month",
+    "potentialContext_one": "{{count}} open opportunity",
+    "potentialContext_other": "{{count}} open opportunities",
+    "recommended": "Recommended",
+    "inProgress": "Accepted and implemented",
+    "dismissedTitle": "Dismissed",
+    "emptyOpen": "No open opportunities right now. EnergyFlow checks your data every hour.",
+    "perMonth": "per month",
+    "perYear": "per year",
+    "title": {
+      "after_hours_schedule": "Switch {{code}} off automatically after the shift",
+      "compressed_air_leak": "Find and fix compressed-air leaks on {{code}}",
+      "efficiency_drift": "Service {{code}}: it needs {{pct}}% more power",
+      "tou_shift": "Run {{code}} in the night tariff"
+    },
+    "body": {
+      "after_hours_schedule": "{{machine}} ran after hours {{episodes}} times in the last 14 days. An auto-off {{grace}} min after the schedule end stops it, unless a production override is logged.",
+      "compressed_air_leak": "With no production, {{machine}} still loads {{leak}}% of the time: air is escaping from the network. Repairing leaks cuts that load whenever the compressor runs.",
+      "efficiency_drift": "{{machine}} draws {{pct}}% more power while running than in its reference period. Typical causes to check: hydraulic pump wear, leaking valves, heater bands.",
+      "tou_shift": "Moving {{share}}% of its day-tariff energy to the night tariff saves money. It does not reduce CO₂: Kosovo's grid factor is an annual average."
+    },
+    "band": {
+      "high": "High priority",
+      "medium": "Medium priority",
+      "optimization": "Optimization"
+    },
+    "tag": {
+      "eur_co2": "€ + CO₂",
+      "eur": "€ only",
+      "co2": "CO₂",
+      "peak": "Peak"
+    },
+    "effort": {
+      "low": "Low effort",
+      "medium": "Medium effort",
+      "high": "High effort"
+    },
+    "capex": {
+      "none": "No investment",
+      "low": "Small investment",
+      "medium": "Medium investment",
+      "high": "Large investment"
+    },
+    "confidence": "Confidence {{pct}}",
+    "status": {
+      "proposed": "Recommended",
+      "accepted": "To do",
+      "implemented": "Implemented",
+      "verified": "Verified",
+      "dismissed": "Dismissed"
+    },
+    "simulate": "Simulate",
+    "accept": "Accept",
+    "dismiss": "Dismiss",
+    "markDone": "Mark as done",
+    "viewAutomation": "View automation",
+    "details": "Details",
+    "replayTitle": "Last 30 days, replayed",
+    "evidenceTitle": "Why EnergyFlow suggests this",
+    "assumptionsTitle": "How it is calculated",
+    "evidence": {
+      "episodes": "{{count}} after-hours episodes in 14 days, {{kwh}} in total.",
+      "leak": "Leak signature on {{nights}} nights in 30 days: loaded {{share}} of the time with no production.",
+      "drift": "Running power {{pct}}% above the reference of {{ref}} since {{since}}.",
+      "tou": "{{kwh}} of its {{total}} in the last 30 days ran in the day tariff."
+    },
+    "acceptTitle": "Accept this opportunity?",
+    "acceptPolicy": "Accepting creates an automation: {{code}} is switched off {{grace}} min after its schedule ends, verified by the meter every time. It starts now, and that is the starting point for the before/after proof.",
+    "acceptTask": "Accepting adds this to your list. Mark it as done when the work is finished: that starts the before/after measurement.",
+    "mode": "How should EnergyFlow act?",
+    "modes": {
+      "auto": "Automatically, and report it",
+      "approve": "Ask me first (alert with a Turn Off button)",
+      "notify": "Only notify me"
+    },
+    "acceptConfirm": "Accept",
+    "dismissTitle": "Dismiss this opportunity?",
+    "dismissHint": "EnergyFlow won't suggest it again for 30 days. Your reason helps it learn what doesn't fit.",
+    "dismissed": "Dismissed: {{reason}}",
+    "acceptedBy": "Accepted by {{name}} on {{date}}"
+  },
+  "whatIf": {
+    "title": "What-if simulator",
+    "subtitle": "Pick a machine and a change. EnergyFlow replays that machine's last {{days}} days with the change applied.",
+    "machine": "Machine",
+    "action": "Change",
+    "window": "History",
+    "actions": {
+      "auto_off_after_schedule": "Switch off after the shift",
+      "leak_repair": "Repair compressed-air leaks",
+      "efficiency_restore": "Restore efficiency (service)",
+      "tou_shift": "Run in the night tariff"
+    },
+    "params": {
+      "grace_min": "Grace after schedule end",
+      "repair_share": "Share of leaks repaired",
+      "improvement_pct": "Running power reduced by",
+      "shift_share": "Share moved to the night tariff"
+    },
+    "minutes": "{{count}} min",
+    "days": "{{count}} days",
+    "today": "As it ran",
+    "with": "With the change",
+    "saving": "Saving",
+    "energy": "Energy",
+    "cost": "Cost",
+    "co2": "CO₂e",
+    "perMonth": "Per month",
+    "perYear": "Per year",
+    "legendActual": "As it ran",
+    "legendScenario": "With the change",
+    "chartUnit": "kWh per day",
+    "assumption": {
+      "auto_off": "The machine is switched off {{grace}} min after its schedule ends. The grace period still runs.",
+      "overrides_respected": "Logged extra shifts and HOLD presses count as working time and are never switched off.",
+      "leak_measured": "Measured: with no production the compressor loads {{share}} of the time (loaded {{loaded}}, unloaded {{unloaded}}).",
+      "leak_repair": "Assumption: {{share}} of the leaks are repaired.",
+      "efficiency_measured": "Measured: running power is {{pct}}% above the reference. Service restores it.",
+      "efficiency_assumed": "Assumption: running power falls by {{pct}}%.",
+      "tou_shift": "Assumption: {{share}} of the day-tariff energy can run in the night tariff instead."
+    },
+    "caveat": {
+      "tou_no_co2": "Saves money, not CO₂: Kosovo's emission factor (Ember 2025) is an annual average, so moving load to the night does not change emissions.",
+      "seasonal": "Heating and cooling depend on the weather: the yearly figure is a rough extrapolation."
+    },
+    "error": {
+      "not_enough_data": "This machine doesn't have enough history yet.",
+      "no_leak_data": "The compressor hasn't run without production long enough to measure leaks.",
+      "action_not_applicable": "This change doesn't apply to this machine."
+    },
+    "pick": "Pick a machine to start."
+  },
+  "overviewOpportunities": {
+    "title": "Top opportunities",
+    "empty": "No open opportunities right now."
+  },
+  "impactPage": {
+    "subtitle": "Proof that actions saved energy: measured, and adjusted for working days.",
+    "adjusted": "Adjusted (recommended)",
+    "raw": "Raw",
+    "before": "Before",
+    "after": "After",
+    "energy": "Energy",
+    "cost": "Cost",
+    "co2": "CO₂e",
+    "beforeHint": "What the machines would have used without the actions",
+    "beforeHintRaw": "Baseline period average × the same number of days",
+    "afterHint": "What the meters measured",
+    "delta": "{{share}} less energy · {{eur}} · {{co2}} avoided",
+    "ci": "± {{kwh}} (90 % confidence)",
+    "verifiedTotal": "Verified savings to date",
+    "interventions": "Interventions",
+    "table": {
+      "machine": "Machine",
+      "action": "Action",
+      "since": "Since",
+      "period": "Measured",
+      "savings": "Energy saved",
+      "eur": "Cost saved",
+      "co2": "CO₂e avoided",
+      "status": "Status"
+    },
+    "days": "{{count}} days",
+    "status": {
+      "verified": "Verified",
+      "collecting": "Collecting data ({{days}}/{{min}} days)",
+      "inconclusive": "Not yet significant"
+    },
+    "actions": {
+      "auto_off_after_schedule": "Auto-off {{grace}} min after the schedule ends",
+      "EfficiencyDrift": "Service (efficiency restored)",
+      "CompressedAirLeak": "Compressed-air leaks repaired"
+    },
+    "chartTitle": "{{machine}}: daily energy before and after",
+    "legendActual": "Measured",
+    "legendModel": "Baseline model (adjusted)",
+    "marker": "Action applied",
+    "how": "How we calculate this",
+    "howItems": {
+      "baseline": "Baseline: the {{days}} days before the action.",
+      "model": "Model: average daily energy per kind of day, by the machine's scheduled hours ({{types}}).",
+      "adjusted": "Adjusted baseline: the model applied to the days after the action, so a week with a holiday is compared fairly.",
+      "savings": "Savings = adjusted baseline − measured, with a 90 % confidence interval from the baseline's day-to-day spread.",
+      "verified": "Verified once at least {{min}} days are measured and the lower end of the interval is above zero.",
+      "valuation": "€ at the day/night mix of marginal tariff rates; CO₂e at the grid factor.",
+      "label": "IPMVP-inspired (Option B, sub-metered). Not a certified M&V."
+    },
+    "dayType": "{{hours}} h",
+    "emptyTitle": "Nothing to prove yet",
+    "emptyBody": "Accept an opportunity or turn on an automation. After 7 days, its savings are measured and verified here."
+  },
+  "carbonPage": {
+    "subtitle": "Emissions from your metered electricity, VSME datapoints and how they are calculated.",
+    "tabs": {
+      "overview": "Overview",
+      "breakdown": "Breakdown",
+      "vsme": "VSME B3",
+      "readiness": "Readiness",
+      "methodology": "Methodology"
+    },
+    "tiles": {
+      "scope2": "CO₂e from electricity",
+      "scope2Context": "Scope 2, location-based",
+      "intensity": "Carbon intensity",
+      "intensityUnit": "kg CO₂e / €1,000",
+      "intensityContext": "annualised, per turnover",
+      "intensityMissing": "Add your turnover in Settings",
+      "avoided": "Avoided (verified)",
+      "avoidedContext": "by actions, measured",
+      "electricity": "Electricity"
+    },
+    "factorChip": "{{value}} kg CO₂e/kWh · {{source}} · {{methodology}}",
+    "monthlyTitle": "CO₂e per month",
+    "monthlyUnit": "t CO₂e",
+    "partialMonth": "{{days}} days measured",
+    "scopes": "Scopes",
+    "scope1": "Scope 1 · fuels burned on site",
+    "scope1Missing": "Not reported yet. Declare your fuel use (generator, forklifts, heating oil) — or that there is none — in Readiness.",
+    "scope1None": "Declared: no fuel burned on site.",
+    "scope2Location": "Scope 2 · location-based",
+    "scope2Market": "Scope 2 · market-based",
+    "scope2MarketNa": "Not available: there is no published residual-mix factor for Kosovo and no certified renewable purchase.",
+    "groupBy": {
+      "machine": "By machine",
+      "department": "By department",
+      "tariff_period": "By tariff period"
+    },
+    "unmonitored": "Unmonitored loads",
+    "tariffHigh": "Day tariff",
+    "tariffLow": "Night tariff",
+    "tariffNote": "Same factor every hour: moving load to the night tariff lowers the bill, not CO₂e.",
+    "vsmeTitle": "VSME Basic Module · B3 Energy and GHG emissions",
+    "vsmeYear": "Year {{year}}",
+    "vsmeDisclaimer": "Prepared from metered data. Check the datapoints against the EFRAG VSME text before you share it.",
+    "partialYear": "Metered since {{date}}: the year is not complete.",
+    "vsmeTable": {
+      "datapoint": "Datapoint",
+      "value": "Value",
+      "status": "Status",
+      "note": "Source / note"
+    },
+    "vsme": {
+      "electricity_grid": "Electricity from the grid",
+      "electricity_renewable_share": "Renewable share of that electricity",
+      "self_generated": "Self-generated electricity",
+      "fuels": "Fuels burned on site",
+      "energy_total": "Total energy consumption",
+      "scope1": "Gross Scope 1 emissions",
+      "scope2_location": "Gross Scope 2 emissions (location-based)",
+      "scope2_market": "Gross Scope 2 emissions (market-based)",
+      "ghg_total": "Total GHG emissions (Scope 1 + 2)",
+      "ghg_intensity": "GHG intensity per turnover"
+    },
+    "statusChip": {
+      "auto": "Auto",
+      "manual": "Manual",
+      "estimated": "Estimated",
+      "missing": "Missing",
+      "not_available": "Not available"
+    },
+    "notes": {
+      "metered": "EnergyFlow meters",
+      "metered_factor": "EnergyFlow meters × grid factor",
+      "supplier": "Needs your supplier's energy mix",
+      "declaration": "Your declaration",
+      "market": "No residual mix for Kosovo",
+      "turnover": "Turnover from the company profile",
+      "partial_year": "metered part of the year",
+      "supplier_mix": "not on the bill",
+      "electricity_only": "electricity only until fuels are declared",
+      "no_residual_mix": "",
+      "scope2_only": "Scope 2 only until Scope 1 is declared"
+    },
+    "readinessTitle": "ESG readiness",
+    "readinessBody": "How much of what banks and EU buyers ask for (VSME B1–B3) you can already answer.",
+    "nextSteps": "Next 3 steps",
+    "groups": {
+      "B1": "B1 · Company basics",
+      "B2": "B2 · Practices",
+      "B3": "B3 · Energy and emissions data"
+    },
+    "items": {
+      "legal_form": "Legal form",
+      "business_number": "Business number (NUI)",
+      "nace_code": "Sector (NACE code)",
+      "employees": "Number of employees",
+      "turnover": "Annual turnover",
+      "energy_policy": "A written energy policy",
+      "reduction_target": "An energy or emissions reduction target",
+      "schedules": "Working hours defined",
+      "automation": "At least one automation active",
+      "maintenance_plan": "A maintenance plan for major machines",
+      "electricity_metered": "Electricity metered by machine",
+      "coverage": "Sub-meters cover ≥ 80 % of the main incomer",
+      "factor": "Emission factor selected",
+      "fuels": "Fuel use declared (or none)",
+      "onsite_generation": "On-site generation declared (or none)"
+    },
+    "answerHint": {
+      "energy_policy": "We have a written energy policy",
+      "reduction_target": "We have set a reduction target",
+      "maintenance_plan": "We follow a maintenance plan",
+      "fuels": "We burn no fuel on site (no generator, forklifts or heating oil)",
+      "onsite_generation": "We generate no electricity on site (no solar)"
+    },
+    "goTo": {
+      "company": "Settings",
+      "auto": "Automatic"
+    },
+    "methodology": {
+      "factorTitle": "Grid emission factor",
+      "factorBody": "{{value}} kg CO₂e per kWh · {{source}} · reference year {{year}} · {{methodology}}.",
+      "caveatsTitle": "Caveats",
+      "caveats": {
+        "lifecycle": "Lifecycle factor: Ember applies standard lifecycle values per fuel, not measurements from Kosovo's lignite plants. GHG Protocol Scope 2 reporting often uses combustion-only factors; the two differ.",
+        "generation": "Generation-based: it describes electricity generated in Kosovo; imports and exports are not reflected.",
+        "annual": "Annual average: it does not change by hour, so moving load to the night tariff saves money but not CO₂e."
+      },
+      "scopesTitle": "Scopes",
+      "scope1": "Scope 1: fuels you burn (generators, forklifts, heating). Declared by you.",
+      "scope2": "Scope 2: the electricity you buy. Location-based = metered kWh × the grid factor.",
+      "mvTitle": "Measured savings",
+      "mv": "Each action is checked against an adjusted baseline (28 days before, by day type) with a 90 % confidence interval — IPMVP-inspired, Option B. Not a certified M&V.",
+      "coverageTitle": "Data coverage",
+      "coverage": "Machines on EnergyFlow meters account for {{share}} of the main incomer over the last 30 days.",
+      "simulatedTitle": "Simulated data",
+      "simulated": "This is a fictional demo company. Its machines are simulated (with real Pristina weather and the official Kosovo tariff); the methods are the ones used for real meters.",
+      "source": "Source"
+    }
+  },
+  "reportsPage": {
+    "subtitle": "Monthly energy and sustainability reports, generated from measured data.",
+    "new": "New report",
+    "newTitle": "New monthly report",
+    "month": "Month",
+    "language": "Language",
+    "monthPartial": "{{month}} (so far)",
+    "create": "Create report",
+    "creating": "Building the report…",
+    "createHint": "Every figure is frozen in the report. The written summary is drafted from those figures and you can edit it before finalising.",
+    "table": {
+      "period": "Period",
+      "language": "Language",
+      "energy": "Energy",
+      "co2": "CO₂e",
+      "status": "Status",
+      "created": "Created"
+    },
+    "status": {
+      "draft": "Draft",
+      "final": "Final"
+    },
+    "emptyTitle": "No reports yet",
+    "emptyBody": "Create the first one: it takes a few seconds and is built from your measured data."
+  },
+  "report": {
+    "back": "All reports",
+    "download": "Download PDF",
+    "downloadHint": "Opens the print dialog: choose \"Save as PDF\".",
+    "edit": "Edit text",
+    "save": "Save text",
+    "finalize": "Finalize",
+    "finalizeConfirm": "Finalize this report? It can't be changed afterwards.",
+    "title": "Monthly energy and sustainability report",
+    "demo": "Demo company (fictional) — simulated data",
+    "draft": "Draft",
+    "final": "Final",
+    "generated": "Generated {{date}}",
+    "finalizedBy": "Finalised by {{name}} on {{date}}",
+    "period": "Reporting period",
+    "sections": {
+      "summary": "Executive summary",
+      "keyFigures": "Key figures",
+      "energy": "Where the energy went",
+      "waste": "Where waste occurred and why",
+      "actions": "Actions taken and verified impact",
+      "carbon": "Carbon",
+      "comparison": "Compared with the previous period",
+      "recommendations": "Recommendations for the next period",
+      "vsme": "VSME B3 datapoints",
+      "methodology": "Methodology and data quality"
+    },
+    "narrativeAi": "Drafted by EnergyFlow's assistant (Groq) from the figures in this report; every number was checked against them.",
+    "narrativeTemplate": "Written by EnergyFlow from the figures in this report.",
+    "narrativeEdited": "Edited by the company from EnergyFlow's draft.",
+    "kf": {
+      "energy": "Electricity",
+      "cost": "Energy cost (excl. VAT)",
+      "co2": "CO₂e (Scope 2)",
+      "waste": "Waste",
+      "wasteShare": "{{share}} of consumption",
+      "saved": "Verified savings",
+      "topConsumer": "Largest consumer",
+      "largestWaste": "Largest waste event",
+      "opportunities": "Open opportunities",
+      "opportunitiesValue": "{{count}} · {{eur}} / month",
+      "bill": "Estimated bill (excl. VAT)",
+      "peak": "Peak demand"
+    },
+    "table": {
+      "machine": "Machine",
+      "energy": "Energy (kWh)",
+      "share": "Share",
+      "cost": "Cost",
+      "co2": "CO₂e",
+      "type": "Type",
+      "events": "Events",
+      "measure": "Measure",
+      "current": "This period",
+      "previous": "Previous period",
+      "change": "Change",
+      "action": "Action",
+      "perMonth": "€ / month",
+      "effort": "Effort",
+      "impact": "Impact",
+      "intervention": "Intervention",
+      "saved": "Saved",
+      "status": "Status"
+    },
+    "turnOffs": "{{manual}} manual and {{automatic}} automatic Turn Offs, each verified by the meter · active automations: {{policies}}.",
+    "noImpact": "No action has been measured long enough to verify savings yet.",
+    "scope1": "Scope 1",
+    "scope2": "Scope 2 (location-based)",
+    "scope2Market": "Scope 2 (market-based)",
+    "intensity": "Intensity",
+    "notAvailable": "not available",
+    "notReported": "not reported",
+    "coverage": "Metering coverage: {{share}} of the main incomer.",
+    "monitoringSince": "Measured by EnergyFlow since {{date}}.",
+    "devices": "{{total}} EnergyFlow devices, {{simulated}} of them simulated.",
+    "factorLine": "Emission factor: {{value}} kg CO₂e/kWh — {{source}} ({{year}}, {{methodology}}).",
+    "tariffLine": "Tariff: {{name}}. {{note}}",
+    "mvLine": "Savings are verified against an adjusted baseline with a 90 % confidence interval (IPMVP-inspired, Option B). This is not a certified M&V.",
+    "simulatedLine": "This report describes a fictional demo company with simulated machines. The methods are the same as for real meters.",
+    "footer": "EnergyFlow · energy intelligence for Kosovo SMEs",
+    "periodPartial": "(month to date)"
   }
 }

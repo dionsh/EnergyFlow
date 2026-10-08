@@ -9,6 +9,8 @@ use EnergyFlow\Services\Calendar\LocalTime;
 use EnergyFlow\Services\Calendar\ScheduleBook;
 use EnergyFlow\Services\Carbon\EmissionFactors;
 use EnergyFlow\Services\Clock;
+use EnergyFlow\Services\Control\CommandService;
+use EnergyFlow\Services\Detection\Projection;
 use EnergyFlow\Services\Tariff\TariffBook;
 use EnergyFlow\Utils\Time;
 
@@ -44,6 +46,8 @@ final class LiveService
         );
 
         $today = EnergyQuery::byMachine($companyId, $time->startOfDay($now), $now, null, $tariff);
+        $relays = CommandService::relays($companyId);
+        $commands = CommandService::recent($companyId, $now);
         $machines = [];
         $incomer = null;
         $siteKw = 0.0;
@@ -77,7 +81,10 @@ final class LiveService
                 'control_mode' => $row['control_mode'],
                 'device' => $row['device_serial'] === null ? null : ['serial' => $row['device_serial'], 'simulated' => (bool) $row['device_simulated']],
                 'after_hours' => null,
+                'command' => $commands[$id] ?? null,
             ];
+            $machine['control'] = CommandService::evaluate($row, $relays[$id] ?? null, $commands[$id] ?? null, $machine['state'], $scheduled)
+                + ['relay' => isset($relays[$id]) ? ['serial' => $relays[$id]['serial'], 'channel' => $relays[$id]['channel']] : null];
 
             if ($row['kind'] === 'incomer') {
                 $incomer = $machine;
@@ -92,12 +99,15 @@ final class LiveService
                 $energy = EnergyQuery::byMachine($companyId, $since, $now, $id, $tariff)[$id] ?? null;
                 $kwh = $energy['kwh'] ?? 0.0;
                 $eur = $energy === null ? 0.0 : EnergyQuery::energyCost($energy, $tariff);
+                $hours = ($now - $since) / 3600;
+                $averageKw = $hours >= 0.25 ? $kwh / $hours : ($kw ?? 0.0); // average once there is enough history
                 $machine['after_hours'] = [
                     'since' => Time::iso(gmdate('Y-m-d H:i:s', $since)),
                     'duration_s' => $now - $since,
                     'kwh' => round($kwh, 2),
                     'eur' => round($eur, 2),
                     'co2_kg' => round($kwh * $factor['value'], 1),
+                    'projection' => Projection::untilNextStart($schedule, $tariff, $factor['value'], $scheduleId, $id, $now, $averageKw),
                 ];
                 $waste['kwh'] += $kwh;
                 $waste['eur'] += $eur;

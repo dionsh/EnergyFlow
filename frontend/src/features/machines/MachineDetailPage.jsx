@@ -10,6 +10,8 @@ import { StatTile } from '../../components/ui/StatTile'
 import { StateBadge } from '../../components/ui/StateBadge'
 import { Callout, EmptyState, ErrorState, Skeleton } from '../../components/ui/States'
 import { useMachine, useMachineSeries } from '../data'
+import { TurnOffButton } from '../control/TurnOff'
+import { MachineFindings } from '../waste/InsightCards'
 import { MachineChart } from './MachineChart'
 
 const RANGES = ['24h', '7d', '30d']
@@ -62,6 +64,7 @@ export function MachineDetailPage() {
             </p>
           </div>
         </div>
+        {live && <TurnOffButton machine={live} />}
       </div>
 
       {live?.after_hours && (
@@ -118,22 +121,25 @@ export function MachineDetailPage() {
           </CardBody>
         </Card>
 
-        <Card>
-          <CardHeader title={t('machineDetail.info')} />
-          <CardBody className="py-1">
-            <dl>
-              <Detail label={t('machineDetail.schedule')}>{machine.schedule}</Detail>
-              <Detail label={t('machineDetail.department')}>{machine.department}</Detail>
-              <Detail label={t('machineDetail.rated')}>{machine.rated_power_kw ? formatKw(machine.rated_power_kw) : null}</Detail>
-              <Detail label={t('machineDetail.phases')}>{machine.phases}</Detail>
-              <Detail label={t('machineDetail.control')}>{t(`controlModes.${machine.control_mode}`)}</Detail>
-              <Detail label={t('machineDetail.criticalityLabel')}>{t(`criticality.${machine.criticality}`)}</Detail>
-              <Detail label={t('machineDetail.device')}>
-                {live?.device ? <span className="font-mono">{live.device.serial}</span> : null}
-              </Detail>
-            </dl>
-          </CardBody>
-        </Card>
+        <div className="flex flex-col gap-6">
+          <MachineFindings machineId={machine.id} />
+          <Card>
+            <CardHeader title={t('machineDetail.info')} />
+            <CardBody className="py-1">
+              <dl>
+                <Detail label={t('machineDetail.schedule')}>{machine.schedule}</Detail>
+                <Detail label={t('machineDetail.department')}>{machine.department}</Detail>
+                <Detail label={t('machineDetail.rated')}>{machine.rated_power_kw ? formatKw(machine.rated_power_kw) : null}</Detail>
+                <Detail label={t('machineDetail.phases')}>{machine.phases}</Detail>
+                <Detail label={t('machineDetail.control')}>{t(`controlModes.${machine.control_mode}`)}</Detail>
+                <Detail label={t('machineDetail.criticalityLabel')}>{t(`criticality.${machine.criticality}`)}</Detail>
+                <Detail label={t('machineDetail.device')}>
+                  {live?.device ? <span className="font-mono">{live.device.serial}</span> : null}
+                </Detail>
+              </dl>
+            </CardBody>
+          </Card>
+        </div>
       </div>
     </>
   )

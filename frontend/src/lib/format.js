@@ -7,41 +7,6 @@ import { languageFor } from '../i18n/languages'
 
 const TIMEZONE = 'Europe/Belgrade' // Kosovo local time
 
-const spec = () => languageFor(i18n.language).number
-
-function number(value, maximumFractionDigits = 0, minimumFractionDigits = 0) {
-  if (value === null || value === undefined || Number.isNaN(Number(value))) return '—'
-  const { group, decimal } = spec()
-  const [whole, fraction] = Number(value).toLocaleString('en-US', { maximumFractionDigits, minimumFractionDigits }).split('.')
-  const grouped = whole.replace(/,/g, group)
-  return fraction === undefined ? grouped : `${grouped}${decimal}${fraction}`
-}
-
-export const formatNumber = (value, digits = 0) => number(value, digits)
-
-/** kW: 1 decimal, 2 below 1 kW. */
-export const formatKw = (value) => `${number(value, Math.abs(value) < 1 ? 2 : 1, Math.abs(value) < 1 ? 2 : 1)} kW`
-
-/** kWh: no decimals from 100 up, 1 decimal below. */
-export const formatKwh = (value) => `${number(value, Math.abs(value) >= 100 ? 0 : 1)} kWh`
-
-/** €: 2 decimals below 1,000; whole euros above (KPIs). */
-export function formatEur(value, { compact = true } = {}) {
-  if (value === null || value === undefined) return '—'
-  const digits = compact && Math.abs(value) >= 1000 ? 0 : 2
-  const amount = number(Math.abs(value), digits, digits)
-  const sign = value < 0 ? '−' : ''
-  return spec().currency === 'prefix' ? `${sign}€${amount}` : `${sign}${amount} €`
-}
-
-/** CO₂e: kg below 1,000, tonnes (1 decimal) above. */
-export function formatCo2(kg) {
-  if (kg === null || kg === undefined) return '—'
-  return Math.abs(kg) >= 1000 ? `${number(kg / 1000, 1, 1)} t CO₂e` : `${number(kg, kg < 10 ? 1 : 0)} kg CO₂e`
-}
-
-export const formatPercent = (ratio, digits = 1) => (ratio === null || ratio === undefined ? '—' : `${number(ratio * 100, digits)}${spec().percentSpace ? ' ' : ''}%`)
-
 /** Calendar parts of a moment in Kosovo local time. */
 function parts(iso) {
   const values = {}
@@ -61,34 +26,82 @@ function parts(iso) {
   return { year: values.year, month: Number(values.month), day: Number(values.day), weekday, time: `${values.hour}:${values.minute}` }
 }
 
-const calendar = (key) => i18n.t(`calendar.${key}`, { returnObjects: true })
 const pad = (n) => String(n).padStart(2, '0')
 
 /**
- * Dates in local time. Variants:
- *   'medium'       23 Jul 2026 · 23 korrik 2026
- *   'dayMonth'     23.07
- *   'weekdayDay'   Thu 23 · enj 23
- *   'dateTime'     23 Jul 2026, 21:40
- *   'weekdayTime'  Thursday 23 Jul, 21:40
+ * The number and date formatters for a language. The app uses the current UI
+ * language; a report uses its own language (formattersFor), whatever the UI shows.
  */
-export function formatDate(iso, variant = 'medium') {
-  if (!iso) return '—'
-  const p = parts(iso)
-  const month = calendar(i18n.language === 'en' ? 'monthsShort' : 'months')[p.month - 1]
-  switch (variant) {
-    case 'dayMonth':
-      return `${pad(p.day)}.${pad(p.month)}`
-    case 'weekdayDay':
-      return `${calendar('weekdaysShort')[p.weekday]} ${pad(p.day)}`
-    case 'dateTime':
-      return `${p.day} ${month} ${p.year}, ${p.time}`
-    case 'weekdayTime':
-      return `${calendar('weekdays')[p.weekday]} ${p.day} ${month}, ${p.time}`
-    default:
-      return `${p.day} ${month} ${p.year}`
+function makeFormatters(language) {
+  const spec = () => languageFor(language()).number
+  const calendar = (key) => i18n.getFixedT(language())(`calendar.${key}`, { returnObjects: true })
+
+  function number(value, maximumFractionDigits = 0, minimumFractionDigits = 0) {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) return '—'
+    const { group, decimal } = spec()
+    const [whole, fraction] = Number(value).toLocaleString('en-US', { maximumFractionDigits, minimumFractionDigits }).split('.')
+    const grouped = whole.replace(/,/g, group)
+    return fraction === undefined ? grouped : `${grouped}${decimal}${fraction}`
+  }
+
+  return {
+    formatNumber: (value, digits = 0) => number(value, digits),
+
+    /** kW: 1 decimal, 2 below 1 kW. */
+    formatKw: (value) => `${number(value, Math.abs(value) < 1 ? 2 : 1, Math.abs(value) < 1 ? 2 : 1)} kW`,
+
+    /** kWh: no decimals from 100 up, 1 decimal below. */
+    formatKwh: (value) => `${number(value, Math.abs(value) >= 100 ? 0 : 1)} kWh`,
+
+    /** €: 2 decimals below 1,000; whole euros above (KPIs). */
+    formatEur(value, { compact = true } = {}) {
+      if (value === null || value === undefined) return '—'
+      const digits = compact && Math.abs(value) >= 1000 ? 0 : 2
+      const amount = number(Math.abs(value), digits, digits)
+      const sign = value < 0 ? '−' : ''
+      return spec().currency === 'prefix' ? `${sign}€${amount}` : `${sign}${amount} €`
+    },
+
+    /** CO₂e: kg below 1,000, tonnes (1 decimal) above. */
+    formatCo2(kg) {
+      if (kg === null || kg === undefined) return '—'
+      return Math.abs(kg) >= 1000 ? `${number(kg / 1000, 1, 1)} t CO₂e` : `${number(kg, kg < 10 ? 1 : 0)} kg CO₂e`
+    },
+
+    formatPercent: (ratio, digits = 1) => (ratio === null || ratio === undefined ? '—' : `${number(ratio * 100, digits)}${spec().percentSpace ? ' ' : ''}%`),
+
+    /**
+     * Dates in local time. Variants:
+     *   'medium'       23 Jul 2026 · 23 korrik 2026
+     *   'dayMonth'     23.07
+     *   'weekdayDay'   Thu 23 · enj 23
+     *   'dateTime'     23 Jul 2026, 21:40
+     *   'weekdayTime'  Thursday 23 Jul, 21:40
+     */
+    formatDate(iso, variant = 'medium') {
+      if (!iso) return '—'
+      const p = parts(iso)
+      const month = calendar(language() === 'en' ? 'monthsShort' : 'months')[p.month - 1]
+      switch (variant) {
+        case 'dayMonth':
+          return `${pad(p.day)}.${pad(p.month)}`
+        case 'weekdayDay':
+          return `${calendar('weekdaysShort')[p.weekday]} ${pad(p.day)}`
+        case 'dateTime':
+          return `${p.day} ${month} ${p.year}, ${p.time}`
+        case 'weekdayTime':
+          return `${calendar('weekdays')[p.weekday]} ${p.day} ${month}, ${p.time}`
+        default:
+          return `${p.day} ${month} ${p.year}`
+      }
+    },
   }
 }
+
+export const { formatNumber, formatKw, formatKwh, formatEur, formatCo2, formatPercent, formatDate } = makeFormatters(() => i18n.language)
+
+/** Formatters fixed to one language (e.g. a report written in Albanian, viewed in English). */
+export const formattersFor = (language) => makeFormatters(() => language)
 
 /** Local clock time (24 h) in Kosovo time. */
 export function formatTime(iso) {

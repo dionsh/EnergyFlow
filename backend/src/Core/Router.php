@@ -89,7 +89,12 @@ final class Router
     private function add(string $method, string $path, array $handler, array $middleware): void
     {
         $full = rtrim($this->groupPrefix . $path, '/') ?: '/';
-        $pattern = preg_replace('#\{([a-z_]+)\}#', '(?P<$1>[0-9]+)', $full);
+        // {id} matches digits; {key:slug} matches a lower-case slug (a-z, 0-9, _ and -).
+        $pattern = preg_replace_callback(
+            '#\{([a-z_]+)(:slug)?\}#',
+            static fn (array $m): string => '(?P<' . $m[1] . '>' . (isset($m[2]) ? '[a-z0-9_\-]+' : '[0-9]+') . ')',
+            $full,
+        );
         $this->routes[] = [
             'method' => $method,
             'regex' => '#^' . $pattern . '$#',

@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use EnergyFlow\Controllers\AlertController;
 use EnergyFlow\Controllers\AuthController;
+use EnergyFlow\Controllers\CommandController;
 use EnergyFlow\Controllers\CompanyController;
 use EnergyFlow\Controllers\DemoController;
 use EnergyFlow\Controllers\DeviceController;
@@ -11,7 +13,12 @@ use EnergyFlow\Controllers\IngestController;
 use EnergyFlow\Controllers\InternalController;
 use EnergyFlow\Controllers\LiveController;
 use EnergyFlow\Controllers\MachineController;
+use EnergyFlow\Controllers\NotificationController;
 use EnergyFlow\Controllers\OnboardingController;
+use EnergyFlow\Controllers\OpportunityController;
+use EnergyFlow\Controllers\PolicyController;
+use EnergyFlow\Controllers\ProveController;
+use EnergyFlow\Controllers\WasteController;
 use EnergyFlow\Core\Router;
 use EnergyFlow\Middleware\Authenticate;
 use EnergyFlow\Middleware\CronAuth;
@@ -55,8 +62,44 @@ $router->group('/api/v1', [], static function (Router $r): void {
             $r->get('/machines', [MachineController::class, 'index']);
             $r->get('/machines/{id}', [MachineController::class, 'show']);
             $r->get('/machines/{id}/timeseries', [MachineController::class, 'timeseries']);
+            $r->get('/machines/{id}/commands', [CommandController::class, 'forMachine']);
+            $r->post('/machines/{id}/commands', [CommandController::class, 'create'], [new RequireRole('manager')]);
+            $r->get('/commands', [CommandController::class, 'index']);
+            $r->get('/commands/{id}', [CommandController::class, 'show']);
+            $r->get('/recommendations', [OpportunityController::class, 'index']);
+            $r->get('/recommendations/{id}', [OpportunityController::class, 'show']);
+            $r->post('/recommendations/{id}/accept', [OpportunityController::class, 'accept'], [new RequireRole('manager')]);
+            $r->post('/recommendations/{id}/implemented', [OpportunityController::class, 'implemented'], [new RequireRole('manager')]);
+            $r->post('/recommendations/{id}/dismiss', [OpportunityController::class, 'dismiss'], [new RequireRole('manager')]);
+            $r->get('/what-if/options', [OpportunityController::class, 'options']);
+            $r->post('/what-if', [OpportunityController::class, 'whatIf']);
+            $r->get('/impact/summary', [ProveController::class, 'impact']);
+            $r->get('/impact/interventions/{id}', [ProveController::class, 'intervention']);
+            $r->get('/carbon/summary', [ProveController::class, 'carbonSummary']);
+            $r->get('/carbon/breakdown', [ProveController::class, 'carbonBreakdown']);
+            $r->get('/esg/vsme-b3', [ProveController::class, 'vsme']);
+            $r->get('/esg/readiness', [ProveController::class, 'readiness']);
+            $r->put('/esg/answers/{key:slug}', [ProveController::class, 'answer'], [new RequireRole('admin')]);
+            $r->get('/reports', [ProveController::class, 'reports']);
+            $r->post('/reports', [ProveController::class, 'createReport'], [new RequireRole('manager')]);
+            $r->get('/reports/{id}', [ProveController::class, 'report']);
+            $r->patch('/reports/{id}/narrative', [ProveController::class, 'narrative'], [new RequireRole('manager')]);
+            $r->post('/reports/{id}/finalize', [ProveController::class, 'finalize'], [new RequireRole('admin')]);
+            $r->get('/policies', [PolicyController::class, 'index']);
+            $r->patch('/policies/{id}', [PolicyController::class, 'update'], [new RequireRole('manager')]);
             $r->get('/devices', [DeviceController::class, 'index']);
             $r->get('/devices/{id}', [DeviceController::class, 'show']);
+
+            $r->get('/waste/summary', [WasteController::class, 'summary']);
+            $r->get('/waste-events', [WasteController::class, 'index']);
+            $r->get('/waste-events/{id}', [WasteController::class, 'show']);
+            $r->post('/waste-events/{id}/dismiss', [WasteController::class, 'dismiss'], [new RequireRole('manager')]);
+            $r->get('/alerts', [AlertController::class, 'index']);
+            $r->post('/alerts/{id}/acknowledge', [AlertController::class, 'acknowledge'], [new RequireRole('manager')]);
+            $r->post('/alerts/{id}/resolve', [AlertController::class, 'resolve'], [new RequireRole('manager')]);
+            $r->get('/notifications', [NotificationController::class, 'index']);
+            $r->post('/notifications/read-all', [NotificationController::class, 'readAll']);
+            $r->post('/notifications/{id}/read', [NotificationController::class, 'read']);
 
             $r->group('/demo', [RequireDemoAdmin::class], static function (Router $r): void {
                 $r->get('/state', [DemoController::class, 'state']);

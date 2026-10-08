@@ -9,6 +9,8 @@ use EnergyFlow\Core\Env;
 use EnergyFlow\Services\Auth\AuthService;
 use EnergyFlow\Services\Clock;
 use EnergyFlow\Services\Calendar\LocalTime;
+use EnergyFlow\Services\Control\PolicyEngine;
+use EnergyFlow\Services\Jobs\AnalyticsPipeline;
 use EnergyFlow\Services\Simulation\SimContext;
 use EnergyFlow\Services\Simulation\Simulator;
 use EnergyFlow\Services\Tariff\TariffBook;
@@ -60,9 +62,14 @@ final class DemoSeeder
         $source = WeatherService::ensure((int) $site['id'], (float) $site['latitude'], (float) $site['longitude'], $historyStart, $anchor + 2 * 86400);
         $log("Weather loaded ({$source}).");
 
+        // The accepted lighting policy acted every night it found the lights left on:
+        // those Turn Off commands are part of the history the simulator then follows.
+        Clock::forget($companyId);
+        $planned = PolicyEngine::planSimulated($companyId, $historyStart, $anchor + 1, $anchor);
+        $log("Planned {$planned} automatic Turn Off commands from the accepted policy.");
+
         // History as 15-minute buckets, then the last hour as live 10-second readings.
         $bucketsEnd = intdiv($anchor - 3600, 900) * 900;
-        Clock::forget($companyId);
         $context = SimContext::load($companyId, $historyStart, $anchor + 3600);
         $tariff = TariffBook::forCompany($companyId);
         $simulator = new Simulator($context, $tariff);
@@ -82,6 +89,9 @@ final class DemoSeeder
         Database::run('UPDATE sim_state SET last_generated_at = FROM_UNIXTIME(?) WHERE company_id = ?', [$anchor, $companyId]);
         Database::run("UPDATE devices SET status = 'online', last_seen_at = FROM_UNIXTIME(?) WHERE company_id = ? AND is_simulated = 1", [$anchor, $companyId]);
         $log('Generated ' . count($raw) . ' live readings for the last hour.');
+
+        $insights = AnalyticsPipeline::run($companyId, $anchor);
+        $log("Detected {$insights['waste_episodes']} waste episodes and {$insights['drift']} efficiency drift(s).");
 
         return ['company_id' => $companyId, 'owner_password' => $ids['owner_password']];
     }
@@ -184,6 +194,30 @@ final class DemoSeeder
                     [$deviceId, $channel, $machineIds[$code], $mode, $relay, $installed],
                 );
             }
+        }
+
+        // Optional real hardware on stage (tools/hw-bridge + a metering smart plug), only when the
+        // team has one: DEMO_HARDWARE_SERIAL=EF-101. It starts as "not connected yet" and gets data
+        // only from the device itself — the simulator never generates readings for it. The device
+        // secret is derived from the serial, so it survives every reset unchanged.
+        $hardwareSerial = Env::get('DEMO_HARDWARE_SERIAL');
+        if ($hardwareSerial !== null && preg_match('/^[A-Z0-9\-]{3,30}$/', $hardwareSerial)) {
+            $lampId = Database::insert(
+                "INSERT INTO machines (company_id, site_id, department_id, kind, code, name, type_code, rated_power_kw, phases, schedule_id,
+                                       criticality, control_mode, off_threshold_kw, idle_threshold_kw)
+                 VALUES (?, ?, ?, 'machine', 'LIVE-01', 'Workshop lamp (live hardware)', 'lighting', 0.1, 1, ?, 'normal', 'approve', 0.005, 0.005)",
+                [$companyId, $siteId, $departments['production'], $production],
+            );
+            $bridgeId = Database::insert(
+                "INSERT INTO devices (company_id, site_id, serial, model, key_hash, key_version, is_simulated, status, installed_at)
+                 VALUES (?, ?, ?, 'EF-Bridge', ?, 1, 0, 'provisioned', FROM_UNIXTIME(?))",
+                [$companyId, $siteId, $hardwareSerial, hash('sha256', DeviceSecrets::secretFor($hardwareSerial, 1)), $anchor],
+            );
+            Database::run(
+                "INSERT INTO device_channels (device_id, channel_no, machine_id, measurement_mode, has_relay, valid_from)
+                 VALUES (?, 1, ?, 'single_phase', 1, FROM_UNIXTIME(?))",
+                [$bridgeId, $lampId, $anchor],
+            );
         }
 
         // The story.

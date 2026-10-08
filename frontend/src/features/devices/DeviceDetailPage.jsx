@@ -1,12 +1,13 @@
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, Info, Power } from 'lucide-react'
+import { ArrowLeft, Info, Power, RadioTower, Server } from 'lucide-react'
 import { formatDate, formatNumber } from '../../lib/format'
 import { Badge } from '../../components/ui/Badge'
 import { Card, CardHeader } from '../../components/ui/Card'
 import { StateBadge } from '../../components/ui/StateBadge'
 import { Callout, EmptyState, ErrorState, Skeleton } from '../../components/ui/States'
 import { useDevice } from '../data'
+import { CommandsTable } from '../control/CommandsTable'
 import { DeviceStatus } from './DevicesPage'
 
 const value = (v, digits) => (v === null || v === undefined ? '—' : formatNumber(v, digits))
@@ -93,6 +94,30 @@ export function DeviceDetailPage() {
           </table>
         </div>
       </Card>
+
+      <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,4fr)_minmax(0,8fr)]">
+        {device.connection && (
+          <Card>
+            <CardHeader title={t('devicesPage.connection')} />
+            <div className="flex items-start gap-3 px-5 py-4 text-[13px] text-ink-2">
+              {device.connection.kind === 'simulated' ? <Server className="mt-0.5 size-4 shrink-0 text-ink-3" aria-hidden="true" /> : <RadioTower className="mt-0.5 size-4 shrink-0 text-ink-3" aria-hidden="true" />}
+              <p>
+                {device.connection.kind === 'simulated'
+                  ? t('devicesPage.connectionSimulated')
+                  : t('devicesPage.connectionPull', { seconds: device.connection.uplink_s })}
+              </p>
+            </div>
+          </Card>
+        )}
+        <Card className="overflow-hidden">
+          <CardHeader title={t('devicesPage.commandQueue')} />
+          {device.commands?.length ? (
+            <CommandsTable commands={device.commands} />
+          ) : (
+            <p className="px-5 py-4 text-[13px] text-ink-3">{t('devicesPage.noCommandsDevice')}</p>
+          )}
+        </Card>
+      </div>
     </>
   )
 }

@@ -12,10 +12,16 @@ final class EmissionFactors
     /** @var array<int, array> */
     private static array $cache = [];
 
-    /** @return array{id: int, value: float, unit: string, reference_year: int, methodology: string, source_name: string, source_url: ?string} */
+    /** @return array{id: int, value: float, unit: string, reference_year: int, methodology: string, source_name: string, source_url: ?string, region: ?string, notes: ?string} */
     public static function gridFactor(int $companyId): array
     {
         return self::$cache[$companyId] ??= self::resolve($companyId);
+    }
+
+    /** Same factor, for display: the Methodology panel shows its caveats in full. */
+    public static function details(int $companyId): array
+    {
+        return self::gridFactor($companyId);
     }
 
     private static function resolve(int $companyId): array
@@ -35,6 +41,8 @@ final class EmissionFactors
             'methodology' => $row['methodology'],
             'source_name' => $row['source_name'],
             'source_url' => $row['source_url'],
+            'region' => $row['region'],
+            'notes' => $row['notes'],
         ];
     }
 }

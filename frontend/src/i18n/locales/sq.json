@@ -13,7 +13,10 @@
     "optional": "opsionale",
     "done": "Kryer",
     "todo": "Për t'u bërë",
-    "open": "Hap"
+    "open": "Hap",
+    "close": "Mbyll",
+    "viewAll": "Shiko të gjitha",
+    "confirm": "Konfirmo"
   },
   "nav": {
     "overview": "Përmbledhje",
@@ -98,7 +101,21 @@
     "rate_limited": "Shumë përpjekje. Prit pak dhe provo përsëri.",
     "unauthenticated": "Kyçu për të vazhduar.",
     "forbidden": "Nuk ke leje për këtë veprim.",
-    "validation_failed": "Kontrollo fushat e shënuara."
+    "validation_failed": "Kontrollo fushat e shënuara.",
+    "machine_critical": "Kjo është makineri kritike — EnergyFlow nuk e fik kurrë.",
+    "control_monitor_only": "Kjo makineri është vetëm për monitorim.",
+    "no_relay": "Asnjë rele STOP në distancë nuk është e lidhur me këtë makineri.",
+    "already_off": "Makineria është tashmë e fikur.",
+    "command_pending": "Një komandë për këtë makineri është tashmë në proces.",
+    "machine_scheduled": "Kjo makineri është në orar pune tani. Konfirmo që prodhimi ka përfunduar.",
+    "no_live_data": "Asnjë e dhënë live nga kjo makineri tani.",
+    "not_controllable": "Ky matës nuk mund të fiket.",
+    "recommendation_state": "Për këtë mundësi është vendosur tashmë.",
+    "not_enough_data": "Kjo makineri nuk ka ende historik të mjaftueshëm.",
+    "no_leak_data": "Kompresori nuk ka punuar mjaftueshëm pa prodhim për të matur rrjedhjet.",
+    "action_not_applicable": "Ky ndryshim nuk vlen për këtë makineri.",
+    "report_final": "Ky raport është final dhe nuk mund të ndryshohet.",
+    "invalid_period": "Ai muaj nuk ka filluar ende."
   },
   "validation": {
     "required": "Kjo fushë është e detyrueshme.",
@@ -311,7 +328,8 @@
     },
     "scheduled": "Në orar",
     "offSchedule": "Jashtë orarit",
-    "noData": "Pa të dhëna live"
+    "noData": "Pa të dhëna live",
+    "review": "Shiko"
   },
   "overviewData": {
     "now": "Fuqia tani",
@@ -417,7 +435,12 @@
       "frequency": "Frekuenca",
       "temp": "Temp."
     },
-    "simulatedNote": "Nyje e simuluar: matjet vijnë nga simulatori i EnergyFlow dhe kalojnë nëpër të njëjtin proces si harduerin."
+    "simulatedNote": "Nyje e simuluar: matjet vijnë nga simulatori i EnergyFlow dhe kalojnë nëpër të njëjtin proces si harduerin.",
+    "connection": "Lidhja",
+    "connectionSimulated": "Nyje e simuluar në serverin e EnergyFlow. Komandat kalojnë të njëjtën rrugë si në harduer dhe verifikohen nga matjet.",
+    "connectionPull": "Protokolli i nënshkruar i pajisjes v1: HMAC-SHA256, dërgim çdo {{seconds}} s, komandat merren nga pajisja (punon pas NAT).",
+    "commandQueue": "Radha e komandave",
+    "noCommandsDevice": "Ende nuk janë dërguar komanda në këtë pajisje."
   },
   "calendar": {
     "months": [
@@ -474,5 +497,719 @@
     "hoursAgo": "{{count}} orë më parë",
     "daysAgo_one": "{{count}} ditë më parë",
     "daysAgo_other": "{{count}} ditë më parë"
+  },
+  "periods": {
+    "today": "Sot",
+    "7d": "7 ditë",
+    "mtd": "Ky muaj",
+    "30d": "30 ditë",
+    "ytd": "Ky vit"
+  },
+  "severity": {
+    "critical": "Kritike",
+    "warning": "Paralajmërim",
+    "info": "Info"
+  },
+  "method": {
+    "rule": "Rregull",
+    "statistical": "Statistikore",
+    "pattern": "Mostër",
+    "ml": "ML",
+    "llm": "LLM",
+    "data": "Të dhëna"
+  },
+  "wasteTypes": {
+    "after_hours": "Pas orarit",
+    "idle": "Në pritje gjatë prodhimit",
+    "excess_vs_baseline": "Rënie e efikasitetit"
+  },
+  "wastePage": {
+    "subtitle": "Ku u humb energjia, pse dhe sa kushtoi.",
+    "tabs": {
+      "waste": "Humbjet",
+      "alerts": "Alarmet"
+    },
+    "tiles": {
+      "kwh": "Humbje",
+      "eur": "Kostoja e humbjeve",
+      "co2": "CO₂e nga humbjet",
+      "share": "Pjesa e konsumit"
+    },
+    "shareContext": "nga {{kwh}} të konsumuara",
+    "eventsContext_one": "{{count}} ngjarje",
+    "eventsContext_other": "{{count}} ngjarje",
+    "vsPrevious": "{{value}} krahasuar me periudhën e mëparshme",
+    "dailyTitle": "Humbjet për ditë",
+    "byType": "Sipas llojit",
+    "byMachine": "Sipas makinerisë",
+    "eventsTitle": "Ngjarjet e humbjeve",
+    "table": {
+      "machine": "Makineria",
+      "type": "Lloji",
+      "when": "Kur",
+      "duration": "Kohëzgjatja",
+      "energy": "Energjia",
+      "cost": "Kostoja",
+      "co2": "CO₂e",
+      "severity": "Rëndësia",
+      "status": "Statusi"
+    },
+    "status": {
+      "ongoing": "Në vazhdim",
+      "ended": "Përfunduar",
+      "acted": "U veprua",
+      "dismissed": "Shpërfillur"
+    },
+    "emptyTitle": "Asnjë humbje në këtë periudhë",
+    "emptyBody": "Asnjë makineri nuk punoi jashtë orarit, nuk qëndroi në pritje gjatë prodhimit dhe nuk u largua nga referenca e saj.",
+    "running": "Punon prej {{duration}}"
+  },
+  "wasteDetail": {
+    "title": {
+      "after_hours": "{{machine}} punoi pas orarit",
+      "idle": "{{machine}} qëndroi në pritje gjatë prodhimit",
+      "excess_vs_baseline": "{{machine}} kërkon më shumë fuqi për të njëjtën punë"
+    },
+    "ongoing": "Ende punon · {{duration}} pasi mbaroi ndërrimi në {{time}}",
+    "ongoingIdle": "Ende në pritje · prej {{duration}}",
+    "ended": "{{from}} – {{to}} · {{duration}}",
+    "drift": "Që nga {{date}} · fuqia gjatë punës {{pct}} mbi referencën",
+    "projection": "Nëse vazhdon të punojë deri në {{time}}: {{kwh}} · {{eur}} · {{co2}}",
+    "energy": "Energjia",
+    "cost": "Kostoja",
+    "co2": "CO₂e",
+    "chartPower": "Fuqia (kW)",
+    "chartRunning": "Fuqia gjatë punës për ditë (kW)",
+    "shiftEnd": "Mbaroi ndërrimi",
+    "reference": "Referenca",
+    "why": "Pse po e shoh këtë?",
+    "rule": {
+      "after_hours": "Fuqi mbi {{kw}} jashtë orarit të punës për të paktën {{min}} minuta. Ndërrimet shtesë të regjistruara llogariten si kohë pune.",
+      "idle": "Në pritje për të paktën {{min}} minuta gjatë orarit të prodhimit, jashtë {{warmup}} minutave të para të ndërrimit (ngrohja).",
+      "cusum": "Fuqia mesatare kur makineria punon plotësisht, krahasuar me {{days}} ditët e para të të dhënave të saj. Testi CUSUM i njëanshëm (k = {{k}}, h = {{h}}) konfirmon se rritja është e qëndrueshme, jo zhurmë."
+    },
+    "observed": "Fuqia mesatare {{kw}} · maksimumi {{max}}",
+    "leak": "I ngarkuar {{share}} të kohës pa kërkesë nga prodhimi, me {{cycles}} cikle në orë. Kjo është shenja tipike e rrjedhjeve të ajrit të kompresuar.",
+    "tariff": "Llogaritur me tarifën margjinale: {{high}} × {{rateHigh}} (ditë) + {{low}} × {{rateLow}} (natë), pa TVSH.",
+    "factor": "CO₂e me {{value}} kg/kWh · {{source}}.",
+    "referenceLine": "Referenca {{ref}} ({{from}} – {{to}}) · 7 ditët e fundit {{recent}}",
+    "cusum": "Rritja nisi rreth {{onset}} dhe u konfirmua statistikisht më {{alarm}}.",
+    "openMachine": "Hap makinerinë",
+    "dismiss": "Shpërfill…",
+    "dismissTitle": "Ta shpërfillim këtë ngjarje?",
+    "dismissReason": "Arsyeja",
+    "dismissHint": "Për shembull një punë e planifikuar mirëmbajtjeje. Ngjarjet e shpërfillura nuk llogariten më si humbje.",
+    "dismissConfirm": "Shpërfill ngjarjen",
+    "dismissed": "Shpërfillur: {{reason}}",
+    "acted": "U fik nga EnergyFlow.",
+    "readOnly": "Roli yt mund ta shohë, por jo ta ndryshojë këtë ngjarje.",
+    "titleOngoing": {
+      "after_hours": "{{machine}} po punon pas orarit",
+      "idle": "{{machine}} është në pritje gjatë prodhimit",
+      "excess_vs_baseline": "{{machine}} kërkon më shumë fuqi për të njëjtën punë"
+    },
+    "seeOpportunity": "Shiko zgjidhjen"
+  },
+  "alertsTab": {
+    "filters": {
+      "active": "Aktive",
+      "resolved": "Të zgjidhura",
+      "all": "Të gjitha"
+    },
+    "table": {
+      "severity": "Rëndësia",
+      "alert": "Alarmi",
+      "opened": "Hapur",
+      "status": "Statusi"
+    },
+    "status": {
+      "open": "I hapur",
+      "acknowledged": "I pranuar",
+      "resolved": "I zgjidhur"
+    },
+    "acknowledge": "Prano",
+    "acknowledgedBy": "nga {{name}}",
+    "emptyTitle": "Asnjë alarm këtu",
+    "emptyBody": "EnergyFlow ngre alarm kur diçka kërkon vëmendje: një makineri që punon pas orarit, një rënie efikasiteti ose një pajisje që ndaloi raportimin."
+  },
+  "alertText": {
+    "after_hours": "{{machine}} punoi pas orarit",
+    "after_hours_detail": "{{duration}} · {{kwh}} · {{eur}}",
+    "leak": "shenjë rrjedhjeje ajri",
+    "idle": "{{machine}} qëndroi në pritje gjatë prodhimit",
+    "idle_detail": "{{duration}} · {{kwh}} · {{eur}}",
+    "drift": "{{machine}}: fuqia gjatë punës {{pct}} mbi referencën",
+    "drift_detail": "Që nga {{date}} · {{kwh}} · {{eur}} shtesë",
+    "device_offline": "{{serial}} ndaloi raportimin",
+    "device_offline_detail": "Matja e fundit {{date}}",
+    "command_failed": "Fikja nuk u konfirmua për {{machine}}",
+    "command_failed_detail": "{{serial}} · {{reason}}"
+  },
+  "notifications": {
+    "markAllRead": "Shëno të gjitha si të lexuara",
+    "alert_after_hours": "{{machine}} po punon pas orarit",
+    "alert_after_hours_escalated": "{{machine}} pas orarit: tani {{eur}}",
+    "alert_idle": "{{machine}} është në pritje gjatë prodhimit",
+    "alert_idle_escalated": "{{machine}} në pritje: tani {{eur}}",
+    "alert_drift": "{{machine}} kërkon {{pct}} më shumë fuqi gjatë punës",
+    "alert_drift_escalated": "Rënia e efikasitetit të {{machine}} tani {{pct}}",
+    "alert_device_offline": "{{serial}} ndaloi raportimin",
+    "alert_device_offline_escalated": "{{serial}} është ende offline",
+    "command_verified": "{{machine}} u fik · u verifikua nga matësi",
+    "impact_verified": "Kursime të verifikuara për {{code}}: {{kwh}} · {{eur}} në {{days}} ditë"
+  },
+  "overviewAlerts": {
+    "title": "Alarmet e hapura",
+    "empty": "Asnjë alarm i hapur. EnergyFlow do të të njoftojë kur diçka kërkon vëmendje."
+  },
+  "machineInsights": {
+    "title": "Çfarë sheh EnergyFlow",
+    "empty": "Asgjë e pazakontë në 30 ditët e fundit.",
+    "afterHoursWeek": "Punoi {{duration}} jashtë orarit në 7 ditët e fundit: {{eur}}.",
+    "open": "Hap"
+  },
+  "control": {
+    "turnOff": "Fik",
+    "turnOffMachine": "Fik {{machine}}",
+    "dialogTitle": "Ta fikim {{machine}}?",
+    "consequence": {
+      "compressor": "Ajri i kompresuar ndalet për të gjithë hallën.",
+      "injection_moulding": "Makina e injektimit ndalet. Ngrohësit ftohen dhe duhet ngrohje para prodhimit të radhës.",
+      "lighting": "Dritat e hallës fiken.",
+      "pump": "Uji i procesit ndalon së qarkulluari.",
+      "chiller": "Ftohja e kallëpeve ndalet.",
+      "hvac": "Ngrohja dhe ftohja e zyrës dhe magazinës ndalen.",
+      "default": "Makineria ndalet."
+    },
+    "afterHours": "Orari mbaroi në {{time}} · punon {{duration}} pas orarit · {{eur}} deri tani.",
+    "projection": "Nëse lihet ndezur deri në {{time}} do të kushtojë rreth {{eur}} më shumë.",
+    "scheduledWarning": "Kjo makineri është në orar pune tani. Fike vetëm nëse prodhimi ka përfunduar.",
+    "confirmScheduled": "Prodhimi në këtë makineri ka përfunduar",
+    "safety": "EnergyFlow hap kontaktin STOP në distancë në {{serial}} · CH{{channel}}. Ai vetëm e ndal makinerinë: rindezja bëhet me butonin START të vetë makinerisë.",
+    "simulatedNode": "Nyje e simuluar: komanda kalon të njëjtën rrugë dhe verifikohet njësoj si në harduer.",
+    "sending": "Duke fikur…",
+    "verifiedToast": "{{machine}} u fik",
+    "verifiedToastBody": "Komanda u dërgua · u verifikua nga matësi në {{seconds}} s",
+    "failedToast": "{{machine}} nuk u fik",
+    "done": "Gati",
+    "inProgress": "Duke u fikur",
+    "verifiedIn": "Verifikuar në {{seconds}} s",
+    "reasons": {
+      "machine_critical": "Makineri kritike — EnergyFlow nuk e fik kurrë.",
+      "control_monitor_only": "Vetëm monitorim: EnergyFlow nuk mund të veprojë në këtë makineri.",
+      "no_relay": "Asnjë rele STOP në distancë nuk është e lidhur me këtë makineri.",
+      "already_off": "Makineria është tashmë e fikur.",
+      "command_pending": "Një komandë është tashmë në proces.",
+      "no_live_data": "Asnjë e dhënë live nga kjo makineri tani.",
+      "not_controllable": "Matësi kryesor nuk mund të fiket.",
+      "read_only": "Roli yt mund të shohë, por jo të veprojë."
+    }
+  },
+  "commandSteps": {
+    "queued": "Komanda në radhë",
+    "sent": "U mor nga {{serial}}",
+    "executed": "Releja u hap (STOP në distancë)",
+    "verified": "Matësi konfirmon {{kw}}",
+    "waitingSent": "Në pritje të dërgimit të radhës nga nyja",
+    "waitingExecuted": "Në pritje të reles",
+    "waitingVerified": "Në pritje të konfirmimit nga matësi",
+    "failed": "Nuk u konfirmua: {{reason}}"
+  },
+  "commandStatus": {
+    "queued": "Në radhë",
+    "sent": "Dërguar",
+    "acknowledged": "Pranuar",
+    "executed": "Ekzekutuar",
+    "verified": "Verifikuar",
+    "failed": "Dështoi",
+    "cancelled": "Anuluar"
+  },
+  "commandFailure": {
+    "power_did_not_drop": "fuqia nuk ra",
+    "no_readings": "asnjë matje pas ndalimit",
+    "no_response": "pajisja nuk u përgjigj",
+    "device_offline": "pajisja është offline",
+    "device_reported": "pajisja raportoi defekt"
+  },
+  "automationsPage": {
+    "subtitle": "Çfarë mund të bëjë EnergyFlow vetë dhe çdo komandë që dërgoi — me konfirmimin e matësit.",
+    "policies": "Rregullat",
+    "commands": "Regjistri i komandave",
+    "policyTable": {
+      "machine": "Makineria",
+      "rule": "Rregulli",
+      "mode": "Mënyra",
+      "since": "Që nga",
+      "triggered": "Herë të aktivizuara",
+      "savings": "Kursime të verifikuara",
+      "active": "Aktiv"
+    },
+    "rule": {
+      "auto_off_after_schedule": "Fik {{min}} min pasi mbaron orari",
+      "idle_standby": "Në pritje pas mospunimit",
+      "tou_shift": "Puno me tarifën e natës",
+      "stagger_start": "Ndezje të shkallëzuara"
+    },
+    "modes": {
+      "auto": "Automatik",
+      "approve": "Pyet më parë",
+      "notify": "Vetëm njofto"
+    },
+    "collecting": "Duke mbledhur të dhëna",
+    "noPolicies": "Ende nuk ka automatizime. Pranimi i një mundësie krijon një të tillë këtu.",
+    "commandTable": {
+      "time": "Koha",
+      "machine": "Makineria",
+      "command": "Komanda",
+      "source": "Burimi",
+      "status": "Statusi",
+      "power": "Fuqia para → pas"
+    },
+    "sourcePolicy": "Rregull · fikje automatike",
+    "sourceUser": "{{name}}",
+    "simulatedHistory": "histori e simuluar",
+    "noCommands": "Ende nuk ka komanda. Veprimet Fik dhe komandat e rregullave shfaqen këtu me verifikimin e tyre.",
+    "toggleOn": "Aktivizo rregullin",
+    "toggleOff": "Pezullo rregullin"
+  },
+  "opportunities": {
+    "subtitle": "Kursime të renditura sipas € dhe CO₂, secila e llogaritur duke riluajtur të dhënat e tua.",
+    "potential": "Potenciali i hapur",
+    "potentialValue": "{{eur}} · {{kwh}} · {{co2}} në muaj",
+    "potentialContext_one": "{{count}} mundësi e hapur",
+    "potentialContext_other": "{{count}} mundësi të hapura",
+    "recommended": "Të rekomanduara",
+    "inProgress": "Të pranuara dhe të zbatuara",
+    "dismissedTitle": "Të shpërfillura",
+    "emptyOpen": "Asnjë mundësi e hapur tani. EnergyFlow i kontrollon të dhënat çdo orë.",
+    "perMonth": "në muaj",
+    "perYear": "në vit",
+    "title": {
+      "after_hours_schedule": "Fik {{code}} automatikisht pas ndërrimit",
+      "compressed_air_leak": "Gjej dhe riparo rrjedhjet e ajrit në {{code}}",
+      "efficiency_drift": "Servisim për {{code}}: kërkon {{pct}}% më shumë fuqi",
+      "tou_shift": "Puno me {{code}} në tarifën e natës"
+    },
+    "body": {
+      "after_hours_schedule": "{{machine}} punoi pas orarit {{episodes}} herë në 14 ditët e fundit. Fikja automatike {{grace}} min pas mbarimit të orarit e ndal, përveç kur regjistrohet ndërrim shtesë.",
+      "compressed_air_leak": "Pa prodhim, {{machine}} ngarkohet ende {{leak}}% të kohës: ajri po rrjedh nga rrjeti. Riparimi i rrjedhjeve e ul këtë ngarkesë sa herë punon kompresori.",
+      "efficiency_drift": "{{machine}} merr {{pct}}% më shumë fuqi gjatë punës se në periudhën referuese. Shkaqe tipike për t'u kontrolluar: konsumimi i pompës hidraulike, valvula që rrjedhin, ngrohësit.",
+      "tou_shift": "Zhvendosja e {{share}}% të energjisë nga tarifa e ditës në atë të natës kursen para. Nuk e ul CO₂: faktori i rrjetit të Kosovës është mesatare vjetore."
+    },
+    "band": {
+      "high": "Përparësi e lartë",
+      "medium": "Përparësi mesatare",
+      "optimization": "Optimizim"
+    },
+    "tag": {
+      "eur_co2": "€ + CO₂",
+      "eur": "Vetëm €",
+      "co2": "CO₂",
+      "peak": "Kulmi"
+    },
+    "effort": {
+      "low": "Përpjekje e vogël",
+      "medium": "Përpjekje mesatare",
+      "high": "Përpjekje e madhe"
+    },
+    "capex": {
+      "none": "Pa investim",
+      "low": "Investim i vogël",
+      "medium": "Investim mesatar",
+      "high": "Investim i madh"
+    },
+    "confidence": "Besueshmëria {{pct}}",
+    "status": {
+      "proposed": "E rekomanduar",
+      "accepted": "Për t'u bërë",
+      "implemented": "E zbatuar",
+      "verified": "E verifikuar",
+      "dismissed": "E shpërfillur"
+    },
+    "simulate": "Simulo",
+    "accept": "Prano",
+    "dismiss": "Shpërfill",
+    "markDone": "Shëno si të kryer",
+    "viewAutomation": "Shiko automatizimin",
+    "details": "Detajet",
+    "replayTitle": "30 ditët e fundit, të riluajtura",
+    "evidenceTitle": "Pse e sugjeron EnergyFlow",
+    "assumptionsTitle": "Si llogaritet",
+    "evidence": {
+      "episodes": "{{count}} raste pune pas orarit në 14 ditë, gjithsej {{kwh}}.",
+      "leak": "Shenjë rrjedhjeje në {{nights}} netë në 30 ditë: i ngarkuar {{share}} të kohës pa prodhim.",
+      "drift": "Fuqia gjatë punës {{pct}}% mbi referencën prej {{ref}} që nga {{since}}.",
+      "tou": "{{kwh}} nga {{total}} në 30 ditët e fundit u konsumuan në tarifën e ditës."
+    },
+    "acceptTitle": "Ta pranojmë këtë mundësi?",
+    "acceptPolicy": "Pranimi krijon një automatizim: {{code}} fiket {{grace}} min pasi mbaron orari, i verifikuar nga matësi çdo herë. Fillon tani dhe kjo është pika e nisjes për dëshminë para/pas.",
+    "acceptTask": "Pranimi e shton në listën tënde. Shënoje si të kryer kur të përfundojë puna: kjo nis matjen para/pas.",
+    "mode": "Si duhet të veprojë EnergyFlow?",
+    "modes": {
+      "auto": "Automatikisht, dhe të më raportojë",
+      "approve": "Të më pyesë më parë (alarm me butonin Fik)",
+      "notify": "Vetëm të më njoftojë"
+    },
+    "acceptConfirm": "Prano",
+    "dismissTitle": "Ta shpërfillim këtë mundësi?",
+    "dismissHint": "EnergyFlow nuk do ta sugjerojë më për 30 ditë. Arsyeja e ndihmon të mësojë çfarë nuk përshtatet.",
+    "dismissed": "Shpërfillur: {{reason}}",
+    "acceptedBy": "Pranuar nga {{name}} më {{date}}"
+  },
+  "whatIf": {
+    "title": "Simulatori \"po sikur\"",
+    "subtitle": "Zgjidh një makineri dhe një ndryshim. EnergyFlow i riluan {{days}} ditët e fundit të asaj makinerie me ndryshimin të zbatuar.",
+    "machine": "Makineria",
+    "action": "Ndryshimi",
+    "window": "Historiku",
+    "actions": {
+      "auto_off_after_schedule": "Fik pas ndërrimit",
+      "leak_repair": "Riparo rrjedhjet e ajrit",
+      "efficiency_restore": "Rikthe efikasitetin (servisim)",
+      "tou_shift": "Puno në tarifën e natës"
+    },
+    "params": {
+      "grace_min": "Kohë shtesë pas mbarimit të orarit",
+      "repair_share": "Pjesa e rrjedhjeve të riparuara",
+      "improvement_pct": "Ulja e fuqisë gjatë punës",
+      "shift_share": "Pjesa e zhvendosur në tarifën e natës"
+    },
+    "minutes": "{{count}} min",
+    "days": "{{count}} ditë",
+    "today": "Siç punoi",
+    "with": "Me ndryshimin",
+    "saving": "Kursimi",
+    "energy": "Energjia",
+    "cost": "Kostoja",
+    "co2": "CO₂e",
+    "perMonth": "Në muaj",
+    "perYear": "Në vit",
+    "legendActual": "Siç punoi",
+    "legendScenario": "Me ndryshimin",
+    "chartUnit": "kWh në ditë",
+    "assumption": {
+      "auto_off": "Makineria fiket {{grace}} min pasi mbaron orari. Koha shtesë vazhdon të punojë.",
+      "overrides_respected": "Ndërrimet shtesë të regjistruara dhe shtypjet e HOLD llogariten si kohë pune dhe nuk fiken kurrë.",
+      "leak_measured": "E matur: pa prodhim kompresori ngarkohet {{share}} të kohës (i ngarkuar {{loaded}}, i shkarkuar {{unloaded}}).",
+      "leak_repair": "Supozim: riparohen {{share}} e rrjedhjeve.",
+      "efficiency_measured": "E matur: fuqia gjatë punës është {{pct}}% mbi referencën. Servisimi e rikthen.",
+      "efficiency_assumed": "Supozim: fuqia gjatë punës ulet {{pct}}%.",
+      "tou_shift": "Supozim: {{share}} e energjisë së ditës mund të punojë në tarifën e natës."
+    },
+    "caveat": {
+      "tou_no_co2": "Kursen para, jo CO₂: faktori i emetimit të Kosovës (Ember 2025) është mesatare vjetore, kështu që zhvendosja natën nuk i ndryshon emetimet.",
+      "seasonal": "Ngrohja dhe ftohja varen nga moti: shifra vjetore është vetëm një ekstrapolim i përafërt."
+    },
+    "error": {
+      "not_enough_data": "Kjo makineri nuk ka ende historik të mjaftueshëm.",
+      "no_leak_data": "Kompresori nuk ka punuar mjaftueshëm pa prodhim për të matur rrjedhjet.",
+      "action_not_applicable": "Ky ndryshim nuk vlen për këtë makineri."
+    },
+    "pick": "Zgjidh një makineri për të filluar."
+  },
+  "overviewOpportunities": {
+    "title": "Mundësitë kryesore",
+    "empty": "Asnjë mundësi e hapur tani."
+  },
+  "impactPage": {
+    "subtitle": "Dëshmi që veprimet kursyen energji: e matur dhe e rregulluar sipas ditëve të punës.",
+    "adjusted": "E rregulluar (rekomandohet)",
+    "raw": "E papërpunuar",
+    "before": "Para",
+    "after": "Pas",
+    "energy": "Energjia",
+    "cost": "Kostoja",
+    "co2": "CO₂e",
+    "beforeHint": "Sa do të kishin konsumuar makineritë pa veprimet",
+    "beforeHintRaw": "Mesatarja e periudhës bazë × i njëjti numër ditësh",
+    "afterHint": "Çfarë matën matësit",
+    "delta": "{{share}} më pak energji · {{eur}} · {{co2}} të shmangura",
+    "ci": "± {{kwh}} (besueshmëri 90 %)",
+    "verifiedTotal": "Kursime të verifikuara deri tani",
+    "interventions": "Ndërhyrjet",
+    "table": {
+      "machine": "Makineria",
+      "action": "Veprimi",
+      "since": "Që nga",
+      "period": "E matur",
+      "savings": "Energji e kursyer",
+      "eur": "Kosto e kursyer",
+      "co2": "CO₂e e shmangur",
+      "status": "Statusi"
+    },
+    "days": "{{count}} ditë",
+    "status": {
+      "verified": "E verifikuar",
+      "collecting": "Duke mbledhur të dhëna ({{days}}/{{min}} ditë)",
+      "inconclusive": "Ende jo domethënëse"
+    },
+    "actions": {
+      "auto_off_after_schedule": "Fikje automatike {{grace}} min pas mbarimit të orarit",
+      "EfficiencyDrift": "Servisim (efikasiteti u rikthye)",
+      "CompressedAirLeak": "Rrjedhjet e ajrit u riparuan"
+    },
+    "chartTitle": "{{machine}}: energjia ditore para dhe pas",
+    "legendActual": "E matur",
+    "legendModel": "Modeli bazë (i rregulluar)",
+    "marker": "Veprimi u zbatua",
+    "how": "Si e llogarisim",
+    "howItems": {
+      "baseline": "Baza: {{days}} ditët para veprimit.",
+      "model": "Modeli: energjia mesatare ditore për çdo lloj dite, sipas orëve të planifikuara të makinerisë ({{types}}).",
+      "adjusted": "Baza e rregulluar: modeli i zbatuar në ditët pas veprimit, që një javë me festë të krahasohet drejt.",
+      "savings": "Kursimi = baza e rregulluar − e matura, me interval besueshmërie 90 % nga luhatja ditore e bazës.",
+      "verified": "Verifikohet kur maten të paktën {{min}} ditë dhe skaji i poshtëm i intervalit është mbi zero.",
+      "valuation": "€ sipas përzierjes ditë/natë të tarifave margjinale; CO₂e me faktorin e rrjetit.",
+      "label": "I frymëzuar nga IPMVP (Opsioni B, me nën-matës). Nuk është M&V e certifikuar."
+    },
+    "dayType": "{{hours}} orë",
+    "emptyTitle": "Ende s'ka çfarë të dëshmohet",
+    "emptyBody": "Prano një mundësi ose aktivizo një automatizim. Pas 7 ditësh, kursimet maten dhe verifikohen këtu."
+  },
+  "carbonPage": {
+    "subtitle": "Emetimet nga energjia elektrike e matur, të dhënat VSME dhe si llogariten.",
+    "tabs": {
+      "overview": "Përmbledhje",
+      "breakdown": "Ndarja",
+      "vsme": "VSME B3",
+      "readiness": "Gatishmëria",
+      "methodology": "Metodologjia"
+    },
+    "tiles": {
+      "scope2": "CO₂e nga energjia elektrike",
+      "scope2Context": "Scope 2, sipas vendndodhjes",
+      "intensity": "Intensiteti i karbonit",
+      "intensityUnit": "kg CO₂e / 1 000 €",
+      "intensityContext": "në vit, për qarkullim",
+      "intensityMissing": "Shto qarkullimin te Cilësimet",
+      "avoided": "E shmangur (e verifikuar)",
+      "avoidedContext": "nga veprimet, e matur",
+      "electricity": "Energjia elektrike"
+    },
+    "factorChip": "{{value}} kg CO₂e/kWh · {{source}} · {{methodology}}",
+    "monthlyTitle": "CO₂e për muaj",
+    "monthlyUnit": "t CO₂e",
+    "partialMonth": "{{days}} ditë të matura",
+    "scopes": "Fushat (scopes)",
+    "scope1": "Scope 1 · karburante të djegura në vend",
+    "scope1Missing": "Ende e paraportuar. Deklaro përdorimin e karburantit (gjenerator, pirunë, naftë ngrohjeje) — ose që nuk ka — te Gatishmëria.",
+    "scope1None": "E deklaruar: nuk digjet karburant në vend.",
+    "scope2Location": "Scope 2 · sipas vendndodhjes",
+    "scope2Market": "Scope 2 · sipas tregut",
+    "scope2MarketNa": "Jo e disponueshme: nuk ka faktor të publikuar të përzierjes së mbetur për Kosovën dhe asnjë blerje të certifikuar të rinovueshme.",
+    "groupBy": {
+      "machine": "Sipas makinerisë",
+      "department": "Sipas departamentit",
+      "tariff_period": "Sipas tarifës"
+    },
+    "unmonitored": "Ngarkesa të pamonitoruara",
+    "tariffHigh": "Tarifa e ditës",
+    "tariffLow": "Tarifa e natës",
+    "tariffNote": "I njëjti faktor çdo orë: zhvendosja e ngarkesës në tarifën e natës ul faturën, jo CO₂e.",
+    "vsmeTitle": "Moduli bazë VSME · B3 Energjia dhe emetimet e gazeve serrë",
+    "vsmeYear": "Viti {{year}}",
+    "vsmeDisclaimer": "Përgatitur nga të dhëna të matura. Kontrolloji të dhënat me tekstin e EFRAG VSME para se t'i ndash.",
+    "partialYear": "Matur që nga {{date}}: viti nuk është i plotë.",
+    "vsmeTable": {
+      "datapoint": "Treguesi",
+      "value": "Vlera",
+      "status": "Statusi",
+      "note": "Burimi / shënim"
+    },
+    "vsme": {
+      "electricity_grid": "Energji elektrike nga rrjeti",
+      "electricity_renewable_share": "Pjesa e rinovueshme e kësaj energjie",
+      "self_generated": "Energji elektrike e prodhuar vetë",
+      "fuels": "Karburante të djegura në vend",
+      "energy_total": "Konsumi total i energjisë",
+      "scope1": "Emetimet bruto Scope 1",
+      "scope2_location": "Emetimet bruto Scope 2 (sipas vendndodhjes)",
+      "scope2_market": "Emetimet bruto Scope 2 (sipas tregut)",
+      "ghg_total": "Emetimet totale (Scope 1 + 2)",
+      "ghg_intensity": "Intensiteti i emetimeve për qarkullim"
+    },
+    "statusChip": {
+      "auto": "Automatike",
+      "manual": "Manuale",
+      "estimated": "E vlerësuar",
+      "missing": "Mungon",
+      "not_available": "Jo e disponueshme"
+    },
+    "notes": {
+      "metered": "Matësit e EnergyFlow",
+      "metered_factor": "Matësit e EnergyFlow × faktori i rrjetit",
+      "supplier": "Duhet përzierja e energjisë nga furnizuesi",
+      "declaration": "Deklarata jote",
+      "market": "Nuk ka përzierje të mbetur për Kosovën",
+      "turnover": "Qarkullimi nga profili i kompanisë",
+      "partial_year": "pjesa e matur e vitit",
+      "supplier_mix": "nuk shfaqet në faturë",
+      "electricity_only": "vetëm energjia elektrike deri sa të deklarohen karburantet",
+      "no_residual_mix": "",
+      "scope2_only": "vetëm Scope 2 deri sa të deklarohet Scope 1"
+    },
+    "readinessTitle": "Gatishmëria ESG",
+    "readinessBody": "Sa nga ato që kërkojnë bankat dhe blerësit e BE-së (VSME B1–B3) mund t'i përgjigjesh tashmë.",
+    "nextSteps": "3 hapat e ardhshëm",
+    "groups": {
+      "B1": "B1 · Të dhënat bazë",
+      "B2": "B2 · Praktikat",
+      "B3": "B3 · Të dhënat e energjisë dhe emetimeve"
+    },
+    "items": {
+      "legal_form": "Forma juridike",
+      "business_number": "Numri i biznesit (NUI)",
+      "nace_code": "Sektori (kodi NACE)",
+      "employees": "Numri i punonjësve",
+      "turnover": "Qarkullimi vjetor",
+      "energy_policy": "Politikë e shkruar e energjisë",
+      "reduction_target": "Objektiv për uljen e energjisë ose emetimeve",
+      "schedules": "Orari i punës i përcaktuar",
+      "automation": "Të paktën një automatizim aktiv",
+      "maintenance_plan": "Plan mirëmbajtjeje për makineritë kryesore",
+      "electricity_metered": "Energjia elektrike e matur për makineri",
+      "coverage": "Nën-matësit mbulojnë ≥ 80 % të matësit kryesor",
+      "factor": "Faktori i emetimit i zgjedhur",
+      "fuels": "Përdorimi i karburantit i deklaruar (ose asnjë)",
+      "onsite_generation": "Prodhimi në vend i deklaruar (ose asnjë)"
+    },
+    "answerHint": {
+      "energy_policy": "Kemi politikë të shkruar të energjisë",
+      "reduction_target": "Kemi vendosur objektiv uljeje",
+      "maintenance_plan": "Ndjekim plan mirëmbajtjeje",
+      "fuels": "Nuk djegim karburant në vend (pa gjenerator, pirunë apo naftë ngrohjeje)",
+      "onsite_generation": "Nuk prodhojmë energji elektrike në vend (pa panele diellore)"
+    },
+    "goTo": {
+      "company": "Cilësimet",
+      "auto": "Automatike"
+    },
+    "methodology": {
+      "factorTitle": "Faktori i emetimit të rrjetit",
+      "factorBody": "{{value}} kg CO₂e për kWh · {{source}} · viti i referencës {{year}} · {{methodology}}.",
+      "caveatsTitle": "Kufizimet",
+      "caveats": {
+        "lifecycle": "Faktor i ciklit jetësor: Ember zbaton vlera standarde për çdo lëndë djegëse, jo matje nga termocentralet me linjit të Kosovës. Raportimi Scope 2 sipas GHG Protocol shpesh përdor faktorë vetëm të djegies; të dy ndryshojnë.",
+        "generation": "Sipas prodhimit: përshkruan energjinë e prodhuar në Kosovë; importet dhe eksportet nuk pasqyrohen.",
+        "annual": "Mesatare vjetore: nuk ndryshon sipas orës, prandaj zhvendosja në tarifën e natës kursen para, jo CO₂e."
+      },
+      "scopesTitle": "Fushat",
+      "scope1": "Scope 1: karburantet që djeg (gjeneratorë, pirunë, ngrohje). Të deklaruara nga ti.",
+      "scope2": "Scope 2: energjia elektrike që blen. Sipas vendndodhjes = kWh e matur × faktori i rrjetit.",
+      "mvTitle": "Kursimet e matura",
+      "mv": "Çdo veprim krahasohet me një bazë të rregulluar (28 ditë para, sipas llojit të ditës) me interval besueshmërie 90 % — i frymëzuar nga IPMVP, Opsioni B. Nuk është M&V e certifikuar.",
+      "coverageTitle": "Mbulimi i të dhënave",
+      "coverage": "Makineritë në matësit e EnergyFlow përbëjnë {{share}} të matësit kryesor në 30 ditët e fundit.",
+      "simulatedTitle": "Të dhëna të simuluara",
+      "simulated": "Kjo është një kompani demo fiktive. Makineritë e saj janë të simuluara (me motin real të Prishtinës dhe tarifën zyrtare të Kosovës); metodat janë ato që përdoren për matës realë.",
+      "source": "Burimi"
+    }
+  },
+  "reportsPage": {
+    "subtitle": "Raporte mujore të energjisë dhe qëndrueshmërisë, të ndërtuara nga të dhëna të matura.",
+    "new": "Raport i ri",
+    "newTitle": "Raport i ri mujor",
+    "month": "Muaji",
+    "language": "Gjuha",
+    "monthPartial": "{{month}} (deri tani)",
+    "create": "Krijo raportin",
+    "creating": "Duke ndërtuar raportin…",
+    "createHint": "Çdo shifër ngrihet në raport. Përmbledhja e shkruar hartohet nga ato shifra dhe mund ta ndryshosh para finalizimit.",
+    "table": {
+      "period": "Periudha",
+      "language": "Gjuha",
+      "energy": "Energjia",
+      "co2": "CO₂e",
+      "status": "Statusi",
+      "created": "Krijuar"
+    },
+    "status": {
+      "draft": "Draft",
+      "final": "Final"
+    },
+    "emptyTitle": "Ende nuk ka raporte",
+    "emptyBody": "Krijo të parin: zgjat disa sekonda dhe ndërtohet nga të dhënat e tua të matura."
+  },
+  "report": {
+    "back": "Të gjitha raportet",
+    "download": "Shkarko PDF",
+    "downloadHint": "Hap dritaren e printimit: zgjidh \"Ruaj si PDF\".",
+    "edit": "Ndrysho tekstin",
+    "save": "Ruaj tekstin",
+    "finalize": "Finalizo",
+    "finalizeConfirm": "Ta finalizojmë këtë raport? Pas kësaj nuk mund të ndryshohet.",
+    "title": "Raporti mujor i energjisë dhe qëndrueshmërisë",
+    "demo": "Kompani demo (fiktive) — të dhëna të simuluara",
+    "draft": "Draft",
+    "final": "Final",
+    "generated": "Gjeneruar më {{date}}",
+    "finalizedBy": "Finalizuar nga {{name}} më {{date}}",
+    "period": "Periudha e raportimit",
+    "sections": {
+      "summary": "Përmbledhje ekzekutive",
+      "keyFigures": "Shifrat kryesore",
+      "energy": "Ku shkoi energjia",
+      "waste": "Ku ndodhën humbjet dhe pse",
+      "actions": "Veprimet dhe ndikimi i verifikuar",
+      "carbon": "Karboni",
+      "comparison": "Krahasimi me periudhën e mëparshme",
+      "recommendations": "Rekomandime për periudhën e ardhshme",
+      "vsme": "Treguesit VSME B3",
+      "methodology": "Metodologjia dhe cilësia e të dhënave"
+    },
+    "narrativeAi": "Hartuar nga asistenti i EnergyFlow (Groq) nga shifrat e këtij raporti; çdo numër u kontrollua me to.",
+    "narrativeTemplate": "Shkruar nga EnergyFlow nga shifrat e këtij raporti.",
+    "narrativeEdited": "Ndryshuar nga kompania mbi draftin e EnergyFlow.",
+    "kf": {
+      "energy": "Energjia elektrike",
+      "cost": "Kostoja e energjisë (pa TVSH)",
+      "co2": "CO₂e (Scope 2)",
+      "waste": "Humbjet",
+      "wasteShare": "{{share}} e konsumit",
+      "saved": "Kursime të verifikuara",
+      "topConsumer": "Konsumuesi më i madh",
+      "largestWaste": "Humbja më e madhe",
+      "opportunities": "Mundësi të hapura",
+      "opportunitiesValue": "{{count}} · {{eur}} / muaj",
+      "bill": "Fatura e vlerësuar (pa TVSH)",
+      "peak": "Kërkesa maksimale"
+    },
+    "table": {
+      "machine": "Makineria",
+      "energy": "Energjia (kWh)",
+      "share": "Pjesa",
+      "cost": "Kostoja",
+      "co2": "CO₂e",
+      "type": "Lloji",
+      "events": "Ngjarje",
+      "measure": "Treguesi",
+      "current": "Kjo periudhë",
+      "previous": "Periudha e mëparshme",
+      "change": "Ndryshimi",
+      "action": "Veprimi",
+      "perMonth": "€ / muaj",
+      "effort": "Përpjekja",
+      "impact": "Ndikimi",
+      "intervention": "Ndërhyrja",
+      "saved": "Kursyer",
+      "status": "Statusi"
+    },
+    "turnOffs": "{{manual}} fikje manuale dhe {{automatic}} automatike, secila e verifikuar nga matësi · {{policies}} automatizime aktive.",
+    "noImpact": "Asnjë veprim nuk është matur ende mjaftueshëm për të verifikuar kursimet.",
+    "scope1": "Scope 1",
+    "scope2": "Scope 2 (sipas vendndodhjes)",
+    "scope2Market": "Scope 2 (sipas tregut)",
+    "intensity": "Intensiteti",
+    "notAvailable": "jo e disponueshme",
+    "notReported": "e paraportuar",
+    "coverage": "Mbulimi i matjes: {{share}} e matësit kryesor.",
+    "monitoringSince": "E matur nga EnergyFlow që nga {{date}}.",
+    "devices": "{{total}} pajisje EnergyFlow, nga të cilat {{simulated}} të simuluara.",
+    "factorLine": "Faktori i emetimit: {{value}} kg CO₂e/kWh — {{source}} ({{year}}, {{methodology}}).",
+    "tariffLine": "Tarifa: {{name}}. {{note}}",
+    "mvLine": "Kursimet verifikohen me një bazë të rregulluar dhe interval besueshmërie 90 % (i frymëzuar nga IPMVP, Opsioni B). Nuk është M&V e certifikuar.",
+    "simulatedLine": "Ky raport përshkruan një kompani demo fiktive me makineri të simuluara. Metodat janë të njëjtat si për matës realë.",
+    "footer": "EnergyFlow · inteligjencë energjetike për NVM-të e Kosovës",
+    "periodPartial": "(deri tani në muaj)"
   }
 }

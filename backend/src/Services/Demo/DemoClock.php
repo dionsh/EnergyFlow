@@ -7,6 +7,10 @@ namespace EnergyFlow\Services\Demo;
 use EnergyFlow\Core\Database;
 use EnergyFlow\Services\Calendar\LocalTime;
 use EnergyFlow\Services\Clock;
+use EnergyFlow\Services\Control\CommandService;
+use EnergyFlow\Services\Control\PolicyEngine;
+use EnergyFlow\Services\Devices\DeviceGateway;
+use EnergyFlow\Services\Jobs\AnalyticsPipeline;
 use EnergyFlow\Services\Simulation\SimContext;
 use EnergyFlow\Services\Simulation\Simulator;
 use EnergyFlow\Services\Tariff\TariffBook;
@@ -39,13 +43,23 @@ final class DemoClock
         }
         try {
             Clock::forget($companyId);
-            $now = Clock::now($companyId);
-            $now -= $now % 10;
+            $exactNow = Clock::now($companyId);
             $last = Database::value('SELECT UNIX_TIMESTAMP(last_generated_at) FROM sim_state WHERE company_id = ?', [$companyId]);
-            if ($last === null || $now - (int) $last < 10) {
+            if ($last === null) {
                 return 0;
             }
             $last = (int) $last;
+
+            // Commands before readings: policies decide, simulated nodes act on their queue,
+            // so a stop applies to the readings generated next — then the meter verifies it.
+            PolicyEngine::planSimulated($companyId, $last + 1, $exactNow + 1, $exactNow);
+            DeviceGateway::advanceSimulated($companyId, $exactNow);
+
+            $now = $exactNow - $exactNow % 10;
+            if ($now - $last < 10) {
+                CommandService::verify($companyId, $exactNow);
+                return 0;
+            }
 
             // Keep real weather ahead of the virtual clock (one API call per day at most).
             $site = Database::one('SELECT id, latitude, longitude FROM sites WHERE company_id = ? LIMIT 1', [$companyId]);
@@ -79,6 +93,13 @@ final class DemoClock
             Database::run('UPDATE sim_state SET last_generated_at = FROM_UNIXTIME(?) WHERE company_id = ?', [$now, $companyId]);
             Database::run("UPDATE devices SET status = 'online', last_seen_at = FROM_UNIXTIME(?) WHERE company_id = ? AND is_simulated = 1", [$now, $companyId]);
             RollupService::run($companyId, $now);
+            CommandService::verify($companyId, $exactNow);
+            try {
+                AnalyticsPipeline::run($companyId, $now);
+            } catch (\Throwable $e) {
+                // Insight is secondary to live data: a failing analytics step must never break /live.
+                error_log('[EnergyFlow] analytics pipeline failed: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
+            }
             return $rows;
         } finally {
             Database::value('SELECT RELEASE_LOCK(?)', [$lock]);

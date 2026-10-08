@@ -43,6 +43,116 @@ export function useDevice(id) {
   return useQuery({ queryKey: ['device', id], queryFn: () => get(`/devices/${id}`), refetchInterval: LIVE_MS, placeholderData: keepPreviousData })
 }
 
+const query = (params) => {
+  const search = new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined && v !== null && v !== ''))
+  return search.size ? `?${search}` : ''
+}
+
+export function useWasteSummary(period) {
+  return useQuery({ queryKey: ['waste', 'summary', period], queryFn: () => get(`/waste/summary${query({ period })}`), refetchInterval: 60_000, placeholderData: keepPreviousData })
+}
+
+export function useWasteEvents(params) {
+  return useQuery({ queryKey: ['waste', 'events', params], queryFn: () => get(`/waste-events${query(params)}`), refetchInterval: 30_000, placeholderData: keepPreviousData })
+}
+
+/** One episode; while it is still going on the numbers keep ticking. */
+export function useWasteEvent(id) {
+  return useQuery({
+    queryKey: ['waste', 'event', id],
+    queryFn: () => get(`/waste-events/${id}`),
+    enabled: Boolean(id),
+    refetchInterval: (q) => (q.state.data?.data?.ongoing ? 10_000 : false),
+  })
+}
+
+export function useAlerts(status = 'active') {
+  return useQuery({ queryKey: ['alerts', status], queryFn: () => get(`/alerts${query({ status })}`), refetchInterval: OVERVIEW_MS, placeholderData: keepPreviousData })
+}
+
+const TERMINAL = ['verified', 'failed', 'cancelled']
+
+/** One command, polled every 1.5 s until the meter has confirmed (or the command failed). */
+export function useCommand(id) {
+  return useQuery({
+    queryKey: ['command', id],
+    queryFn: () => get(`/commands/${id}`),
+    enabled: Boolean(id),
+    refetchInterval: (q) => (TERMINAL.includes(q.state.data?.data?.status) ? false : 1_500),
+  })
+}
+
+export function useCommands(params = {}) {
+  return useQuery({ queryKey: ['commands', params], queryFn: () => get(`/commands${query(params)}`), refetchInterval: 15_000, placeholderData: keepPreviousData })
+}
+
+export function usePolicies() {
+  return useQuery({ queryKey: ['policies'], queryFn: () => get('/policies'), refetchInterval: 60_000 })
+}
+
+export function useRecommendations(status = 'all') {
+  return useQuery({ queryKey: ['recommendations', status], queryFn: () => get(`/recommendations${query({ status })}`), refetchInterval: 60_000, placeholderData: keepPreviousData })
+}
+
+export function useRecommendation(id) {
+  return useQuery({ queryKey: ['recommendations', 'one', id], queryFn: () => get(`/recommendations/${id}`), enabled: Boolean(id) })
+}
+
+export function useWhatIfOptions() {
+  return useQuery({ queryKey: ['what-if', 'options'], queryFn: () => get('/what-if/options'), staleTime: 5 * 60_000 })
+}
+
+/** A what-if replay. Cached per input, so moving a slider back is instant. */
+export function useWhatIf(input) {
+  return useQuery({
+    queryKey: ['what-if', input],
+    queryFn: async () => {
+      const { data, meta } = await api.post('/what-if', input)
+      return { data, meta }
+    },
+    enabled: Boolean(input?.machine_id && input?.action),
+    placeholderData: keepPreviousData,
+    staleTime: 60_000,
+    retry: false,
+  })
+}
+
+export function useImpact() {
+  return useQuery({ queryKey: ['impact'], queryFn: () => get('/impact/summary'), refetchInterval: 60_000, placeholderData: keepPreviousData })
+}
+
+export function useIntervention(id) {
+  return useQuery({ queryKey: ['impact', 'intervention', id], queryFn: () => get(`/impact/interventions/${id}`), enabled: Boolean(id) })
+}
+
+export function useCarbon(period) {
+  return useQuery({ queryKey: ['carbon', 'summary', period], queryFn: () => get(`/carbon/summary${query({ period })}`), placeholderData: keepPreviousData })
+}
+
+export function useCarbonBreakdown(period, groupBy) {
+  return useQuery({ queryKey: ['carbon', 'breakdown', period, groupBy], queryFn: () => get(`/carbon/breakdown${query({ period, group_by: groupBy })}`), placeholderData: keepPreviousData })
+}
+
+export function useVsme(year) {
+  return useQuery({ queryKey: ['esg', 'vsme', year], queryFn: () => get(`/esg/vsme-b3${query({ year })}`) })
+}
+
+export function useReadiness() {
+  return useQuery({ queryKey: ['esg', 'readiness'], queryFn: () => get('/esg/readiness') })
+}
+
+export function useReports() {
+  return useQuery({ queryKey: ['reports'], queryFn: () => get('/reports') })
+}
+
+export function useReport(id) {
+  return useQuery({ queryKey: ['reports', id], queryFn: () => get(`/reports/${id}`), enabled: Boolean(id) })
+}
+
+export function useNotifications() {
+  return useQuery({ queryKey: ['notifications'], queryFn: () => get('/notifications'), refetchInterval: OVERVIEW_MS })
+}
+
 /**
  * Seconds since the last reading, measured on the company's clock (the demo runs
  * on virtual time): age at fetch time + time elapsed since the fetch.
