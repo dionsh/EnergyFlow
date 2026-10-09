@@ -187,7 +187,7 @@ final class ReportBuilder
                 'turnover_eur' => $company['annual_turnover_eur'] === null ? null : (float) $company['annual_turnover_eur'],
                 'city' => $company['city'], 'country' => $company['country'], 'demo' => (bool) $company['is_demo'],
             ],
-            'period' => ['month' => $month, 'from' => $iso($period->from), 'to' => $iso($period->to), 'days' => round($days, 1), 'partial' => $period->to < $now],
+            'period' => ['month' => $month, 'from' => $iso($period->from), 'to' => $iso($period->to), 'days' => round($days, 1), 'partial' => $period->to >= $now],
             'energy' => [
                 'kwh' => round($site['kwh'], 1), 'kwh_high' => round($site['kwh_high'], 1), 'kwh_low' => round($site['kwh_low'], 1),
                 'eur' => round(EnergyQuery::energyCost($site, $tariff), 2), 'peak_kw' => round($peak, 1), 'bill' => $bill,

@@ -1243,7 +1243,7 @@
     "mvLine": "Savings are verified against an adjusted baseline with a 90 % confidence interval (IPMVP-inspired, Option B). This is not a certified M&V.",
     "simulatedLine": "This report describes a fictional demo company with simulated machines. The methods are the same as for real meters.",
     "footer": "EnergyFlow · energy intelligence for Kosovo SMEs",
-    "periodPartial": "(month to date)",
+    "periodPartial": "(so far)",
     "vsmeScope": "Annual datapoints for the calendar year {{year}}, measured from {{from}} to {{to}} (when this report was generated) — not only this month."
   },
   "assistant": {

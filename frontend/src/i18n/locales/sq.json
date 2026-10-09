@@ -1243,7 +1243,7 @@
     "mvLine": "Kursimet verifikohen me një bazë të rregulluar dhe interval besueshmërie 90 % (i frymëzuar nga IPMVP, Opsioni B). Nuk është M&V e certifikuar.",
     "simulatedLine": "Ky raport përshkruan një kompani demo fiktive me makineri të simuluara. Metodat janë të njëjtat si për matës realë.",
     "footer": "EnergyFlow · inteligjencë energjetike për NVM-të e Kosovës",
-    "periodPartial": "(deri tani në muaj)",
+    "periodPartial": "(deri tani)",
     "vsmeScope": "Të dhëna vjetore për vitin kalendarik {{year}}, të matura nga {{from}} deri më {{to}} (kur u krijua ky raport) — jo vetëm për këtë muaj."
   },
   "assistant": {
