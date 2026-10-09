@@ -69,6 +69,12 @@ final class Period
         return new self($key, $from, $to, $from - ($to - $from), $from);
     }
 
+    /** Any window [from, to), compared with an explicit earlier window (e.g. the same hours one day earlier). */
+    public static function against(int $from, int $to, int $previousFrom, int $previousTo, string $key): self
+    {
+        return new self($key, $from, $to, $previousFrom, $previousTo);
+    }
+
     public function meta(): array
     {
         return [

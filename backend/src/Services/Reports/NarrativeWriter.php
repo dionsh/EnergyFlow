@@ -17,6 +17,12 @@ use EnergyFlow\Services\Assistant\Grounding;
  */
 final class NarrativeWriter
 {
+    /** What the "previous" figures cover (snapshot previous.basis). */
+    private const BASIS = [
+        'en' => ['previous_day' => 'the same hours of the previous day', 'previous_week' => 'the same days of the previous week', 'previous_month' => 'the same days of the previous month'],
+        'sq' => ['previous_day' => 'të njëjtat orë të ditës së kaluar', 'previous_week' => 'të njëjtat ditë të javës së kaluar', 'previous_month' => 'të njëjtat ditë të muajit të kaluar'],
+    ];
+
     /** @return array{sections: array{summary: string, changes: string, outlook: string}, source: string} */
     public static function write(array $snapshot, string $language): array
     {
@@ -42,7 +48,10 @@ final class NarrativeWriter
             'energy_cost_eur_excl_vat' => $s['energy']['eur'],
             'peak_kw' => $s['energy']['peak_kw'],
             'co2e_kg_scope2_location' => $s['carbon']['scope2_location_kg'],
-            'previous_same_days' => ['energy_kwh' => $s['previous']['kwh'], 'cost_eur' => $s['previous']['eur'], 'change_ratio' => $s['previous']['change_ratio']],
+            'previous' => [
+                'compared_with' => self::BASIS['en'][$s['previous']['basis'] ?? 'previous_month'],
+                'energy_kwh' => $s['previous']['kwh'], 'cost_eur' => $s['previous']['eur'], 'change_ratio' => $s['previous']['change_ratio'],
+            ],
             'waste' => [
                 'kwh' => $s['waste']['kwh'], 'eur' => $s['waste']['eur'], 'co2e_kg' => $s['waste']['co2_kg'], 'share_of_consumption' => $s['waste']['share'],
                 'largest' => $s['waste']['largest'] === null ? null : [
@@ -70,7 +79,7 @@ Plain, specific sentences for a business owner; euros first; no marketing langua
 Write CO2e as "CO₂e". Round sensibly (kWh without decimals, euros with two).
 Return a JSON object with exactly these keys:
 - "summary": 3-4 sentences: energy, cost (excl. VAT), CO₂e, waste and verified savings to date.
-- "changes": 2-3 sentences: change vs the preceding comparison period and the largest waste event.
+- "changes": 2-3 sentences: change vs the comparison window (say which one, from previous.compared_with), and the largest waste event.
 - "outlook": 2-3 sentences: the most valuable open opportunities and their total per month. Say if one saves cost only.
 PROMPT;
         $result = GroqClient::chat([
@@ -115,9 +124,10 @@ PROMPT;
         }
 
         $change = $s['previous']['change_ratio'];
+        $basis = self::BASIS[$language][$s['previous']['basis'] ?? 'previous_month'];
         $changes = $change === null ? '' : ($en
-            ? 'Compared with the preceding period of the same length, consumption ' . ($change >= 0 ? 'rose' : 'fell') . " by {$pct($change)}."
-            : 'Krahasuar me periudhën paraprake me kohëzgjatje të njëjtë, konsumi ' . ($change >= 0 ? 'u rrit' : 'ra') . " me {$pct($change)}.");
+            ? "Compared with {$basis}, consumption " . ($change >= 0 ? 'rose' : 'fell') . " by {$pct($change)}."
+            : "Krahasuar me {$basis}, konsumi " . ($change >= 0 ? 'u rrit' : 'ra') . " me {$pct($change)}.");
         $largest = $s['waste']['largest'];
         if ($largest !== null) {
             $type = self::wasteType($largest['type'], $language);

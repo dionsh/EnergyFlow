@@ -64,18 +64,17 @@ final class ReportBuilder
         if ($date === false || $date->format('Y-m-d') !== $key) {
             throw HttpException::validation(['period' => 'invalid_date']);
         }
-        if ($type === 'daily') {
-            $from = $time->at($key);
-            $to = min($now, $time->at($date->modify('+1 day')->format('Y-m-d')));
-        } else {
-            $monday = $date->modify('-' . ((int) $date->format('N') - 1) . ' days');
-            $from = $time->at($monday->format('Y-m-d'));
-            $to = min($now, $time->at($monday->modify('+7 days')->format('Y-m-d')));
-        }
+        // Compared with the same local hours one day (or one week) earlier, so a day or
+        // week in progress is never set against a different time of day or a weekend.
+        $start = $type === 'daily' ? $date : $date->modify('-' . ((int) $date->format('N') - 1) . ' days');
+        $length = $type === 'daily' ? '1 day' : '7 days';
+        $from = $time->at($start->format('Y-m-d'));
+        $to = min($now, $time->at($start->modify('+' . $length)->format('Y-m-d')));
         if ($from >= $now) {
             throw HttpException::badRequest('invalid_period', 'That period has not started yet.');
         }
-        return Period::between($from, $to, $type . ':' . $key);
+        $earlier = static fn (int $ts): int => (new \DateTimeImmutable('@' . $ts))->setTimezone($time->zone())->modify('-' . $length)->getTimestamp();
+        return Period::against($from, $to, $earlier($from), $earlier($to), $type . ':' . $key);
     }
 
     public static function list(int $companyId): array
@@ -195,6 +194,8 @@ final class ReportBuilder
             'previous' => [
                 'kwh' => round($previous['kwh'], 1), 'eur' => round(EnergyQuery::energyCost($previous, $tariff), 2), 'co2_kg' => round($previous['kwh'] * $factor['value'], 1),
                 'change_ratio' => $previous['kwh'] > 0 ? round($site['kwh'] / $previous['kwh'] - 1, 4) : null,
+                'basis' => match (explode(':', $period->key)[0]) { 'daily' => 'previous_day', 'weekly' => 'previous_week', default => 'previous_month' },
+                'from' => $iso($period->previousFrom), 'to' => $iso($period->previousTo),
             ],
             'carbon' => [
                 'scope2_location_kg' => $carbon['scope2_location_kg'], 'scope1' => $carbon['scope1'], 'total_kg' => $carbon['total_kg'],

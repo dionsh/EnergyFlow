@@ -72,7 +72,8 @@ function NewReportDialog({ open, onClose }) {
   const periods = usePeriods(type)
   const [month, setMonth] = useState(null)
   const [language, setLanguage] = useState(i18n.language)
-  const chosen = periods.some((p) => p.key === month) ? month : periods[type === 'monthly' ? 1 : 0]?.key
+  // Default to the last complete month, week or day.
+  const chosen = periods.some((p) => p.key === month) ? month : (periods[1] ?? periods[0])?.key
   const create = useMutation({
     mutationFn: () => api.post('/reports', { type, period: chosen, language }),
     onSuccess: ({ data }) => {
