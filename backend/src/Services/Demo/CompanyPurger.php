@@ -9,7 +9,8 @@ use EnergyFlow\Core\Database;
 /**
  * Deletes a company and every row that belongs to it — including telemetry
  * tables that are keyed by machine/site rather than by a foreign key.
- * Used to rebuild the demo company; never exposed for real customers.
+ * Used to rebuild the demo company, and by a platform admin deleting a
+ * company's only user (UserAdmin::delete, which needs an explicit confirmation).
  */
 final class CompanyPurger
 {

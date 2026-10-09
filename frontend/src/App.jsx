@@ -29,6 +29,7 @@ const CarbonPage = page(pageLoaders.carbon, 'CarbonPage')
 const ReportsPage = page(pageLoaders.reports, 'ReportsPage')
 const ReportView = page(pageLoaders.reportView, 'ReportView')
 const SettingsPage = page(pageLoaders.settings, 'SettingsPage')
+const AdminPage = page(pageLoaders.admin, 'AdminPage')
 const NotFoundPage = page(pageLoaders.notFound, 'NotFoundPage')
 
 const queryClient = new QueryClient({
@@ -74,6 +75,7 @@ export default function App() {
                     <Route path="reports" element={<ReportsPage />} />
                     <Route path="reports/:id" element={<ReportView />} />
                     <Route path="settings" element={<SettingsPage />} />
+                    <Route path="admin" element={<AdminPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                   </Route>
                 </Route>

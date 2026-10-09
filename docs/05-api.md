@@ -183,6 +183,19 @@ Photos are read by a vision model on Groq and never stored. The user reviews eve
 | POST | `/demo/spike` `{machine_id?, minutes?, percent?}` | Motor overload from the next reading: the machine draws `percent` % (100–200, default 135) of its rating for `minutes` (3–30, default 6). Without `machine_id`: the motor-driven machine drawing the most power. 409 if it is off |
 | POST | `/demo/reset` `{scene?}` | Rebuild the deterministic story (`weekday_evening` or `now`) |
 
+## Platform admin (EnergyFlow staff, guarded by `users.is_platform_admin`)
+
+Granted only from the command line (`php bin/platform-admin.php grant <email>`), never through the API, and never to a demo account. Every change is written to `admin_actions` (not to the companies' own audit log).
+
+| Method | Path | Purpose |
+|---|---|---|
+| GET | `/admin/overview` | Platform counts (customer companies and users, active users, devices, activity; the demo company counted apart), sign-ups per week, background jobs, system status, recent admin actions |
+| GET | `/admin/users?q=&company_id=&role=&status=&page=` | Every user of every company, 50 per page (`meta.total`) |
+| PATCH | `/admin/users/{id}` `{full_name?, email?, role?, locale?, disabled?}` | Edit. Disabling revokes the user's sessions; a new e-mail cancels open reset links. 409 `last_owner` (a company always keeps an active owner), `cannot_disable_self`, `demo_account` |
+| DELETE | `/admin/users/{id}?with_company=1` | Delete. A team member's sessions, reset links and assistant conversations go with them; what they created stays with the company. The company's only user takes the company and all its data along, and only with `with_company=1` (otherwise 409 `company_would_be_empty`). 409 `last_owner`, `cannot_delete_self`, `demo_account` |
+| POST | `/admin/users/{id}/password-reset` | E-mail the user a reset link (the link never reaches the admin) |
+| GET | `/admin/companies?q=` | Every company with its users, owner, machines, devices, last data and reports |
+
 ## Internal and health
 
 | Method | Path | Purpose |
