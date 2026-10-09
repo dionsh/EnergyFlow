@@ -92,7 +92,7 @@ function ReportDocument({ report, editing, draft, setDraft }) {
       <header className="flex flex-wrap items-start justify-between gap-4 border-b-2 border-ink pb-5">
         <div>
           <Logo />
-          <h1 className="mt-5 text-[22px] font-semibold leading-tight tracking-[-0.01em] text-ink">{T('report.title')}</h1>
+          <h1 className="mt-5 text-[22px] font-semibold leading-tight tracking-[-0.01em] text-ink">{T(`report.title.${report.type.split('_')[0]}`)}</h1>
           <p className="mt-1 text-[15px] text-ink">{s.company.name}{s.company.legal_form && !s.company.name.includes(s.company.legal_form) ? ` ${s.company.legal_form}` : ''}{s.company.city ? ` · ${s.company.city}` : ''}</p>
         </div>
         <div className="text-right text-[12.5px] text-ink-2">
@@ -305,7 +305,7 @@ export function ReportView() {
   const download = () => {
     const previous = document.title
     const slug = report.snapshot.company.name.replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '')
-    document.title = `EnergyFlow_${slug}_${report.snapshot.period.month}`
+    document.title = `EnergyFlow_${slug}_${report.snapshot.period.month.replace(/[^\p{L}\p{N}-]+/gu, '-')}`
     const restore = () => {
       document.title = previous
       window.removeEventListener('afterprint', restore)
