@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useQueryClient } from '@tanstack/react-query'
 import { ArrowLeft, CircleAlert, Mail } from 'lucide-react'
 import { api } from '../../lib/api'
 import { useApiErrors } from '../../hooks/useApiErrors'
+import { useAuth } from '../../providers/AuthProvider'
 import { Button } from '../../components/ui/Button'
 import { Callout } from '../../components/ui/States'
 import { Field, PasswordField } from '../../components/ui/Field'
@@ -11,6 +13,8 @@ import { AuthLayout } from './AuthLayout'
 
 export function ForgotPasswordPage() {
   const { t } = useTranslation()
+  const queryClient = useQueryClient()
+  const { setSession } = useAuth()
   const [params] = useSearchParams()
   const token = params.get('token') ?? ''
   const { errorMessage, fieldErrors } = useApiErrors()
@@ -34,6 +38,9 @@ export function ForgotPasswordPage() {
     try {
       if (resetting) {
         await api.post('/auth/password/reset', { token, password })
+        // The reset revoked every session, including this browser's if it was signed in.
+        queryClient.clear()
+        setSession(null)
       } else {
         await api.post('/auth/password/forgot', { email })
       }

@@ -14,6 +14,9 @@ final class PasswordResetService
     public static function request(string $email, string $ip): void
     {
         RateLimiter::hit('password-reset-ip:' . $ip, 5, 3600);
+        // Per address too, so nobody can flood one inbox from many IPs. Applied before the
+        // lookup, so the limit behaves the same whether or not the account exists.
+        RateLimiter::hit('password-reset-email:' . mb_strtolower($email), 3, 3600);
         Database::run('DELETE FROM password_resets WHERE expires_at < UTC_TIMESTAMP() OR used_at < UTC_TIMESTAMP() - INTERVAL 30 DAY');
         $user = Database::one(
             "SELECT u.id, u.email, u.full_name, COALESCE(u.locale, 'sq') AS locale FROM users u WHERE u.email = ? AND u.disabled_at IS NULL LIMIT 1",
