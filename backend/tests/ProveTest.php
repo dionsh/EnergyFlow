@@ -74,10 +74,13 @@ test('grounding: numbers must come from the data, in either language, allowing r
 
 test('report: frozen snapshot, template narrative without AI, edit, finalise, then locked', function () use ($proveOwner, $proveGuest, $proveDemo): void {
     $month = LocalTime::forCompany($proveDemo)->format(Clock::now($proveDemo) - 31 * 86400, 'Y-m');
-    assertSame(403, $proveGuest->post('/reports', ['month' => $month, 'language' => 'en'])['status']);
-    assertSame(422, $proveOwner->post('/reports', ['month' => '2026-13', 'language' => 'en'])['status']);
+    assertSame(403, $proveGuest->post('/reports', ['type' => 'monthly', 'period' => $month, 'language' => 'en'])['status']);
+    foreach (['2026-13', '2026-00', '2026-10-05'] as $bad) {
+        assertSame(422, $proveOwner->post('/reports', ['type' => 'monthly', 'period' => $bad, 'language' => 'en'])['status'], "month {$bad}");
+    }
+    assertSame(422, $proveOwner->post('/reports', ['type' => 'yearly', 'period' => $month, 'language' => 'en'])['status']);
 
-    $created = $proveOwner->post('/reports', ['month' => $month, 'language' => 'sq']);
+    $created = $proveOwner->post('/reports', ['type' => 'monthly', 'period' => $month, 'language' => 'sq']);
     assertSame(201, $created['status'], json_encode($created['body']));
     $report = $created['body']['data'];
     $s = $report['snapshot'];
@@ -107,5 +110,48 @@ test('report: frozen snapshot, template narrative without AI, edit, finalise, th
     assertSame($s['energy']['kwh'], $proveOwner->get("/reports/{$report['id']}")['body']['data']['snapshot']['energy']['kwh']);
     $list = $proveOwner->get('/reports')['body']['data'];
     assertSame($s['energy']['kwh'], $list[0]['headline']['kwh']);
+    Clock::freeze(null);
+});
+
+test('daily and weekly reports compare with the same local hours one day or one week earlier', function () use ($proveOwner, $proveDemo, $proveAnchor): void {
+    Clock::freeze($proveAnchor); // a weekday, 21:40 local
+    $time = LocalTime::forCompany($proveDemo);
+    $now = Clock::now($proveDemo);
+    $local = static fn (string $iso): string => $time->format((int) strtotime($iso), 'Y-m-d H:i');
+    $day = static fn (string $date, string $shift): string => (new DateTimeImmutable($date, $time->zone()))->modify($shift)->format('Y-m-d');
+    $today = $time->date($now);
+    $clock = $time->format($now, 'H:i');
+
+    assertSame(422, $proveOwner->post('/reports', ['type' => 'daily', 'period' => substr($today, 0, 7), 'language' => 'en'])['status'], 'a month is not a day');
+    assertSame(422, $proveOwner->post('/reports', ['type' => 'weekly', 'period' => '2026-02-30', 'language' => 'en'])['status']);
+    assertSame(400, $proveOwner->post('/reports', ['type' => 'daily', 'period' => $day($today, '+2 days'), 'language' => 'en'])['status'], 'not started yet');
+
+    // Today, in progress: partial, and compared with yesterday up to the same time.
+    $todayReport = $proveOwner->post('/reports', ['type' => 'daily', 'period' => $today, 'language' => 'en']);
+    assertSame(201, $todayReport['status'], json_encode($todayReport['body']));
+    assertSame('daily_sustainability', $todayReport['body']['data']['type']);
+    $s = $todayReport['body']['data']['snapshot'];
+    assertSame(true, $s['period']['partial'], 'today is still running');
+    assertSame('previous_day', $s['previous']['basis']);
+    assertSame($day($today, '-1 day') . ' 00:00', $local($s['previous']['from']));
+    assertSame($day($today, '-1 day') . ' ' . $clock, $local($s['previous']['to']));
+    if ($s['previous']['change_ratio'] !== null) {
+        assertTrue(str_contains($todayReport['body']['data']['narrative']['changes'], 'the same hours of the previous day'), $todayReport['body']['data']['narrative']['changes']);
+    }
+
+    // Yesterday, complete: not partial, compared with the whole day before.
+    $yesterday = $proveOwner->post('/reports', ['type' => 'daily', 'period' => $day($today, '-1 day'), 'language' => 'sq'])['body']['data']['snapshot'];
+    assertSame(false, $yesterday['period']['partial']);
+    assertSame($day($today, '-2 days') . ' 00:00', $local($yesterday['previous']['from']));
+    assertSame($day($today, '-1 day') . ' 00:00', $local($yesterday['previous']['to']));
+
+    // This week, in progress: Monday to now, against last Monday up to the same weekday and time.
+    $week = $proveOwner->post('/reports', ['type' => 'weekly', 'period' => $today, 'language' => 'en'])['body']['data']['snapshot'];
+    $monday = $day($today, '-' . ((int) $time->format($now, 'N') - 1) . ' days');
+    assertSame(true, $week['period']['partial']);
+    assertSame('previous_week', $week['previous']['basis']);
+    assertSame($monday . ' 00:00', $local($week['period']['from']));
+    assertSame($day($monday, '-7 days') . ' 00:00', $local($week['previous']['from']));
+    assertSame($day($today, '-7 days') . ' ' . $clock, $local($week['previous']['to']));
     Clock::freeze(null);
 });

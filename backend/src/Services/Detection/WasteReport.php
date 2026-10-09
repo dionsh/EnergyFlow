@@ -38,7 +38,11 @@ final class WasteReport
         $byType = [];
         $byMachine = [];
         $daily = [];
+        $largest = null;
         foreach ($current['items'] as $item) {
+            if ($largest === null || $item['eur'] > $largest['eur']) {
+                $largest = $item;
+            }
             $byType[$item['type']] ??= ['type' => $item['type'], 'kwh' => 0.0, 'eur' => 0.0, 'events' => 0];
             $byType[$item['type']]['kwh'] += $item['kwh'];
             $byType[$item['type']]['eur'] += $item['eur'];
@@ -86,6 +90,12 @@ final class WasteReport
             ],
             'by_type' => $round($byType),
             'by_machine' => $round($byMachine),
+            // The costliest event, counted (like the totals) only for the part inside the period.
+            'largest' => $largest === null ? null : [
+                'id' => $largest['id'], 'type' => $largest['type'], 'code' => $largest['machine']['code'], 'name' => $largest['machine']['name'],
+                'started_at' => $largest['started_at'], 'kwh' => round($largest['kwh'], 1), 'eur' => round($largest['eur'], 2),
+                'co2_kg' => round($largest['kwh'] * $factor['value'], 1),
+            ],
             'daily' => $round($daily),
             'open_alerts' => self::openAlertCounts($companyId),
             'factor' => ['value' => $factor['value'], 'source' => $factor['source_name']],
@@ -340,7 +350,7 @@ final class WasteReport
             $eur = array_sum(array_column($days, 1));
             $sumKwh += $kwh;
             $sumEur += $eur;
-            $items[] = ['type' => $event['type'], 'machine' => $event['machine'], 'kwh' => $kwh, 'eur' => $eur, 'days' => $days];
+            $items[] = ['id' => $event['id'], 'type' => $event['type'], 'machine' => $event['machine'], 'started_at' => $event['started_at'], 'kwh' => $kwh, 'eur' => $eur, 'days' => $days];
         }
         return ['kwh' => $sumKwh, 'eur' => $sumEur, 'items' => $items];
     }

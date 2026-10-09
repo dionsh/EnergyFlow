@@ -1163,6 +1163,7 @@
     "types": { "daily": "Daily", "weekly": "Weekly", "monthly": "Monthly" },
     "period": "Period",
     "today": "Today ({{date}})",
+    "thisWeek": "This week ({{range}})",
     "month": "Month",
     "language": "Language",
     "monthPartial": "{{month}} (so far)",
@@ -1265,7 +1266,7 @@
     "simulatedLine": "This report describes a fictional demo company with simulated machines. The methods are the same as for real meters.",
     "footer": "EnergyFlow · energy intelligence for Kosovo SMEs",
     "periodPartial": "(so far)",
-    "vsmeScope": "Annual datapoints for the calendar year {{year}}, measured from {{from}} to {{to}} (when this report was generated) — not only this month."
+    "vsmeScope": "Annual datapoints for the calendar year {{year}}, measured from {{from}} to {{to}} (when this report was generated) — not only this report's period."
   },
   "assistant": {
     "title": "Ask EnergyFlow",

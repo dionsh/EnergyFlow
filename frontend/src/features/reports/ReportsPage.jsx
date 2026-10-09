@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { CircleAlert, FilePlus2, FileText } from 'lucide-react'
 import { api } from '../../lib/api'
-import { formatCo2, formatDate, formatEur, formatKwh } from '../../lib/format'
+import { formatCo2, formatDate, formatEur, formatKwh, localDate } from '../../lib/format'
 import { hasRole } from '../../lib/roles'
 import { LANGUAGES } from '../../i18n/languages'
 import { useApiErrors } from '../../hooks/useApiErrors'
@@ -18,15 +18,27 @@ import { Modal } from '../../components/ui/Overlay'
 import { Callout, EmptyState, ErrorState, Skeleton } from '../../components/ui/States'
 import { useLive, useReports } from '../data'
 
+/**
+ * Today's date on the company clock (Kosovo time), as a UTC midnight so the
+ * day arithmetic below is plain calendar math.
+ */
+function companyToday(nowIso) {
+  const [year, month, day] = localDate(nowIso ?? new Date().toISOString()).split('-').map(Number)
+  return new Date(Date.UTC(year, month - 1, day))
+}
+
+const isoDay = (date) => date.toISOString().slice(0, 10)
+const dayLabel = (key) => formatDate(`${key}T12:00:00Z`)
+
 /** The last 12 months on the company clock, newest first; the current one is "so far". */
 function useMonths() {
   const { t } = useTranslation()
   const nowIso = useLive().data?.data?.now
   return useMemo(() => {
-    const now = nowIso ? new Date(nowIso) : new Date()
+    const today = companyToday(nowIso)
     const names = t('calendar.months', { returnObjects: true })
     return Array.from({ length: 12 }, (_, i) => {
-      const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1))
+      const d = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() - i, 1))
       const key = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`
       const label = `${names[d.getUTCMonth()]} ${d.getUTCFullYear()}`
       return { key, label: i === 0 ? t('reportsPage.monthPartial', { month: label }) : label }
@@ -40,14 +52,13 @@ function usePeriods(type) {
   const months = useMonths()
   return useMemo(() => {
     if (type === 'monthly') return months.map((m) => ({ key: m.key, label: m.label }))
-    const now = nowIso ? new Date(nowIso) : new Date()
-    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
+    const today = companyToday(nowIso)
     if (type === 'daily') {
       return Array.from({ length: 14 }, (_, i) => {
         const d = new Date(today)
         d.setUTCDate(d.getUTCDate() - i)
-        const key = d.toISOString().slice(0, 10)
-        return { key, label: i === 0 ? t('reportsPage.today', { date: key }) : key }
+        const key = isoDay(d)
+        return { key, label: i === 0 ? t('reportsPage.today', { date: dayLabel(key) }) : dayLabel(key) }
       })
     }
     const monday = new Date(today)
@@ -57,8 +68,8 @@ function usePeriods(type) {
       from.setUTCDate(from.getUTCDate() - i * 7)
       const to = new Date(from)
       to.setUTCDate(to.getUTCDate() + 6)
-      const key = from.toISOString().slice(0, 10)
-      return { key, label: `${key} – ${to.toISOString().slice(0, 10)}` }
+      const label = `${dayLabel(isoDay(from))} – ${dayLabel(isoDay(to))}`
+      return { key: isoDay(from), label: i === 0 ? t('reportsPage.thisWeek', { range: label }) : label }
     })
   }, [months, nowIso, t, type])
 }

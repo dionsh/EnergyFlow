@@ -58,11 +58,14 @@ final class ReportBuilder
     private static function resolvePeriod(string $type, string $key, int $now, LocalTime $time): Period
     {
         if ($type === 'monthly') {
+            if (!preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $key)) {
+                throw HttpException::validation(['period' => 'invalid_choice']);
+            }
             return Period::parse('month:' . $key, $now, $time);
         }
         $date = \DateTimeImmutable::createFromFormat('!Y-m-d', $key, $time->zone());
         if ($date === false || $date->format('Y-m-d') !== $key) {
-            throw HttpException::validation(['period' => 'invalid_date']);
+            throw HttpException::validation(['period' => 'invalid_choice']);
         }
         // Compared with the same local hours one day (or one week) earlier, so a day or
         // week in progress is never set against a different time of day or a weekend.
@@ -158,12 +161,6 @@ final class ReportBuilder
         usort($machines, static fn (array $a, array $b): int => $b['kwh'] <=> $a['kwh']);
 
         $waste = WasteReport::summary($companyId, $period);
-        $largest = Database::one(
-            "SELECT w.type, w.energy_kwh, w.cost_eur, w.co2_kg, w.started_at, m.code, m.name FROM waste_events w JOIN machines m ON m.id = w.machine_id
-              WHERE w.company_id = ? AND w.started_at >= FROM_UNIXTIME(?) AND w.started_at < FROM_UNIXTIME(?) AND w.action_status <> 'dismissed'
-              ORDER BY w.cost_eur DESC LIMIT 1",
-            [$companyId, $period->from, $period->to],
-        );
         $commands = Database::one(
             "SELECT SUM(status = 'verified' AND source = 'user') AS manual, SUM(status = 'verified' AND source = 'policy') AS automatic, SUM(status = 'failed') AS failed
                FROM device_commands WHERE company_id = ? AND requested_at >= FROM_UNIXTIME(?) AND requested_at < FROM_UNIXTIME(?)",
@@ -205,10 +202,7 @@ final class ReportBuilder
             'waste' => [
                 'kwh' => $waste['totals']['kwh'], 'eur' => $waste['totals']['eur'], 'co2_kg' => $waste['totals']['co2_kg'], 'events' => $waste['totals']['events'],
                 'share' => $waste['totals']['share_of_consumption'], 'by_type' => $waste['by_type'], 'by_machine' => array_slice($waste['by_machine'], 0, 5),
-                'largest' => $largest === null ? null : [
-                    'type' => $largest['type'], 'code' => $largest['code'], 'name' => $largest['name'], 'started_at' => Time::iso($largest['started_at']),
-                    'kwh' => (float) $largest['energy_kwh'], 'eur' => (float) $largest['cost_eur'], 'co2_kg' => (float) $largest['co2_kg'],
-                ],
+                'largest' => $waste['largest'],
             ],
             'actions' => [
                 'turn_offs_manual' => (int) ($commands['manual'] ?? 0), 'turn_offs_automatic' => (int) ($commands['automatic'] ?? 0), 'failed' => (int) ($commands['failed'] ?? 0),
