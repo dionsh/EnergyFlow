@@ -7,6 +7,7 @@ export const pageLoaders = {
   machines: () => import('../features/machines/MachinesPage'),
   machineDetail: () => import('../features/machines/MachineDetailPage'),
   devices: () => import('../features/devices/DevicesPage'),
+  scan: () => import('../features/scan/ScanPage'),
   deviceDetail: () => import('../features/devices/DeviceDetailPage'),
   waste: () => import('../features/waste/WastePage'),
   opportunities: () => import('../features/opportunities/OpportunitiesPage'),

@@ -32,7 +32,7 @@ final class AssistantService
 {
     private const MAX_CHARS = 1000;
     private const HISTORY_MESSAGES = 6;
-    private const PAGES = ['/', '/live', '/machines', '/devices', '/waste', '/opportunities', '/automations', '/impact', '/carbon', '/reports'];
+    private const PAGES = ['/', '/live', '/machines', '/devices', '/scan', '/waste', '/opportunities', '/automations', '/impact', '/carbon', '/reports'];
 
     // ---------------------------------------------------------------- conversations
 

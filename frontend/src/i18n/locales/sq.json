@@ -16,7 +16,8 @@
     "open": "Hap",
     "close": "Mbyll",
     "viewAll": "Shiko të gjitha",
-    "confirm": "Konfirmo"
+    "confirm": "Konfirmo",
+    "delete": "Fshi"
   },
   "nav": {
     "overview": "Përmbledhje",
@@ -35,7 +36,8 @@
     "carbon": "Karboni & ESG",
     "reports": "Raportet",
     "settings": "Cilësimet",
-    "assistant": "Pyet EnergyFlow"
+    "assistant": "Pyet EnergyFlow",
+    "scan": "Skano"
   },
   "topbar": {
     "openMenu": "Hap menynë",
@@ -115,7 +117,13 @@
     "no_leak_data": "Kompresori nuk ka punuar mjaftueshëm pa prodhim për të matur rrjedhjet.",
     "action_not_applicable": "Ky ndryshim nuk vlen për këtë makineri.",
     "report_final": "Ky raport është final dhe nuk mund të ndryshohet.",
-    "invalid_period": "Ai muaj nuk ka filluar ende."
+    "invalid_period": "Ai muaj nuk ka filluar ende.",
+    "scan_unavailable": "Leximi i fotove kërkon shërbimin e AI, i cili nuk është konfiguruar në këtë server.",
+    "scan_failed": "Fotoja nuk u lexua dot tani.",
+    "reading_backwards": "Ky lexim është më i ulët se ai i mëparshmi.",
+    "not_savable": "Ky lloj skanimi është vetëm për informim.",
+    "payload_too_large": "Fotoja është shumë e madhe.",
+    "not_found": "Nuk u gjet."
   },
   "validation": {
     "required": "Kjo fushë është e detyrueshme.",
@@ -298,7 +306,15 @@
     "resetHint": "Rindërton 75 ditë të dhëna që përfundojnë një ditë pune në 21:40.",
     "working": "Duke punuar…",
     "open": "Hap drejtuesin e demos",
-    "close": "Mbyll"
+    "close": "Mbyll",
+    "advanceMinutes": "+5 min",
+    "faults": "Shkaktoni një defekt",
+    "spike": "Mbingarko motorin më të ngarkuar",
+    "spikeHint": "Makineria që tërheq më shumë fuqi punon me 135 % të fuqisë nominale për 6 minuta. Detektori ka nevojë për 2 minuta të dhëna: prisni ose shtypni +5 min.",
+    "spikeDone": "{{code}} tani tërheq {{kw}} ({{pct}} % e fuqisë nominale) për 6 minuta. Shtypni +5 min ose prisni alarmin.",
+    "spikeError": {
+      "machine_not_running": "Asnjë makineri nuk po tërheq fuqi tani."
+    }
   },
   "live": {
     "subtitle": "Fuqia në kohë reale për çdo makineri.",
@@ -365,7 +381,13 @@
     "runningNow": "Punojnë tani",
     "monitoringSince": "Monitorim që nga {{date}}",
     "factor": "Faktori i rrjetit {{value}} kg CO₂e/kWh · {{source}}",
-    "viewAll": "Shiko të gjitha"
+    "viewAll": "Shiko të gjitha",
+    "forecastTitle": "Parashikimi për fund të muajit (pa TVSH)",
+    "forecastRange": "me gjasë {{low}} – {{high}}",
+    "measuredSoFar": "Matur deri tani: {{kwh}}",
+    "forecastRest": "Parashikimi për pjesën tjetër",
+    "forecastMethod": "{{co2}} deri në fund të muajit. Çdo ditë e mbetur = mesatarja e të njëjtit lloj dite në 28 ditët e fundit.",
+    "forecastMethodRange": "{{co2}} deri në fund të muajit. Çdo ditë e mbetur = mesatarja e të njëjtit lloj dite në 28 ditët e fundit; intervali (P10–P90) vjen nga një provë mbi {{days}} ditët e kaluara, me gabim tipik {{wape}}."
   },
   "machinesPage": {
     "subtitle": "Konsumi, kostoja dhe CO₂e për çdo makineri këtë muaj.",
@@ -402,7 +424,8 @@
     "criticalityLabel": "Rëndësia",
     "device": "Nyja EnergyFlow",
     "afterHours": "Po punon {{duration}} pasi mbaroi orari: {{kwh}}, {{eur}} dhe {{co2}} deri tani.",
-    "notFound": "Makineria nuk u gjet"
+    "notFound": "Makineria nuk u gjet",
+    "scanNameplate": "Skano pllakën"
   },
   "devicesPage": {
     "subtitle": "Nyjet EnergyFlow, lidhja dhe matjet elektrike live.",
@@ -643,7 +666,10 @@
     "device_offline": "{{serial}} ndaloi raportimin",
     "device_offline_detail": "Matja e fundit {{date}}",
     "command_failed": "Fikja nuk u konfirmua për {{machine}}",
-    "command_failed_detail": "{{serial}} · {{reason}}"
+    "command_failed_detail": "{{serial}} · {{reason}}",
+    "spike": "{{machine}}: kulm fuqie deri në {{peak}}",
+    "spike_detail": "{{date}} · {{duration}} · kulmi normal {{normal}}",
+    "overload": "{{ratedPct}} e fuqisë nominale"
   },
   "notifications": {
     "markAllRead": "Shëno të gjitha si të lexuara",
@@ -656,7 +682,9 @@
     "alert_device_offline": "{{serial}} ndaloi raportimin",
     "alert_device_offline_escalated": "{{serial}} është ende offline",
     "command_verified": "{{machine}} u fik · u verifikua nga matësi",
-    "impact_verified": "Kursime të verifikuara për {{code}}: {{kwh}} · {{eur}} në {{days}} ditë"
+    "impact_verified": "Kursime të verifikuara për {{code}}: {{kwh}} · {{eur}} në {{days}} ditë",
+    "alert_spike": "{{machine}}: kulm fuqie deri në {{peak}}",
+    "alert_spike_escalated": "{{machine}}: kulmi tani {{peak}} ({{ratedPct}} e fuqisë nominale)"
   },
   "overviewAlerts": {
     "title": "Alarmet e hapura",
@@ -1103,7 +1131,8 @@
       "simulatedTitle": "Të dhëna të simuluara",
       "simulated": "Kjo është një kompani demo fiktive. Makineritë e saj janë të simuluara (me motin real të Prishtinës dhe tarifën zyrtare të Kosovës); metodat janë ato që përdoren për matës realë.",
       "source": "Burimi"
-    }
+    },
+    "scanFuel": "Skano një kupon karburanti"
   },
   "reportsPage": {
     "subtitle": "Raporte mujore të energjisë dhe qëndrueshmërisë, të ndërtuara nga të dhëna të matura.",
@@ -1263,5 +1292,391 @@
       "opportunity": "Shpjego këtë mundësi dhe si u llogarit kursimi"
     },
     "footer": "Përgjigjet e AI kontrollohen me të dhënat tuaja. Makineritë fiken vetëm pasi ta konfirmoni."
+  },
+  "scan": {
+    "subtitle": "Përdorni kamerën për të kontrolluar faturën e rrymës, për të lexuar njehsorin ose pllakën e makinerisë, dhe për kuponët e karburantit.",
+    "change": "ndrysho",
+    "privacy": "Fotoja i dërgohet Groq (shërbim AI) vetëm për të lexuar tekstin dhe nuk ruhet. Ju i kontrolloni dhe mund t'i korrigjoni të gjitha vlerat para se të ruhet diçka.",
+    "reading": "Po lexohet fotoja…",
+    "checking": "Po kontrollohet…",
+    "photoAlt": "Fotoja e skanuar",
+    "retake": "Bëj sërish",
+    "another": "Skano tjetër",
+    "check": {
+      "fields_complete": "Të gjitha fushat kryesore janë të pranishme.",
+      "fields_missing": "Mungojnë: {{fields}}.",
+      "supplier_universal": "Lëshuar nga {{name}}, furnizuesi universal i Kosovës.",
+      "supplier_licensed": "{{name}} figuron në regjistrin e ZRRE-së për licencat e furnizimit me energji elektrike.",
+      "supplier_unknown": "“{{name}}” nuk është ndër furnizuesit e energjisë që EnergyFlow njeh nga ZRRE (regjistri 2022 dhe vendimet e mëvonshme). Kontrollojeni në ero-ks.org.",
+      "supplier_differs": "Tarifa juaj në EnergyFlow është me {{tariff}}, por kjo faturë është nga {{bill}}.",
+      "date_in_future": "Data {{date}} është në të ardhmen.",
+      "period_reversed": "Periudha e faturimit mbaron para se të fillojë.",
+      "period_unusual": "Periudha e faturimit është {{days}} ditë; faturat mujore zakonisht mbulojnë 28–31 ditë.",
+      "period_ok": "Periudha e faturimit: {{days}} ditë.",
+      "period_in_future": "Periudha e faturimit mbaron më {{date}}, data që ende nuk ka ardhur.",
+      "issued_before_period_end": "Lëshuar më {{issue}}, para se të mbarojë periudha ({{end}}).",
+      "due_before_issue": "Afati i pagesës është para datës së lëshimit.",
+      "kwh_sum": "Dita + nata = gjithsej: {{high}} + {{low}} = {{total}}.",
+      "kwh_sum_wrong": "Dita + nata ({{sum}}) nuk është e barabartë me totalin ({{total}}).",
+      "meter_backwards": "Leximi aktual i njehsorit ({{end}}) është më i ulët se i mëparshmi ({{start}}).",
+      "meter_diff_ok": "Leximet e njehsorit përputhen me konsumin ({{diff}}).",
+      "meter_multiplier": "Leximet e njehsorit × {{factor}} (njehsor me transformatorë rryme) përputhen me konsumin.",
+      "meter_diff_wrong": "Leximet e njehsorit ndryshojnë për {{diff}}, por fatura ngarkon {{kwh}}.",
+      "money_sum": "Shuma + TVSH = totali.",
+      "money_sum_with_debt": "Shuma + TVSH + borxhi i mëparshëm ({{debt}}) = totali.",
+      "money_sum_wrong": "Shuma ({{net}}) + TVSH ({{vat}}) nuk është e barabartë me totalin ({{total}}).",
+      "vat_rate": "TVSH është {{rate}}, norma e Kosovës për energjinë elektrike.",
+      "vat_rate_wrong": "TVSH është {{rate}}, por energjia elektrike në Kosovë tatohet me {{expected}}.",
+      "metering_not_covering": "EnergyFlow ende nuk po maste për gjithë periudhën, ndaj kWh nuk mund të krahasohen.",
+      "metered_match": "Përputhet me matësit tuaj: faturuar {{billed}}, matur {{metered}} ({{diff}}).",
+      "metered_diff": "Faturuar {{billed}}, matur {{metered}} ({{diff}}). Diferencat e vogla vijnë nga ngarkesa që EnergyFlow nuk i mat ose nga ditë të ndryshme leximi.",
+      "metered_diff_large": "Faturuar {{billed}}, por EnergyFlow mati {{metered}} ({{diff}}). Pyesni furnizuesin nëse leximi ishte i vlerësuar.",
+      "tariff_match": "Çmimi përputhet me tarifën zyrtare: faturuar {{billed}}, pritur {{expected}} ({{diff}}).{{note}}",
+      "tariff_diff": "Faturuar {{billed}} kundrejt {{expected}} të pritur sipas tarifës suaj ({{diff}}).{{note}}",
+      "tariff_diff_large": "Faturuar {{billed}} kundrejt {{expected}} të pritur sipas tarifës suaj ({{diff}}): çmimet nuk përputhen me tarifën zyrtare.{{note}}",
+      "tariffAllHigh": " (Fatura nuk ndan ditën dhe natën, ndaj të gjitha kWh u llogaritën me tarifën e lartë.)",
+      "already_saved": "Një faturë për {{month}} është ruajtur tashmë; ruajtja e zëvendëson.",
+      "reading_missing": "Nuk u gjet asnjë lexim.",
+      "first_reading": "Leximi i parë: i radhës do të krahasohet me atë që mat EnergyFlow ndërkohë.",
+      "reading_backwards": "Leximi ({{reading}}) është më i ulët se i mëparshmi ({{previous}}).",
+      "too_soon": "Më pak se një orë nga leximi i fundit: ende herët për krahasim.",
+      "meter_matches": "Nga leximi i fundit njehsori avancoi {{meter}}; EnergyFlow mati {{metered}} ({{diff}}).",
+      "meter_differs": "Njehsori avancoi {{meter}}; EnergyFlow mati {{metered}} ({{diff}}). Diferencat e vogla vijnë nga ngarkesa që EnergyFlow nuk i mat.",
+      "meter_differs_large": "Njehsori avancoi {{meter}}, por EnergyFlow mati {{metered}} ({{diff}}). Kontrolloni që çdo qark të jetë i matur.",
+      "hp_kw_mismatch": "{{kw}} kW dhe {{hp}} HP në pllakë nuk përputhen (1 HP = 0,7457 kW).",
+      "rated_power_missing": "Nuk u gjet fuqia nominale.",
+      "rated_power": "Fuqia nominale: {{kw}}.",
+      "nameplate_consistent": "Konsistente: tensioni, rryma dhe cos φ japin fuqi elektrike hyrëse {{input_kw}}, pra efikasiteti ≈ {{efficiency}}.",
+      "nameplate_inconsistent": "Fuqia nominale {{kw}} nuk përputhet me fuqinë hyrëse {{input_kw}} nga tensioni, rryma dhe cos φ: kontrolloni vlerat.",
+      "ie_class_ok": "Klasa e efikasitetit {{class}}.",
+      "ie_class_low": "Klasa e efikasitetit {{class}}. Në BE, motorët e rinj 0,75–1000 kW duhet të jenë të paktën IE3 që nga korriku 2021 (Rregullorja (BE) 2019/1781): vlen të merret parasysh kur të zëvendësohet.",
+      "running_above_rating": "{{code}} shpesh punon me {{p95_kw}}, {{load}} e kësaj fuqie nominale: kontrolloni që pllaka i përket kësaj makinerie.",
+      "oversized": "{{code}} zakonisht punon me {{p95_kw}}, vetëm {{load}} e fuqisë nominale. Motorët që punojnë shumë nën fuqinë nominale janë më pak efikasë.",
+      "load_ok": "{{code}} zakonisht punon me {{p95_kw}}, {{load}} e fuqisë nominale.",
+      "rated_power_changes": "Ruajtja ndryshon fuqinë nominale të {{code}} nga {{old}} në {{new}}.",
+      "litres_missing": "Nuk ka sasi në litra.",
+      "receipt_sum": "Litrat × çmimi = totali.",
+      "receipt_sum_wrong": "{{litres}} l × {{price}} nuk është e barabartë me totalin {{total}}.",
+      "fuel_unknown": "Zgjidhni karburantin: naftë, benzinë, naftë jashtë rrugës, LPG ose vaj për ngrohje.",
+      "scope1_factor": "Scope 1: {{co2_kg}} me {{value}} kg CO₂e për litër (faktorët UK DESNZ 2025).",
+      "label_class": "Klasa e energjisë {{class}}.",
+      "label_old_scale": "Klasa e energjisë {{class}} është në shkallën e vjetër A+++; që nga 2021 BE-ja po i kthen etiketat në A–G.",
+      "label_class_unreadable": "Klasa e energjisë “{{class}}” nuk u lexua dot.",
+      "label_kwh_missing": "Nuk u gjet shifra e konsumit të energjisë.",
+      "label_cost": "Me çmimin tuaj të rrymës kjo kushton {{eur}} dhe emeton {{co2_kg}} për {{unit}}."
+    },
+    "checkAgain": "Kontrollo sërish",
+    "stale": "Vlerat ndryshuan: kontrollo sërish.",
+    "notCheckedYet": "Plotësoni vlerat dhe shtypni Kontrollo.",
+    "busy": "Lexuesi i fotove është i zënë (plani falas i Groq: rreth tri foto në minutë). Provoni pas një minute.",
+    "typeInstead": "Mund t'i shkruani edhe vetë vlerat më poshtë.",
+    "notRecognised": "Kjo nuk duket si {{kind}}. Bëni sërish foton ose shkruani vlerat më poshtë.",
+    "machine": "Makineria",
+    "chooseMachine": "Zgjidhni makinerinë së cilës i përket pllaka",
+    "viewerNote": "Vetëm menaxherët dhe administratorët mund t'i ruajnë skanimet.",
+    "billDisclaimer": "EnergyFlow kontrollon nëse fatura është konsistente: numrat e saj, tarifën zyrtare dhe matësit tuaj. Nga një foto nuk mund të vërtetohet nëse dokumenti është origjinal apo i falsifikuar; për këtë kontaktoni furnizuesin.",
+    "camera": {
+      "starting": "Po hapet kamera…",
+      "denied": "Kamera nuk është e disponueshme ose qasja u refuzua. Ngarkoni një foto.",
+      "unsupported": "Ky shfletues nuk e hap dot kamerën. Ngarkoni një foto.",
+      "capture": "Bëj foto",
+      "upload": "Ngarko foto",
+      "manual": "Shkruaj vetë",
+      "tooLarge": "Fotoja është shumë e madhe për t'u dërguar. Provoni më afër dokumentit.",
+      "unreadable": "Ky skedar nuk u hap dot si foto."
+    },
+    "review": {
+      "title": "Kontrolloni vlerat",
+      "fromPhoto": "Lexuar nga fotoja. Korrigjoni çdo gjë të lexuar gabim, pastaj kontrolloni sërish.",
+      "manual": "Shkruani vlerat nga dokumenti."
+    },
+    "kinds": {
+      "bill": {
+        "title": "Fatura e rrymës",
+        "body": "Kontrolloni nëse përputhet me veten, me tarifën zyrtare dhe me matësit tuaj, dhe zbuloni faturat e falsifikuara.",
+        "hint": "Futeni gjithë faturën në kornizë, të sheshtë dhe pa shkëlqim."
+      },
+      "meter": {
+        "title": "Leximi i njehsorit",
+        "body": "Fotografoni njehsorin e furnizuesit për ta krahasuar me atë që mati EnergyFlow.",
+        "hint": "Mbusheni kornizën me ekranin e njehsorit dhe numrin e tij."
+      },
+      "nameplate": {
+        "title": "Pllaka e makinerisë",
+        "body": "Lexoni fuqinë nominale, tensionin, rrymën dhe klasën e efikasitetit te një makineri.",
+        "hint": "Afrohuni te pllaka; shmangni reflektimet në metal."
+      },
+      "fuel": {
+        "title": "Kupon karburanti",
+        "body": "Naftë, benzinë ose gaz për gjeneratorë, pirunë dhe automjete: shtohet në Scope 1.",
+        "hint": "Futeni gjithë kuponin në kornizë."
+      },
+      "label": {
+        "title": "Etiketa e energjisë",
+        "body": "Para blerjes: sa do t'ju kushtojë një produkt në vit dhe sa CO₂.",
+        "hint": "Futeni etiketën e energjisë së BE-së në kornizë."
+      }
+    },
+    "group": {
+      "bill": "Fatura",
+      "consumption": "Konsumi",
+      "amounts": "Shumat",
+      "meter": "Njehsori",
+      "identity": "Identifikimi",
+      "rating": "Të dhënat nominale",
+      "receipt": "Kuponi",
+      "product": "Produkti"
+    },
+    "field": {
+      "supplier": "Furnizuesi",
+      "customer_number": "Numri i konsumatorit",
+      "issue_date": "Data e lëshimit",
+      "period_start": "Periudha nga",
+      "period_end": "Periudha deri",
+      "due_date": "Afati i pagesës",
+      "kwh_high": "Tarifa e lartë (ditë)",
+      "kwh_low": "Tarifa e ulët (natë)",
+      "kwh_total": "Konsumi gjithsej",
+      "meter_start": "Leximi i mëparshëm",
+      "meter_end": "Leximi aktual",
+      "net_eur": "Shuma pa TVSH",
+      "vat_eur": "TVSH",
+      "total_eur": "Totali",
+      "previous_debt_eur": "Borxhi i mëparshëm",
+      "period": "Periudha e faturimit",
+      "meter_serial": "Numri i njehsorit",
+      "register": "Regjistri",
+      "reading_kwh": "Leximi",
+      "reading_t1": "Leximi T1 (ditë)",
+      "reading_t2": "Leximi T2 (natë)",
+      "manufacturer": "Prodhuesi",
+      "model": "Modeli",
+      "serial": "Numri serik",
+      "year": "Viti",
+      "rated_power_kw": "Fuqia nominale",
+      "rated_power_hp": "Fuqia nominale (HP)",
+      "voltage_v": "Tensioni",
+      "current_a": "Rryma",
+      "frequency_hz": "Frekuenca",
+      "phases": "Fazat",
+      "power_factor": "Faktori i fuqisë",
+      "efficiency_class": "Klasa e efikasitetit",
+      "efficiency_pct": "Efikasiteti",
+      "speed_rpm": "Shpejtësia",
+      "vendor": "Shitësi",
+      "date": "Data",
+      "fuel": "Karburanti",
+      "litres": "Litra",
+      "unit_price_eur": "Çmimi për litër",
+      "product_type": "Produkti",
+      "brand": "Marka",
+      "energy_class": "Klasa e energjisë",
+      "kwh_per_year": "Konsumi i energjisë",
+      "consumption_unit": "Për"
+    },
+    "option": {
+      "fuel": {
+        "diesel": "Naftë (diesel)",
+        "petrol": "Benzinë",
+        "gas_oil": "Naftë jashtë rrugës (gas oil)",
+        "lpg": "Gaz i lëngshëm (LPG)",
+        "heating_oil": "Vaj për ngrohje"
+      },
+      "phases": {
+        "1": "1 fazë",
+        "3": "3 faza"
+      }
+    },
+    "status": {
+      "pass": "Kaloi",
+      "warn": "Paralajmërim",
+      "fail": "Dështoi",
+      "info": "Shënim"
+    },
+    "verdict": {
+      "bill": {
+        "consistent": "Konsistente",
+        "check": "Duhet kontrolluar",
+        "likely_fake": "Ndoshta e falsifikuar"
+      },
+      "meter": {
+        "ok": "Duket në rregull",
+        "check": "Kontrolloni vlerat"
+      },
+      "nameplate": {
+        "ok": "Duket në rregull",
+        "check": "Kontrolloni vlerat"
+      },
+      "fuel": {
+        "ok": "Duket në rregull",
+        "check": "Kontrolloni vlerat"
+      },
+      "label": {
+        "ok": "U llogarit",
+        "check": "Kontrolloni vlerat"
+      }
+    },
+    "verdictBody": {
+      "bill": {
+        "consistent": "Numrat e saj përputhen dhe pajtohen me tarifën zyrtare dhe me matësit tuaj.",
+        "check": "Disa vlera nuk përputhen. Shihni më poshtë çfarë të kontrolloni para pagesës.",
+        "likely_fake": "Numrat e saj nuk përputhen ashtu siç përputhen në një faturë origjinale. Mos e paguani para se ta kontrolloni me furnizuesin."
+      },
+      "meter": {
+        "ok": "Leximi është konsistent.",
+        "check": "Shihni më poshtë çfarë të kontrolloni."
+      },
+      "nameplate": {
+        "ok": "Vlerat e pllakës janë konsistente.",
+        "check": "Shihni më poshtë çfarë të kontrolloni."
+      },
+      "fuel": {
+        "ok": "Gati për t'u shtuar në Scope 1.",
+        "check": "Shihni më poshtë çfarë të kontrolloni."
+      },
+      "label": {
+        "ok": "Sa kushton me çmimin tuaj të rrymës.",
+        "check": "Mungojnë disa vlera."
+      }
+    },
+    "derived": {
+      "pricePerKwh": "Çmimi mesatar",
+      "expectedTotal": "Totali i pritur (tarifa)",
+      "meteredKwh": "Matur nga EnergyFlow",
+      "co2": "CO₂e",
+      "energy": "Energjia",
+      "ratedKw": "Fuqia nominale",
+      "inputKw": "Fuqia elektrike hyrëse",
+      "load": "Ngarkesa tipike",
+      "cost": "Kostoja",
+      "price": "Çmimi juaj",
+      "meterDelta": "Njehsori avancoi"
+    },
+    "priceBasis": {
+      "measured_30d": "{{price}}/kWh (30 ditët e fundit)",
+      "tariff_high": "{{price}}/kWh (tarifa e lartë)"
+    },
+    "labelUnit": {
+      "year": "vit",
+      "hours1000": "1 000 orë",
+      "cycles100": "100 cikle"
+    },
+    "actions": {
+      "saveBill": "Ruaj faturën",
+      "saveReading": "Ruaj leximin",
+      "applyToMachine": "Apliko te makineria",
+      "addScope1": "Shto në Scope 1"
+    },
+    "saved": {
+      "bill": "Fatura u ruajt",
+      "meter": "Leximi u ruajt",
+      "nameplate": "Pllaka u ruajt te makineria",
+      "fuel": "U shtua në Scope 1"
+    },
+    "afterSave": {
+      "nameplate": "Hap makinerinë",
+      "fuel": "Shiheni te Karboni & ESG"
+    },
+    "history": {
+      "title": "Skanimet e ruajtura",
+      "subtitle": "Faturat krahas asaj që mati EnergyFlow, karburanti për Scope 1 dhe leximet e njehsorit të furnizuesit.",
+      "bills": "Faturat",
+      "fuel": "Karburanti (Scope 1)",
+      "readings": "Leximet e njehsorit",
+      "month": "Muaji",
+      "billed": "Faturuar",
+      "measured": "Matur",
+      "coverage": "Pjesa e matur",
+      "verdict": "Kontrolli",
+      "note": "Kuponi",
+      "readAt": "Lexuar",
+      "billsEmpty": "Ende pa fatura",
+      "billsEmptyBody": "Skanoni një faturë për ta krahasuar me matësit tuaj dhe me tarifën zyrtare.",
+      "fuelEmpty": "Ende pa karburant",
+      "fuelEmptyBody": "Skanoni kuponët e karburantit për gjeneratorë, pirunë ose automjete për të raportuar Scope 1.",
+      "readingsEmpty": "Ende pa lexime",
+      "readingsEmptyBody": "Skanoni herë pas here njehsorin e furnizuesit për ta krahasuar me EnergyFlow."
+    },
+    "checkButton": "Kontrollo"
+  },
+  "score": {
+    "title": "Pikët EnergyFlow",
+    "how": "Si llogaritet?",
+    "howTitle": "Si llogariten pikët EnergyFlow",
+    "howIntro": "Mesatare e ponderuar e gjashtë pjesëve, secila 0–100, për {{days}} ditët e fundit. Çdo pjesë vjen nga matjet tuaja.",
+    "change": "{{points}} krahasuar me javën e kaluar",
+    "fixNext": "Rregulloni më pas",
+    "points": "deri në +{{points}} pikë",
+    "part": "Pjesa",
+    "weight": "Pesha",
+    "value": "Pikët",
+    "basis": "Numrat tuaj",
+    "scaleNote": "Shkallët (p.sh. humbja 25 % e konsumit jep 0) janë zgjedhje e EnergyFlow, jo standard i industrisë. Pjesët pa të dhëna nuk hyjnë në mesatare.",
+    "parts": {
+      "waste": "Humbjet",
+      "schedule": "Disiplina e orarit",
+      "health": "Gjendja e pajisjeve",
+      "peak": "Menaxhimi i pikut",
+      "follow_through": "Veprimi i ndërmarrë",
+      "coverage": "Mbulimi me të dhëna"
+    },
+    "definition": {
+      "waste": "Humbja e matur si pjesë e konsumit; 0 kur arrin 25 %.",
+      "schedule": "Energjia e përdorur jashtë orarit nga makineritë që duhet të jenë të fikura (pa ngarkesat kritike); 0 kur arrin 20 % të konsumit.",
+      "health": "Pjesa e konsumit nga makineritë pa alarm të hapur për rënie efikasiteti ose fikje të pakonfirmuar.",
+      "peak": "Faktori i ngarkesës (fuqia mesatare ÷ piku 15-minutësh); 100 nga 60 % e lart.",
+      "follow_through": "Mundësitë e zbatuara dhe alarmet e zgjidhura brenda 24 orëve (30 ditët e fundit).",
+      "coverage": "Pjesa e hyrjes kryesore e matur për çdo makineri × plotësia e të dhënave 15-minutëshe."
+    },
+    "detail": {
+      "waste": "{{kwh}} humbje, {{share}} e konsumit",
+      "schedule": "{{kwh}} jashtë orarit, {{share}} e konsumit",
+      "health_one": "{{count}} makineri me problem të hapur ({{share}} e konsumit)",
+      "health_other": "{{count}} makineri me probleme të hapura ({{share}} e konsumit)",
+      "peak": "Faktori i ngarkesës {{lf}}, piku {{peak}}",
+      "followThrough": "{{acted}} nga {{opportunities}} mundësi të zbatuara · {{resolved}} nga {{alerts}} alarme të zgjidhura brenda 24 orëve",
+      "coverage": "{{metered}} e matur për makineri · të dhënat {{complete}} të plota"
+    }
+  },
+  "flow": {
+    "title": "Rrjedha e energjisë këtë muaj",
+    "wasteLink": "Shihni humbjet",
+    "grid": "Rrjeti",
+    "others": "Të tjera ({{count}})",
+    "unmetered": "Jo për makineri",
+    "unmeteredHint": "E matur në hyrjen kryesore, por jo nga matësi i një makinerie (ndriçim, priza, humbje).",
+    "notPerMachine": "Jo për makineri",
+    "productive": "Produktive",
+    "waste": "Humbje",
+    "aria": "Rrjedha e energjisë këtë muaj: {{kwh}} nga rrjeti, nga të cilat {{waste}} humbje.",
+    "note": "Humbje është ajo që matën detektorët e EnergyFlow (pas orarit, në pritje, rënie efikasiteti); çdo gjë tjetër që përdori një makineri llogaritet produktive."
+  },
+  "alertDetail": {
+    "title": "Alarm",
+    "peak": "Fuqia kulmore",
+    "z": "z robust = {{z}}",
+    "normal": "Kulmi normal",
+    "rated": "Fuqia nominale",
+    "ofRating": "kulmi = {{pct}} e saj",
+    "duration": "Kohëzgjatja",
+    "ongoing": "ende në vazhdim",
+    "chartTitle": "Leximi më i lartë 10-sekondësh në çdo minutë",
+    "peakMinute": "Kulmi",
+    "avgMinute": "Mesatarja",
+    "limitLine": "Kufiri normal (z = 6): {{kw}}",
+    "overloadLine": "110 % e fuqisë nominale: {{kw}}",
+    "overloadAdvice": "Makineria tërhoqi {{pct}} të fuqisë nominale. Puna mbi fuqinë nominale i nxeh tepër motorët dhe kabllot: kontrolloni për bllokim, kushinetë që po ngec ose filtër të zënë para se të punojë sërish.",
+    "whyTitle": "Pse po e shoh këtë?",
+    "rule": "Kulmi i çdo minute krahasohet me kulmet normale të vetë makinerisë: z robust = (kulmi − mediana) ÷ (1,4826 × MAD). Kulm fuqie është z > {{z}} në të paktën {{min}} minuta radhazi dhe mbaron pas {{clear}} minutash normale. Është kritik kur një lexim kalon {{overload}} % të fuqisë nominale.",
+    "baseline": "Normalja për {{slot}}: kulmi median {{median}}, MAD {{mad}}, nga {{samples}} periudha 15-minutëshe gjatë punës ({{from}} – {{to}}).",
+    "slot": "{{days}}, {{from}}:00–{{to}}:00",
+    "dayType": {
+      "working": "ditët e punës",
+      "non_working": "fundjavat dhe festat"
+    },
+    "openMachine": "Hap {{code}}",
+    "keySpike": "Minutat me kulm",
+    "keyNormal": "Minutat normale",
+    "allHours": "{{days}}, të gjitha orët"
   }
 }

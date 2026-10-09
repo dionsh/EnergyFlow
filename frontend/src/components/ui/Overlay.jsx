@@ -78,14 +78,15 @@ export function Modal({ open, onClose, title, children, footer, wide = false }) 
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className={cn('animate-pop relative w-full rounded-lg border border-line bg-surface shadow-overlay focus:outline-none', wide ? 'max-w-[640px]' : 'max-w-[480px]')}
+        className={cn('animate-pop relative flex max-h-full w-full flex-col rounded-lg border border-line bg-surface shadow-overlay focus:outline-none', wide ? 'max-w-[640px]' : 'max-w-[480px]')}
       >
-        <div className="flex items-start justify-between gap-3 px-5 pb-1 pt-4">
+        <div className="flex shrink-0 items-start justify-between gap-3 px-5 pb-1 pt-4">
           <h2 id={titleId} className="text-base font-semibold text-ink">{title}</h2>
           <IconButton label={t('common.close')} icon={X} onClick={onClose} className="-mr-2 -mt-1 size-8 shrink-0" />
         </div>
-        <div className="px-5 pb-4 pt-1 text-sm text-ink-2">{children}</div>
-        {footer && <div className="flex flex-wrap justify-end gap-2 border-t border-line px-5 py-3">{footer}</div>}
+        {/* Long content scrolls inside the dialog; title and actions stay in view. */}
+        <div className="min-h-0 overflow-y-auto px-5 pb-4 pt-1 text-sm text-ink-2">{children}</div>
+        {footer && <div className="flex shrink-0 flex-wrap justify-end gap-2 border-t border-line px-5 py-3">{footer}</div>}
       </div>
     </div>,
     document.body,

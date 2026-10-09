@@ -17,7 +17,7 @@ import { alertText } from './alertText'
 
 const FILTERS = ['active', 'resolved', 'all']
 
-export function AlertsPanel({ onOpenEvent }) {
+export function AlertsPanel({ onOpenEvent, onOpenAlert }) {
   const { t } = useTranslation()
   const { user } = useAuth()
   const queryClient = useQueryClient()
@@ -55,9 +55,10 @@ export function AlertsPanel({ onOpenEvent }) {
             <tbody>
               {alerts.data.data.map((alert) => {
                 const text = alertText(t, alert)
-                const open = () => alert.waste_event_id && onOpenEvent(alert.waste_event_id)
+                const detail = alert.waste_event_id || alert.type === 'SPIKE'
+                const open = () => (alert.waste_event_id ? onOpenEvent(alert.waste_event_id) : alert.type === 'SPIKE' && onOpenAlert(alert.id))
                 return (
-                  <tr key={alert.id} className={cn('border-b border-line last:border-0', alert.waste_event_id && 'cursor-pointer hover:bg-surface-2')} onClick={open}>
+                  <tr key={alert.id} className={cn('border-b border-line last:border-0', detail && 'cursor-pointer hover:bg-surface-2')} onClick={open}>
                     <td className="px-5 py-3 align-top"><SeverityBadge severity={alert.severity} /></td>
                     <td className="px-3 py-3 align-top">
                       <p className="font-medium text-ink">{text.title}</p>

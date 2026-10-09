@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Check, CircleDashed, ExternalLink, FlaskConical, Info } from 'lucide-react'
+import { Check, CircleDashed, ExternalLink, FlaskConical, Info, ScanLine } from 'lucide-react'
 import { api } from '../../lib/api'
 import { cn } from '../../lib/cn'
 import { formatCo2, formatDate, formatKwh, formatNumber, formatPercent } from '../../lib/format'
@@ -80,7 +80,13 @@ function Overview({ period, onMethodology }) {
                   <span className="text-ink-3">{t('carbonPage.scope1Missing')}</span>
                 ) : c.scope1.status === 'declared_none' ? (
                   <span>0 kg CO₂e · <span className="text-ink-3">{t('carbonPage.scope1None')}</span></span>
-                ) : formatCo2(c.scope1.kg)}
+                ) : <span className="text-base font-semibold">{formatCo2(c.scope1.kg)}</span>}
+                {c.scope1.status !== 'declared_none' && (
+                  <Link to="/scan?kind=fuel" className="mt-1.5 flex items-center gap-1.5 text-[12.5px] font-medium text-brand hover:underline">
+                    <ScanLine className="size-3.5" aria-hidden="true" />
+                    {t('carbonPage.scanFuel')}
+                  </Link>
+                )}
               </dd>
             </div>
             <div className="px-5 py-3">

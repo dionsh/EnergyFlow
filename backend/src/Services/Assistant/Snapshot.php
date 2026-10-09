@@ -15,6 +15,7 @@ use EnergyFlow\Services\Clock;
 use EnergyFlow\Services\Detection\WasteReport;
 use EnergyFlow\Services\Impact\ImpactService;
 use EnergyFlow\Services\Optimization\Recommendations;
+use EnergyFlow\Services\Scan\ScanService;
 use EnergyFlow\Services\Tariff\TariffBook;
 use EnergyFlow\Utils\Time;
 
@@ -46,6 +47,7 @@ final class Snapshot
         'carbon_this_month' => ['Carbon & ESG', 'Karboni & ESG', '/carbon'],
         'automations' => ['Automations', 'Automatizimet', '/automations'],
         'tariff' => ['Tariff', 'Tarifa', '/settings'],
+        'saved_bills' => ['Saved bills', 'Faturat e ruajtura', '/scan'],
         'context' => ['This page', 'Kjo faqe', null],
         'knowledge' => ['EnergyFlow methodology and sourced facts', 'Metodologjia e EnergyFlow dhe fakte me burim', null],
     ];
@@ -63,13 +65,14 @@ final class Snapshot
             'compressor', 'kompresor', 'moulder', 'chiller', 'pump', 'pomp', 'light', 'drit', 'hvac', 'office', 'zyr', 'more', 'më shumë', 'higher', 'rrit'],
         'waste_this_month' => ['waste', 'humb', 'after hours', 'pas orarit', 'idle', 'pritje', 'drift', 'leak', 'rrjedh', 'loss'],
         'waste_last_7_days' => ['week', 'javë', 'jave', '7 days', '7 ditë'],
-        'open_alerts' => ['alert', 'alarm', 'drift', 'problem', 'offline', 'failed', 'issue', 'wrong', 'gabim', 'paralajm', 'more power', 'më shumë fuqi'],
+        'open_alerts' => ['alert', 'alarm', 'drift', 'spike', 'overload', 'kulm', 'mbingarkes', 'problem', 'offline', 'failed', 'issue', 'wrong', 'gabim', 'paralajm', 'more power', 'më shumë fuqi'],
         'open_recommendations' => ['save', 'saving', 'reduce', 'recommend', 'should', 'change', 'improve', 'opportunit', 'fix', 'stop', 'kursim', 'kursej',
             'rekomand', 'ndrysho', 'përmirëso', 'mundësi', 'what if', 'ndal', 'riparo', 'service', 'servis'],
         'verified_savings' => ['saved', 'savings', 'impact', 'verified', 'before', 'after', 'kursyer', 'kursime', 'ndikim', 'verifik', 'auto-off', 'automation'],
         'carbon_this_month' => ['co2', 'co₂', 'carbon', 'emission', 'esg', 'scope', 'vsme', 'karbon', 'emetim', 'climate', 'klim', 'ghg'],
         'automations' => ['automation', 'automat', 'policy', 'policies', 'auto-off', 'polic', 'schedule', 'orar'],
         'tariff' => ['tariff', 'rate', 'price', 'night', 'peak', 'tarif', 'çmim', 'natë', 'nate', 'bill', 'fatur', 'cost', 'kosto', 'vat', 'tvsh'],
+        'saved_bills' => ['bill', 'fatur', 'invoice', 'supplier', 'furnizues', 'kesco', 'fake', 'falsifik', 'correct', 'saktë', 'sakte'],
     ];
 
     /** The sections a question needs: by topic words, by the machines it names, and by page context. */
@@ -138,6 +141,8 @@ final class Snapshot
                     'kwh' => $overview['projection']['kwh'], 'co2_kg' => $overview['projection']['co2_kg'],
                     'bill_excl_vat' => $overview['projection']['bill']['subtotal'] ?? null, 'bill_incl_vat' => $overview['projection']['bill']['total'] ?? null,
                     'method' => 'month to date + average of the same kind of day over the last 28 days',
+                    'likely_range_p10_p90' => $overview['projection']['range'] ?? null,
+                    'backtest_typical_error' => $overview['projection']['backtest']['wape'] ?? null,
                 ] : null,
                 'monthly_history' => self::months($companyId, $now, $time, $tariff, $incomer, (float) ($overview['emission_factor']['value'] ?? 0.0)),
                 'machines_this_month' => self::machines($companyId, $mtd, $tariff, $incomer),
@@ -154,6 +159,10 @@ final class Snapshot
                 'automations' => array_map(static fn (array $p): array => [
                     'machine' => $p['code'], 'type' => $p['type'], 'params' => json_decode((string) $p['params'], true), 'mode' => $p['mode'], 'active' => (bool) $p['is_active'],
                 ], Database::all('SELECT p.type, p.params, p.mode, p.is_active, m.code FROM automation_policies p JOIN machines m ON m.id = p.machine_id WHERE p.company_id = ?', [$companyId])),
+                'saved_bills' => array_map(static fn (array $b): array => [
+                    'month' => $b['month'], 'supplier' => $b['supplier'], 'billed_kwh' => $b['kwh'], 'measured_kwh' => $b['metered_kwh'], 'total_eur' => $b['total_eur'],
+                    'check_verdict' => $b['verdict'], 'failed_checks' => array_values(array_column(array_filter($b['checks'], static fn (array $c): bool => $c['status'] === 'fail'), 'key')),
+                ], array_slice(ScanService::bills($companyId), 0, 3)),
                 'tariff' => $tariff === null ? null : [
                     'name' => $tariff->summary()['name'], 'rate_high_eur_kwh' => $tariff->summary()['rate_high'], 'rate_low_eur_kwh' => $tariff->summary()['rate_low'],
                     'vat_rate' => $tariff->summary()['vat_rate'], 'period_now' => $tariff->period($now),

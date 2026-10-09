@@ -33,7 +33,7 @@ export function OpenAlertsCard() {
             return (
               <li key={alert.id}>
                 <Link
-                  to={alert.waste_event_id ? `/waste?event=${alert.waste_event_id}` : '/waste?tab=alerts'}
+                  to={alert.waste_event_id ? `/waste?event=${alert.waste_event_id}` : alert.type === 'SPIKE' ? `/waste?tab=alerts&alert=${alert.id}` : '/waste?tab=alerts'}
                   className="flex items-start gap-3 px-5 py-3 hover:bg-surface-2"
                 >
                   <SeverityBadge severity={alert.severity} className="mt-0.5 shrink-0" />

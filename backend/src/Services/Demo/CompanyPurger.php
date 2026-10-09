@@ -16,7 +16,7 @@ final class CompanyPurger
     private const BY_COMPANY = [
         'audit_log', 'production_overrides', 'production_output', 'waste_events', 'alerts', 'forecasts',
         'notifications', 'score_snapshots', 'recommendations', 'automation_policies', 'device_commands',
-        'impact_verifications', 'utility_bills', 'carbon_records', 'activity_data', 'esg_answers', 'reports',
+        'impact_verifications', 'utility_bills', 'meter_readings', 'carbon_records', 'activity_data', 'esg_answers', 'reports',
         'ai_conversations', 'sim_state', 'sim_scenarios', 'job_runs', 'power_quality_events', 'readings_15m',
         'machine_live', 'calendar_days', 'emission_factors',
     ];

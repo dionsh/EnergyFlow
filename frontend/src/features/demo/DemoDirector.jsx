@@ -1,15 +1,16 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Clapperboard, FastForward, RotateCcw, X } from 'lucide-react'
+import { Clapperboard, RotateCcw, X, Zap } from 'lucide-react'
 import { api } from '../../lib/api'
-import { formatDate } from '../../lib/format'
+import { formatDate, formatKw } from '../../lib/format'
 import { useAuth } from '../../providers/AuthProvider'
 import { Button, IconButton } from '../../components/ui/Button'
 
 /**
  * Floating control panel for presenting the demo: shows the virtual clock and can
- * fast-forward it or rebuild the whole story. Only demo-company admins see it.
+ * fast-forward it, inject a fault for the detectors to find, or rebuild the whole
+ * story. Only demo-company admins see it.
  */
 export function DemoDirector() {
   const { t } = useTranslation()
@@ -27,7 +28,11 @@ export function DemoDirector() {
 
   const refreshAll = () => queryClient.invalidateQueries()
   const advance = useMutation({
-    mutationFn: (hours) => api.post('/demo/advance', { hours }),
+    mutationFn: (step) => api.post('/demo/advance', step),
+    onSuccess: refreshAll,
+  })
+  const spike = useMutation({
+    mutationFn: () => api.post('/demo/spike', {}),
     onSuccess: refreshAll,
   })
   const reset = useMutation({
@@ -37,7 +42,7 @@ export function DemoDirector() {
       refreshAll()
     },
   })
-  const busy = advance.isPending || reset.isPending
+  const busy = advance.isPending || reset.isPending || spike.isPending
 
   if (!allowed) return null
 
@@ -71,10 +76,22 @@ export function DemoDirector() {
             {state.data ? formatDate(state.data.virtual_now, 'weekdayTime') : '—'}
           </p>
         </div>
-        <div className="grid grid-cols-3 gap-2">
-          <Button variant="secondary" size="sm" icon={FastForward} disabled={busy} onClick={() => advance.mutate(1)}>{t('demo.advanceHour')}</Button>
-          <Button variant="secondary" size="sm" disabled={busy} onClick={() => advance.mutate(24)}>{t('demo.advanceDay')}</Button>
-          <Button variant="secondary" size="sm" disabled={busy} onClick={() => advance.mutate(168)}>{t('demo.advanceWeek')}</Button>
+        <div className="grid grid-cols-4 gap-1.5">
+          <Button variant="secondary" size="sm" disabled={busy} onClick={() => advance.mutate({ minutes: 5 })} className="px-1.5">{t('demo.advanceMinutes')}</Button>
+          <Button variant="secondary" size="sm" disabled={busy} onClick={() => advance.mutate({ hours: 1 })} className="px-1.5">{t('demo.advanceHour')}</Button>
+          <Button variant="secondary" size="sm" disabled={busy} onClick={() => advance.mutate({ hours: 24 })} className="px-1.5">{t('demo.advanceDay')}</Button>
+          <Button variant="secondary" size="sm" disabled={busy} onClick={() => advance.mutate({ hours: 168 })} className="px-1.5">{t('demo.advanceWeek')}</Button>
+        </div>
+        <div className="border-t border-line pt-3">
+          <p className="mb-1.5 text-xs text-ink-3">{t('demo.faults')}</p>
+          <Button variant="secondary" size="sm" icon={Zap} loading={spike.isPending} disabled={busy} onClick={() => spike.mutate()}>{t('demo.spike')}</Button>
+          <p className="mt-1 text-[11.5px] text-ink-3" role="status">
+            {spike.isError
+              ? t(`demo.spikeError.${spike.error?.code}`, { defaultValue: spike.error?.message })
+              : spike.data
+                ? t('demo.spikeDone', { code: spike.data.data.machine.code, pct: spike.data.data.percent, kw: formatKw(spike.data.data.kw) })
+                : t('demo.spikeHint')}
+          </p>
         </div>
         <div className="border-t border-line pt-3">
           <Button variant="ghost" size="sm" icon={RotateCcw} loading={reset.isPending} disabled={busy} onClick={() => reset.mutate()}>

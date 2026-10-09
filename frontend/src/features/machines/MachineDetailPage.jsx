@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, TriangleAlert } from 'lucide-react'
+import { ArrowLeft, ScanLine, TriangleAlert } from 'lucide-react'
 import { cn } from '../../lib/cn'
 import { formatCo2, formatDuration, formatEur, formatKw, formatKwh, formatNumber } from '../../lib/format'
 import { MachineIcon } from '../../lib/machineTypes'
@@ -66,6 +66,14 @@ export function MachineDetailPage() {
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <Link
+            to={`/scan?kind=nameplate&machine=${machine.id}`}
+            title={t('machineDetail.scanNameplate')}
+            className="inline-flex h-9 items-center gap-2 rounded-sm border border-line-strong bg-surface px-3.5 text-sm font-medium text-ink hover:bg-surface-2"
+          >
+            <ScanLine className="size-4" aria-hidden="true" />
+            <span className="hidden sm:inline">{t('machineDetail.scanNameplate')}</span>
+          </Link>
           <AskButton size="md" question={t('assistant.explain.machine', { code: machine.code })} context={{ machine_id: machine.id }} />
           {live && <TurnOffButton machine={live} />}
         </div>

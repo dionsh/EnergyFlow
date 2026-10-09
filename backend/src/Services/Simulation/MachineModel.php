@@ -39,6 +39,45 @@ final class MachineModel
      */
     public function expected(array $m, int $ts): array
     {
+        $e = $this->base($m, $ts);
+        $e['kw'] = $this->overload($m, $ts, $e['kw'], 1.0);
+        return $e;
+    }
+
+    /**
+     * One concrete reading at $ts (10-second resolution).
+     *
+     * @return array{kw: float, pf: ?float, temp: ?float}
+     */
+    public function sample(array $m, int $ts): array
+    {
+        $s = $this->draw($m, $ts);
+        $s['kw'] = $this->overload($m, $ts, $s['kw'], 1 + 0.015 * Noise::gaussian($this->seed($m) + 31, $ts));
+        return $s;
+    }
+
+    /**
+     * A fault injected from the Demo Director (scenario 'spike'): while it is on, the
+     * machine draws `rated_share` × its nameplate power — a jammed screw, a seizing
+     * bearing or a clogged impeller overloads the motor like this until the thermal
+     * relay trips or someone intervenes.
+     */
+    private function overload(array $m, int $ts, float $kw, float $jitter): float
+    {
+        if ($kw <= 0.0) {
+            return $kw;
+        }
+        $scenario = $this->ctx->scenario('spike', $m['id'], $ts);
+        if ($scenario === null) {
+            return $kw;
+        }
+        $rated = (float) ($m['rated_power_kw'] ?? 0.0);
+        return max($kw, (float) ($scenario['params']['rated_share'] ?? 1.35) * $rated * $jitter);
+    }
+
+    /** @return array{mode: string, kw: float, run: float, idle: float, pf: ?float, temp: ?float, cycles_h: float} */
+    private function base(array $m, int $ts): array
+    {
         $p = $m['profile'];
         $seed = $this->seed($m);
         $mode = $this->mode($m, $ts);
@@ -135,16 +174,16 @@ final class MachineModel
     }
 
     /**
-     * One concrete reading at $ts (10-second resolution), adding the dynamics that
-     * a mean hides: compressor load/unload switching, moulding shot profile, pump on/off.
+     * The normal reading at $ts, adding the dynamics that a mean hides: compressor
+     * load/unload switching, moulding shot profile, pump on/off.
      *
      * @return array{kw: float, pf: ?float, temp: ?float}
      */
-    public function sample(array $m, int $ts): array
+    private function draw(array $m, int $ts): array
     {
         $p = $m['profile'];
         $seed = $this->seed($m);
-        $e = $this->expected($m, $ts);
+        $e = $this->base($m, $ts);
         $jitter = 1 + 0.012 * Noise::gaussian($seed, $ts);
 
         if ($e['kw'] <= 0.0) {
@@ -156,7 +195,7 @@ final class MachineModel
                 // Rhythm from the air demand at the start of the current 10-minute window, so the
                 // load/unload cycle is continuous (re-deriving the period every sample turns the phase into noise).
                 $window = $ts - ($ts % 600);
-                $w = $this->expected($m, $window);
+                $w = $this->base($m, $window);
                 $period = 3600 / max(1.0, $w['cycles_h']);
                 $phase = fmod($ts - $window + ($seed % 997) * 13, $period) / $period;
                 $loaded = $phase < ($w['kw'] > 0.0 ? $w['run'] : $e['run']);

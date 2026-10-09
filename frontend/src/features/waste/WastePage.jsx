@@ -14,6 +14,7 @@ import { Segmented, Tabs } from '../../components/ui/Tabs'
 import { useAlerts, useLive, useWasteEvents, useWasteSummary } from '../data'
 import { TurnOffButton } from '../control/TurnOff'
 import { AskButton } from '../assistant/AskButton'
+import { AlertDetail } from './AlertDetail'
 import { AlertsPanel } from './AlertsPanel'
 import { DailyWasteChart } from './WasteCharts'
 import { StatusBadge, WasteDrawer } from './WasteDrawer'
@@ -174,6 +175,7 @@ export function WastePage() {
   const tab = params.get('tab') === 'alerts' ? 'alerts' : 'waste'
   const period = PERIODS.includes(params.get('period')) ? params.get('period') : 'mtd'
   const eventId = params.get('event')
+  const alertId = params.get('alert')
   const activeAlerts = useAlerts('active')
   const live = useLive()
 
@@ -204,8 +206,9 @@ export function WastePage() {
       {tab === 'waste' ? (
         <WasteOverview period={period} onOpen={(id) => update({ event: String(id) })} />
       ) : (
-        <AlertsPanel onOpenEvent={(id) => update({ event: String(id) })} />
+        <AlertsPanel onOpenEvent={(id) => update({ event: String(id) })} onOpenAlert={(id) => update({ alert: String(id) })} />
       )}
+      <AlertDetail alertId={alertId} onClose={() => update({ alert: null })} />
       <WasteDrawer
         eventId={eventId}
         onClose={() => update({ event: null })}

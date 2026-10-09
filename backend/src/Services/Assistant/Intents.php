@@ -25,6 +25,7 @@ final class Intents
         '/impact' => ['impact', 'ndikim', 'before and after', 'before/after', 'para dhe pas'],
         '/carbon' => ['carbon', 'esg', 'vsme', 'karbon', 'emission', 'emetim'],
         '/reports' => ['report', 'raport'],
+        '/scan' => ['scan', 'skano', 'skanim', 'camera', 'kamer'],
         '/devices' => ['device', 'pajisje', 'sensor', 'hardware', 'meter', 'matës', 'mates'],
         '/machines' => ['machines', 'makineritë', 'makinerite', 'machine list', 'lista e makinerive'],
         '/live' => ['live', 'real time', 'real-time', 'monitor'],
@@ -113,8 +114,11 @@ final class Intents
             $afterHours = $has(['after hours', 'after-hours', 'after working hours', 'outside working hours', 'pas orarit', 'jashtë orarit', 'jashte orarit']);
             return $intent('waste', 'mtd') + ['type' => $afterHours ? 'after_hours' : null];
         }
-        if ($has(['alert', 'alarm', 'problem', 'issue', 'anything wrong', 'gabim', 'paralajmërim', 'paralajmerim'])) {
+        if ($has(['alert', 'alarm', 'problem', 'issue', 'anything wrong', 'gabim', 'paralajmërim', 'paralajmerim', 'spike', 'overload', 'mbingarkes', 'kulm fuqie'])) {
             return $intent('alerts');
+        }
+        if ($has(['energyflow score', 'our score', 'the score', 'my score', 'score?', 'pikët', 'piket', 'sa pikë', 'sa pike'])) {
+            return $intent('score');
         }
         if ($has(['forecast', 'projection', 'end of the month', 'end of month', 'expected bill', 'bill estimate', 'estimated bill', 'parashikim', 'fund të muajit', 'fund te muajit', 'fatura e pritshme', 'fatura e parashikuar'])) {
             return $intent('forecast');

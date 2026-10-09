@@ -19,6 +19,7 @@ const MachinesPage = page(pageLoaders.machines, 'MachinesPage')
 const MachineDetailPage = page(pageLoaders.machineDetail, 'MachineDetailPage')
 const DevicesPage = page(pageLoaders.devices, 'DevicesPage')
 const DeviceDetailPage = page(pageLoaders.deviceDetail, 'DeviceDetailPage')
+const ScanPage = page(pageLoaders.scan, 'ScanPage')
 const WastePage = page(pageLoaders.waste, 'WastePage')
 const OpportunitiesPage = page(pageLoaders.opportunities, 'OpportunitiesPage')
 const AutomationsPage = page(pageLoaders.automations, 'AutomationsPage')
@@ -60,6 +61,7 @@ export default function App() {
                     <Route path="machines/:id" element={<MachineDetailPage />} />
                     <Route path="devices" element={<DevicesPage />} />
                     <Route path="devices/:id" element={<DeviceDetailPage />} />
+                    <Route path="scan" element={<ScanPage />} />
                     <Route path="waste" element={<WastePage />} />
                     <Route path="opportunities" element={<OpportunitiesPage />} />
                     <Route path="automations" element={<AutomationsPage />} />

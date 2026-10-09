@@ -35,6 +35,12 @@ final class SeverityPolicy
         };
     }
 
+    /** A power spike: critical when it overloads the motor (> 110 % of its nameplate rating). */
+    public static function spike(bool $overload): string
+    {
+        return $overload ? 'critical' : 'warning';
+    }
+
     /** Notification category for a severity (critical / warning / insight). */
     public static function category(string $severity): string
     {

@@ -85,7 +85,8 @@ Roles: **V** viewer, **M** manager, **A** admin, **O** owner. Each role includes
 |---|---|---|---|
 | GET | `/live` | V | Site kW now, every machine's live row, devices online, `last_reading_at`, running-after-hours flags, live waste meter. In demo mode this also triggers simulator catch-up. |
 | GET | `/overview?date` | V | KPI set: current kW, today kWh, MTD kWh, estimated bill (forecast), MTD CO₂, verified savings, open alerts by severity, machines running, EnergyFlow Score |
-| GET | `/energy/flow?period` | V | Sankey nodes and links (grid → nodes → machines → productive/waste), with € and CO₂ totals |
+| GET | `/energy-flow` | V | This month's flow: site kWh/€/CO₂, per machine kWh, € and quantified waste, unmetered rest, productive vs waste (drawn as a Sankey) |
+| GET | `/score` | V | EnergyFlow Score: six parts (value, weight, numbers behind it), change vs the previous 7 days, the part to fix next |
 | GET | `/energy/consumption?period&group_by=machine\|department\|day\|hour\|tariff_period` | V | Breakdown series |
 | GET | `/energy/load-profile?period` | V | Day × hour heatmap matrix |
 | GET | `/energy/bill-variance?a=2026-08&b=2026-09` | V | Decomposition (waterfall) + drivers |
@@ -99,6 +100,7 @@ Roles: **V** viewer, **M** manager, **A** admin, **O** owner. Each role includes
 | GET | `/waste-events?period&type&machine_id&severity&status` | V | List |
 | GET | `/waste-events/{id}` | V | Detail + evidence + suggested action |
 | GET | `/alerts?status&severity` | V | List |
+| GET | `/alerts/{id}` | V | One alert with its evidence (baseline, observed values, thresholds; for spikes the minute series) |
 | POST | `/alerts/{id}/acknowledge` · `/alerts/{id}/resolve` | M | Lifecycle |
 | GET | `/notifications?unread=1` | V | Notification centre |
 | POST | `/notifications/{id}/read` · `/notifications/read-all` | V | |
@@ -123,7 +125,7 @@ Roles: **V** viewer, **M** manager, **A** admin, **O** owner. Each role includes
 | GET | `/impact/summary?period` | V | Before/after at company level (raw + adjusted) |
 | GET | `/impact/interventions` | V | Every intervention with its verification status |
 | GET | `/impact/interventions/{id}` | V | Baseline model, adjustments, CI, daily series |
-| GET | `/scores` | V | EnergyFlow Score + ESG Readiness with breakdowns and history |
+| GET | `/score` | V | EnergyFlow Score (see Live and overview). ESG Readiness is `/esg/readiness`; the month-end forecast with its P10–P90 range and backtest is `projection` in `/overview` |
 | GET | `/ml/models` | V | Active model cards |
 
 ## Carbon and ESG
@@ -133,10 +135,22 @@ Roles: **V** viewer, **M** manager, **A** admin, **O** owner. Each role includes
 | GET | `/carbon/summary?period` | V | Scope 1, Scope 2 (location; market = n/a), intensities, factor used, avoided emissions |
 | GET | `/carbon/breakdown?period&group_by=machine\|department\|month` | V | |
 | GET | `/carbon/trend?granularity=day\|week\|month&from&to` | V | |
-| CRUD | `/carbon/activity-data` | M | Scope 1 fuel entries |
+| GET · DELETE | `/fuel-records` · `/fuel-records/{id}` | V · M | Scope 1 fuel entries (added through Scan) |
 | GET | `/esg/vsme-b3?year=2026` | V | B3 datapoint table with status per row (`auto`/`manual`/`estimated`/`missing`) |
 | GET | `/esg/readiness` | V | Score, checklist, next 3 steps |
 | PUT | `/esg/answers/{item_key}` | A | B2 practices answers |
+
+## Scan (camera)
+
+Photos are read by a vision model on Groq and never stored. The user reviews every field before `check` and `save`.
+
+| Method | Path | Role | Purpose |
+|---|---|---|---|
+| POST | `/scan/read` `{kind, image}` | V | `kind` = `bill`, `meter`, `nameplate`, `fuel` or `label`; `image` = JPEG/PNG/WebP data URL ≤ 1 MB → `{recognised, fields}`. 20/h per user, `SCAN_DAILY_LIMIT` per company |
+| POST | `/scan/check` `{kind, fields, machine_id?}` | V | Deterministic checks → `{verdict, checks[], derived}`; bills: `consistent` / `check` / `likely_fake` |
+| POST | `/scan/save` `{kind, fields, machine_id?}` | M | Bill → `utility_bills` (billed vs metered), meter → `meter_readings`, nameplate → machine rating, fuel → Scope 1 `activity_data` |
+| GET · DELETE | `/bills` · `/bills/{id}` | V · M | Saved bills with the metered kWh for the same period and coverage |
+| GET · DELETE | `/meter-readings` · `/meter-readings/{id}` | V · M | Main-meter readings |
 
 ## Reports
 
@@ -162,10 +176,10 @@ Roles: **V** viewer, **M** manager, **A** admin, **O** owner. Each role includes
 
 | Method | Path | Purpose |
 |---|---|---|
-| GET | `/demo/state` | Virtual clock, speed, active scenarios |
-| POST | `/demo/clock` `{set_local: "21:40"}` or `{advance_days: 7}` | Set clock / fast-forward (generates data + runs jobs for the range) |
-| POST | `/demo/scenarios` `{scenario, machine_id, params}` · DELETE `/demo/scenarios/{id}` | Trigger / stop S1–S6 |
-| POST | `/demo/reset` | Rebuild the deterministic story |
+| GET | `/demo/state` | Virtual clock, offset, story anchor, generated-until |
+| POST | `/demo/advance` `{hours}` or `{minutes}` | Fast-forward (generates the data and runs the analytics pipeline for the range) |
+| POST | `/demo/spike` `{machine_id?, minutes?, percent?}` | Motor overload from the next reading: the machine draws `percent` % (100–200, default 135) of its rating for `minutes` (3–30, default 6). Without `machine_id`: the motor-driven machine drawing the most power. 409 if it is off |
+| POST | `/demo/reset` `{scene?}` | Rebuild the deterministic story (`weekday_evening` or `now`) |
 
 ## Internal and health
 

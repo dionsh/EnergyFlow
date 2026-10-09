@@ -236,12 +236,18 @@ final class CarbonReport
     /** Scope 1 from declared fuel use; "missing" until the company declares it (or declares none). */
     private static function scope1(int $companyId, int $from, int $to): array
     {
+        // Fuel is declared per month: every month that overlaps the period, in local dates
+        // (the period's end is exclusive, so its last day is $to − 1).
+        $time = LocalTime::forCompany($companyId);
         $row = Database::one(
-            'SELECT COUNT(*) AS n, SUM(co2e_kg) AS kg FROM activity_data WHERE company_id = ? AND period_month >= ? AND period_month < ?',
-            [$companyId, gmdate('Y-m-01', $from), gmdate('Y-m-d', $to)],
+            'SELECT COUNT(*) AS n, SUM(co2e_kg) AS kg, SUM(energy_kwh) AS kwh, COUNT(energy_kwh) AS with_energy
+               FROM activity_data WHERE company_id = ? AND period_month >= ? AND period_month <= ?',
+            [$companyId, substr($time->date($from), 0, 7) . '-01', $time->date($to - 1)],
         );
         if ((int) $row['n'] > 0) {
-            return ['status' => 'manual', 'kg' => round((float) $row['kg'], 1), 'kwh' => null];
+            // Energy is known when every fuel line has it (factors with an energy content, migration 0014).
+            $kwh = (int) $row['with_energy'] === (int) $row['n'] ? round((float) $row['kwh'], 1) : null;
+            return ['status' => 'manual', 'kg' => round((float) $row['kg'], 2), 'kwh' => $kwh];
         }
         if ((self::answers($companyId)['no_fuel_combustion'] ?? false) === true) {
             return ['status' => 'declared_none', 'kg' => 0.0, 'kwh' => 0.0];

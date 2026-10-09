@@ -22,8 +22,8 @@ final class GroqClient
     }
 
     /**
-     * @param list<array{role: string, content: string}> $messages
-     * @param array{temperature?: float, max_tokens?: int, json?: bool} $options
+     * @param list<array{role: string, content: string|list<array<string, mixed>>}> $messages content may mix text and images
+     * @param array{temperature?: float, max_tokens?: int, json?: bool, models?: list<string>, timeout?: int} $options
      * @return array{ok: bool, text: string, model: ?string, tokens_in: ?int, tokens_out: ?int, latency_ms: int, error: ?string}
      */
     public static function chat(array $messages, array $options = []): array
@@ -32,7 +32,7 @@ final class GroqClient
         if ($key === null) {
             return self::failure('not_configured', 0);
         }
-        $models = array_values(array_unique(array_filter([
+        $models = array_values(array_unique(array_filter($options['models'] ?? [
             Env::get('GROQ_MODEL', 'openai/gpt-oss-120b'),
             Env::get('GROQ_MODEL_FALLBACK', 'openai/gpt-oss-20b'),
         ])));
@@ -61,7 +61,7 @@ final class GroqClient
                 CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE),
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_CONNECTTIMEOUT => 5,
-                CURLOPT_TIMEOUT => 25,
+                CURLOPT_TIMEOUT => $options['timeout'] ?? 25,
             ]);
             $raw = curl_exec($curl);
             $status = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);

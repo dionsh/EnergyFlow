@@ -52,14 +52,17 @@ The owner signs in as `owner@ylli-plast.demo` with `DEMO_OWNER_PASSWORD` from `b
 
 | Module | What it does |
 |---|---|
+| Overview | EnergyFlow Score (six weighted parts from the measurements, with what to fix next), month-end forecast with a P10–P90 range from a backtest, energy-flow diagram (grid → machines → productive or waste) |
 | Live · Machines · Devices | Power per machine every few seconds, consumption, cost and CO₂e per machine, device health |
-| Waste & Alerts | After-hours and idle episodes, compressed-air leak signature, efficiency drift (CUSUM), offline devices; quantified in kWh, € and CO₂e |
+| Waste & Alerts | After-hours and idle episodes, compressed-air leak signature, efficiency drift (CUSUM), power spikes and motor overloads (robust z-score), offline devices; quantified in kWh, € and CO₂e, each with the evidence behind it |
+| Scan | Camera (or photo upload) for an electricity bill (checked for arithmetic, VAT, licensed supplier, meter and tariff: consistent, check or likely fake), a meter reading, a motor nameplate, a fuel receipt (Scope 1) or an appliance energy label. A vision model reads the photo, the user confirms every field, the checks are deterministic. Photos are never stored |
 | Opportunities | Ranked recommendations, each quantified by replaying the machine's own data; a What-if simulator |
 | Turn Off & Automations | A command loop to the relay, verified only by the meter; policies such as "off 15 min after the shift" |
 | Impact | Before/after proof per action: adjusted baseline, 90 % confidence interval (IPMVP-inspired) |
-| Carbon & ESG | Scope 2 from metered electricity, Scope 1 from declarations, VSME B3 datapoints, readiness checklist, methodology |
+| Carbon & ESG | Scope 2 from metered electricity, Scope 1 from scanned fuel receipts (DESNZ 2025 factors), VSME B3 datapoints, readiness checklist, methodology |
 | Reports | Monthly energy and sustainability report, frozen figures, AI-drafted text checked against them, A4 PDF |
 | Ask EnergyFlow | Assistant (Ctrl/⌘ K): data questions answered straight from MySQL; open questions by Groq over a data snapshot, every number checked; off-topic questions refused; Turn Off only after the user confirms |
+| Demo Director | Virtual clock (+5 min to +7 days), story reset, and fault injection (a motor overload the spike detector must find) |
 | Hardware bridge | `tools/hw-bridge`: real smart relays (Shelly Gen2) speak the same signed device protocol as the EF-N3 nodes |
 
 ## Checks

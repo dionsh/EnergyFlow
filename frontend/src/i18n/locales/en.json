@@ -16,7 +16,8 @@
     "open": "Open",
     "close": "Close",
     "viewAll": "View all",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "delete": "Delete"
   },
   "nav": {
     "overview": "Overview",
@@ -35,7 +36,8 @@
     "carbon": "Carbon & ESG",
     "reports": "Reports",
     "settings": "Settings",
-    "assistant": "Ask EnergyFlow"
+    "assistant": "Ask EnergyFlow",
+    "scan": "Scan"
   },
   "topbar": {
     "openMenu": "Open menu",
@@ -115,7 +117,13 @@
     "no_leak_data": "The compressor hasn't run without production long enough to measure leaks.",
     "action_not_applicable": "This change doesn't apply to this machine.",
     "report_final": "This report is final and can't be changed.",
-    "invalid_period": "That month hasn't started yet."
+    "invalid_period": "That month hasn't started yet.",
+    "scan_unavailable": "Reading photos needs the AI service, which isn't configured on this server.",
+    "scan_failed": "The photo couldn't be read right now.",
+    "reading_backwards": "This reading is lower than the previous one.",
+    "not_savable": "This kind of scan is for information only.",
+    "payload_too_large": "The photo is too large.",
+    "not_found": "Not found."
   },
   "validation": {
     "required": "This field is required.",
@@ -298,7 +306,15 @@
     "resetHint": "Rebuilds 75 days of data ending on a weekday at 21:40.",
     "working": "Working…",
     "open": "Open Demo Director",
-    "close": "Close"
+    "close": "Close",
+    "advanceMinutes": "+5 min",
+    "faults": "Inject a fault",
+    "spike": "Overload the busiest motor",
+    "spikeHint": "The machine drawing the most power runs at 135 % of its rating for 6 minutes. The spike detector needs 2 minutes of data: wait, or press +5 min.",
+    "spikeDone": "{{code}} now draws {{kw}} ({{pct}} % of its rating) for 6 minutes. Press +5 min or wait for the alert.",
+    "spikeError": {
+      "machine_not_running": "No machine is drawing power right now."
+    }
   },
   "live": {
     "subtitle": "Real-time power for every machine.",
@@ -365,7 +381,13 @@
     "runningNow": "Running now",
     "monitoringSince": "Monitoring since {{date}}",
     "factor": "Grid factor {{value}} kg CO₂e/kWh · {{source}}",
-    "viewAll": "View all"
+    "viewAll": "View all",
+    "forecastTitle": "Month-end forecast (excl. VAT)",
+    "forecastRange": "likely {{low}} – {{high}}",
+    "measuredSoFar": "Measured so far: {{kwh}}",
+    "forecastRest": "Forecast for the rest",
+    "forecastMethod": "{{co2}} by month-end. Each remaining day = the average of the same kind of day over the last 28 days.",
+    "forecastMethodRange": "{{co2}} by month-end. Each remaining day = the average of the same kind of day over the last 28 days; the range (P10–P90) comes from a {{days}}-day backtest with a typical error of {{wape}}."
   },
   "machinesPage": {
     "subtitle": "Consumption, cost and CO₂e per machine this month.",
@@ -402,7 +424,8 @@
     "criticalityLabel": "Criticality",
     "device": "EnergyFlow node",
     "afterHours": "Running for {{duration}} after the schedule ended: {{kwh}}, {{eur}} and {{co2}} so far.",
-    "notFound": "Machine not found"
+    "notFound": "Machine not found",
+    "scanNameplate": "Scan nameplate"
   },
   "devicesPage": {
     "subtitle": "EnergyFlow nodes, their connection and live electrical readings.",
@@ -643,7 +666,10 @@
     "device_offline": "{{serial}} stopped reporting",
     "device_offline_detail": "Last reading {{date}}",
     "command_failed": "Turn Off not confirmed for {{machine}}",
-    "command_failed_detail": "{{serial}} · {{reason}}"
+    "command_failed_detail": "{{serial}} · {{reason}}",
+    "spike": "{{machine}}: power spike to {{peak}}",
+    "spike_detail": "{{date}} · {{duration}} · normal peak {{normal}}",
+    "overload": "{{ratedPct}} of its rating"
   },
   "notifications": {
     "markAllRead": "Mark all as read",
@@ -656,7 +682,9 @@
     "alert_device_offline": "{{serial}} stopped reporting",
     "alert_device_offline_escalated": "{{serial}} is still offline",
     "command_verified": "{{machine}} switched off · verified by the meter",
-    "impact_verified": "Savings verified on {{code}}: {{kwh}} · {{eur}} over {{days}} days"
+    "impact_verified": "Savings verified on {{code}}: {{kwh}} · {{eur}} over {{days}} days",
+    "alert_spike": "{{machine}}: power spike to {{peak}}",
+    "alert_spike_escalated": "{{machine}}: power spike now {{peak}} ({{ratedPct}} of its rating)"
   },
   "overviewAlerts": {
     "title": "Open alerts",
@@ -1103,7 +1131,8 @@
       "simulatedTitle": "Simulated data",
       "simulated": "This is a fictional demo company. Its machines are simulated (with real Pristina weather and the official Kosovo tariff); the methods are the ones used for real meters.",
       "source": "Source"
-    }
+    },
+    "scanFuel": "Scan a fuel receipt"
   },
   "reportsPage": {
     "subtitle": "Monthly energy and sustainability reports, generated from measured data.",
@@ -1263,5 +1292,391 @@
       "opportunity": "Explain this opportunity and how its saving was calculated"
     },
     "footer": "AI answers are checked against your data. Machines are only switched off after you confirm."
+  },
+  "scan": {
+    "subtitle": "Use your camera to check an electricity bill, read a meter or a nameplate, and capture fuel receipts.",
+    "change": "change",
+    "privacy": "The photo is sent to Groq (an AI service) only to read the text, and isn't stored. You check and can correct every value before anything is saved.",
+    "reading": "Reading the photo…",
+    "checking": "Checking…",
+    "photoAlt": "The scanned photo",
+    "retake": "Retake",
+    "another": "Scan another",
+    "check": {
+      "fields_complete": "All key fields are present.",
+      "fields_missing": "Missing: {{fields}}.",
+      "supplier_universal": "Issued by {{name}}, Kosovo's universal service supplier.",
+      "supplier_licensed": "{{name}} appears in ERO's register of electricity supply licences.",
+      "supplier_unknown": "“{{name}}” isn't among the electricity suppliers EnergyFlow knows from ERO (2022 register and later decisions). Check it at ero-ks.org.",
+      "supplier_differs": "Your tariff in EnergyFlow is with {{tariff}}, but this bill is from {{bill}}.",
+      "date_in_future": "The date {{date}} is in the future.",
+      "period_reversed": "The billing period ends before it starts.",
+      "period_unusual": "The billing period is {{days}} days long; monthly bills usually cover 28–31 days.",
+      "period_ok": "Billing period: {{days}} days.",
+      "period_in_future": "The billing period ends on {{date}}, which hasn't come yet.",
+      "issued_before_period_end": "Issued on {{issue}}, before the period ends ({{end}}).",
+      "due_before_issue": "The due date is before the issue date.",
+      "kwh_sum": "Day + night = total: {{high}} + {{low}} = {{total}}.",
+      "kwh_sum_wrong": "Day + night ({{sum}}) doesn't equal the total ({{total}}).",
+      "meter_backwards": "The current meter reading ({{end}}) is lower than the previous one ({{start}}).",
+      "meter_diff_ok": "The meter readings match the consumption ({{diff}}).",
+      "meter_multiplier": "The meter readings × {{factor}} (a current-transformer meter) match the consumption.",
+      "meter_diff_wrong": "The meter readings differ by {{diff}}, but the bill charges {{kwh}}.",
+      "money_sum": "Amount + VAT = total.",
+      "money_sum_with_debt": "Amount + VAT + previous debt ({{debt}}) = total.",
+      "money_sum_wrong": "Amount ({{net}}) + VAT ({{vat}}) doesn't equal the total ({{total}}).",
+      "vat_rate": "VAT is {{rate}}, Kosovo's rate for electricity.",
+      "vat_rate_wrong": "VAT is {{rate}}, but electricity in Kosovo is taxed at {{expected}}.",
+      "metering_not_covering": "EnergyFlow wasn't measuring yet for the whole period, so the kWh can't be compared.",
+      "metered_match": "Matches your meters: billed {{billed}}, measured {{metered}} ({{diff}}).",
+      "metered_diff": "Billed {{billed}}, measured {{metered}} ({{diff}}). Small gaps can come from loads EnergyFlow doesn't meter or different reading days.",
+      "metered_diff_large": "Billed {{billed}}, but EnergyFlow measured {{metered}} ({{diff}}). Ask the supplier whether the reading was estimated.",
+      "tariff_match": "The price matches the official tariff: {{billed}} billed, {{expected}} expected ({{diff}}).{{note}}",
+      "tariff_diff": "{{billed}} billed against {{expected}} expected at your tariff ({{diff}}).{{note}}",
+      "tariff_diff_large": "{{billed}} billed against {{expected}} expected at your tariff ({{diff}}): the prices don't match the official tariff.{{note}}",
+      "tariffAllHigh": " (No day/night split on the bill, so all kWh were priced at the high tariff.)",
+      "already_saved": "A bill for {{month}} is already saved; saving replaces it.",
+      "reading_missing": "No reading could be found.",
+      "first_reading": "First reading: the next one will be compared with what EnergyFlow measures in between.",
+      "reading_backwards": "The reading ({{reading}}) is lower than the previous one ({{previous}}).",
+      "too_soon": "Less than an hour since the last reading: too early to compare.",
+      "meter_matches": "Since the last reading the meter advanced {{meter}}; EnergyFlow measured {{metered}} ({{diff}}).",
+      "meter_differs": "The meter advanced {{meter}}; EnergyFlow measured {{metered}} ({{diff}}). Small gaps can come from loads EnergyFlow doesn't meter.",
+      "meter_differs_large": "The meter advanced {{meter}}, but EnergyFlow measured {{metered}} ({{diff}}). Check that every circuit is metered.",
+      "hp_kw_mismatch": "{{kw}} kW and {{hp}} HP on the plate don't match (1 HP = 0.7457 kW).",
+      "rated_power_missing": "No rated power found.",
+      "rated_power": "Rated power: {{kw}}.",
+      "nameplate_consistent": "Consistent: voltage, current and cos φ give an electrical input of {{input_kw}}, so efficiency ≈ {{efficiency}}.",
+      "nameplate_inconsistent": "The rated {{kw}} doesn't fit the electrical input of {{input_kw}} from voltage, current and cos φ: check the values.",
+      "ie_class_ok": "Efficiency class {{class}}.",
+      "ie_class_low": "Efficiency class {{class}}. In the EU, new motors of 0.75–1000 kW must be at least IE3 since July 2021 (Regulation (EU) 2019/1781): worth considering when it's replaced.",
+      "running_above_rating": "{{code}} often runs at {{p95_kw}}, {{load}} of this rating: check the plate belongs to this machine.",
+      "oversized": "{{code}} typically runs at {{p95_kw}}, only {{load}} of its rating. Motors running far below their rating work less efficiently.",
+      "load_ok": "{{code}} typically runs at {{p95_kw}}, {{load}} of its rating.",
+      "rated_power_changes": "Saving changes {{code}}'s rated power from {{old}} to {{new}}.",
+      "litres_missing": "No quantity in litres.",
+      "receipt_sum": "Litres × price = total.",
+      "receipt_sum_wrong": "{{litres}} l × {{price}} doesn't equal the total {{total}}.",
+      "fuel_unknown": "Choose the fuel: diesel, petrol, gas oil, LPG or heating oil.",
+      "scope1_factor": "Scope 1: {{co2_kg}} at {{value}} kg CO₂e per litre (UK DESNZ 2025 factors).",
+      "label_class": "Energy class {{class}}.",
+      "label_old_scale": "Energy class {{class}} is on the old A+++ scale; since 2021 the EU has been moving labels back to A–G.",
+      "label_class_unreadable": "The energy class “{{class}}” couldn't be read.",
+      "label_kwh_missing": "No energy consumption figure found.",
+      "label_cost": "At your electricity price this costs {{eur}} and emits {{co2_kg}} per {{unit}}."
+    },
+    "checkAgain": "Check again",
+    "stale": "Values changed: check again.",
+    "notCheckedYet": "Fill in the values and press Check.",
+    "busy": "The photo reader is busy (Groq free tier: about three photos a minute). Try again in a minute.",
+    "typeInstead": "You can also type the values below.",
+    "notRecognised": "This doesn't look like a {{kind}}. Retake the photo, or type the values below.",
+    "machine": "Machine",
+    "chooseMachine": "Choose the machine this plate belongs to",
+    "viewerNote": "Only managers and admins can save scans.",
+    "billDisclaimer": "EnergyFlow checks whether a bill is consistent: its own numbers, the official tariff and your meters. A photo can't prove a document genuine or forged; for that, contact the supplier.",
+    "camera": {
+      "starting": "Starting the camera…",
+      "denied": "The camera isn't available or access was denied. Upload a photo instead.",
+      "unsupported": "This browser can't open the camera. Upload a photo instead.",
+      "capture": "Take photo",
+      "upload": "Upload a photo",
+      "manual": "Type it in",
+      "tooLarge": "The photo is too large to send. Try again closer to the document.",
+      "unreadable": "That file couldn't be opened as an image."
+    },
+    "review": {
+      "title": "Check the values",
+      "fromPhoto": "Read from the photo. Correct anything that was misread, then check again.",
+      "manual": "Type the values from the document."
+    },
+    "kinds": {
+      "bill": {
+        "title": "Electricity bill",
+        "body": "Check that it adds up, matches the official tariff and your meters, and spot fakes.",
+        "hint": "Fit the whole bill in the frame, flat and without glare."
+      },
+      "meter": {
+        "title": "Meter reading",
+        "body": "Photograph the supplier's meter to compare it with what EnergyFlow measured.",
+        "hint": "Fill the frame with the meter display and its number."
+      },
+      "nameplate": {
+        "title": "Machine nameplate",
+        "body": "Read rated power, voltage, current and efficiency class into a machine.",
+        "hint": "Get close to the rating plate; avoid reflections on metal."
+      },
+      "fuel": {
+        "title": "Fuel receipt",
+        "body": "Diesel, petrol or LPG for generators, forklifts and vehicles: added to Scope 1.",
+        "hint": "Fit the whole receipt in the frame."
+      },
+      "label": {
+        "title": "Energy label",
+        "body": "Before you buy: what a product will cost you per year and in CO₂.",
+        "hint": "Fit the EU energy label in the frame."
+      }
+    },
+    "group": {
+      "bill": "Bill",
+      "consumption": "Consumption",
+      "amounts": "Amounts",
+      "meter": "Meter",
+      "identity": "Identification",
+      "rating": "Rating",
+      "receipt": "Receipt",
+      "product": "Product"
+    },
+    "field": {
+      "supplier": "Supplier",
+      "customer_number": "Customer number",
+      "issue_date": "Issue date",
+      "period_start": "Period from",
+      "period_end": "Period to",
+      "due_date": "Due date",
+      "kwh_high": "High tariff (day)",
+      "kwh_low": "Low tariff (night)",
+      "kwh_total": "Total consumption",
+      "meter_start": "Previous reading",
+      "meter_end": "Current reading",
+      "net_eur": "Amount excl. VAT",
+      "vat_eur": "VAT",
+      "total_eur": "Total",
+      "previous_debt_eur": "Previous debt",
+      "period": "Billing period",
+      "meter_serial": "Meter number",
+      "register": "Register",
+      "reading_kwh": "Reading",
+      "reading_t1": "Reading T1 (day)",
+      "reading_t2": "Reading T2 (night)",
+      "manufacturer": "Manufacturer",
+      "model": "Model",
+      "serial": "Serial number",
+      "year": "Year",
+      "rated_power_kw": "Rated power",
+      "rated_power_hp": "Rated power (HP)",
+      "voltage_v": "Voltage",
+      "current_a": "Current",
+      "frequency_hz": "Frequency",
+      "phases": "Phases",
+      "power_factor": "Power factor",
+      "efficiency_class": "Efficiency class",
+      "efficiency_pct": "Efficiency",
+      "speed_rpm": "Speed",
+      "vendor": "Seller",
+      "date": "Date",
+      "fuel": "Fuel",
+      "litres": "Litres",
+      "unit_price_eur": "Price per litre",
+      "product_type": "Product",
+      "brand": "Brand",
+      "energy_class": "Energy class",
+      "kwh_per_year": "Energy consumption",
+      "consumption_unit": "Per"
+    },
+    "option": {
+      "fuel": {
+        "diesel": "Diesel",
+        "petrol": "Petrol",
+        "gas_oil": "Gas oil (off-road)",
+        "lpg": "LPG",
+        "heating_oil": "Heating oil"
+      },
+      "phases": {
+        "1": "1 phase",
+        "3": "3 phases"
+      }
+    },
+    "status": {
+      "pass": "Passed",
+      "warn": "Warning",
+      "fail": "Failed",
+      "info": "Note"
+    },
+    "verdict": {
+      "bill": {
+        "consistent": "Consistent",
+        "check": "Needs checking",
+        "likely_fake": "Likely fake"
+      },
+      "meter": {
+        "ok": "Looks right",
+        "check": "Check the values"
+      },
+      "nameplate": {
+        "ok": "Looks right",
+        "check": "Check the values"
+      },
+      "fuel": {
+        "ok": "Looks right",
+        "check": "Check the values"
+      },
+      "label": {
+        "ok": "Calculated",
+        "check": "Check the values"
+      }
+    },
+    "verdictBody": {
+      "bill": {
+        "consistent": "Its numbers add up and match the official tariff and your meters.",
+        "check": "Some values don't match. See below what to check before you pay.",
+        "likely_fake": "Its own numbers don't add up the way a genuine bill's do. Don't pay it before checking with the supplier."
+      },
+      "meter": {
+        "ok": "The reading is consistent.",
+        "check": "See below what to check."
+      },
+      "nameplate": {
+        "ok": "The plate's values are consistent.",
+        "check": "See below what to check."
+      },
+      "fuel": {
+        "ok": "Ready to add to Scope 1.",
+        "check": "See below what to check."
+      },
+      "label": {
+        "ok": "What it costs at your electricity price.",
+        "check": "Some values are missing."
+      }
+    },
+    "derived": {
+      "pricePerKwh": "Average price",
+      "expectedTotal": "Expected total (tariff)",
+      "meteredKwh": "Measured by EnergyFlow",
+      "co2": "CO₂e",
+      "energy": "Energy",
+      "ratedKw": "Rated power",
+      "inputKw": "Electrical input",
+      "load": "Typical load",
+      "cost": "Cost",
+      "price": "Your price",
+      "meterDelta": "Meter advanced"
+    },
+    "priceBasis": {
+      "measured_30d": "{{price}}/kWh (last 30 days)",
+      "tariff_high": "{{price}}/kWh (high tariff)"
+    },
+    "labelUnit": {
+      "year": "year",
+      "hours1000": "1,000 hours",
+      "cycles100": "100 cycles"
+    },
+    "actions": {
+      "saveBill": "Save bill",
+      "saveReading": "Save reading",
+      "applyToMachine": "Apply to machine",
+      "addScope1": "Add to Scope 1"
+    },
+    "saved": {
+      "bill": "Bill saved",
+      "meter": "Reading saved",
+      "nameplate": "Nameplate saved to the machine",
+      "fuel": "Added to Scope 1"
+    },
+    "afterSave": {
+      "nameplate": "Open the machine",
+      "fuel": "See it in Carbon & ESG"
+    },
+    "history": {
+      "title": "Saved scans",
+      "subtitle": "Bills next to what EnergyFlow measured, Scope 1 fuel, and readings of the supplier's meter.",
+      "bills": "Bills",
+      "fuel": "Fuel (Scope 1)",
+      "readings": "Meter readings",
+      "month": "Month",
+      "billed": "Billed",
+      "measured": "Measured",
+      "coverage": "Measured share",
+      "verdict": "Check",
+      "note": "Receipt",
+      "readAt": "Read",
+      "billsEmpty": "No bills yet",
+      "billsEmptyBody": "Scan a bill to compare it with your meters and the official tariff.",
+      "fuelEmpty": "No fuel yet",
+      "fuelEmptyBody": "Scan fuel receipts for generators, forklifts or vehicles to report Scope 1.",
+      "readingsEmpty": "No readings yet",
+      "readingsEmptyBody": "Scan the supplier's meter now and again to compare it with EnergyFlow."
+    },
+    "checkButton": "Check"
+  },
+  "score": {
+    "title": "EnergyFlow Score",
+    "how": "How is it calculated?",
+    "howTitle": "How the EnergyFlow Score is calculated",
+    "howIntro": "A weighted average of six parts, each 0–100, over the last {{days}} days. Every part comes from your measurements.",
+    "change": "{{points}} vs last week",
+    "fixNext": "Fix next",
+    "points": "+{{points}} points possible",
+    "part": "Part",
+    "weight": "Weight",
+    "value": "Score",
+    "basis": "Your numbers",
+    "scaleNote": "The scales (e.g. waste at 25 % of consumption scores 0) are EnergyFlow's design, not an industry standard. Parts without data are left out of the average.",
+    "parts": {
+      "waste": "Waste",
+      "schedule": "Schedule discipline",
+      "health": "Equipment health",
+      "peak": "Peak management",
+      "follow_through": "Follow-through",
+      "coverage": "Data coverage"
+    },
+    "definition": {
+      "waste": "Quantified waste as a share of consumption; 0 at 25 %.",
+      "schedule": "Energy used outside their schedules by machines that should be off (critical loads excluded); 0 at 20 % of consumption.",
+      "health": "Share of consumption from machines without an open efficiency-drift or failed Turn Off alert.",
+      "peak": "Load factor (average ÷ peak 15-minute power); 100 at 60 % or more.",
+      "follow_through": "Opportunities acted on, and alerts resolved within 24 hours (last 30 days).",
+      "coverage": "Share of the main incomer metered per machine × completeness of the 15-minute data."
+    },
+    "detail": {
+      "waste": "{{kwh}} of waste, {{share}} of consumption",
+      "schedule": "{{kwh}} off schedule, {{share}} of consumption",
+      "health_one": "{{count}} machine with an open issue ({{share}} of consumption)",
+      "health_other": "{{count}} machines with an open issue ({{share}} of consumption)",
+      "peak": "Load factor {{lf}}, peak {{peak}}",
+      "followThrough": "{{acted}} of {{opportunities}} opportunities acted on · {{resolved}} of {{alerts}} alerts resolved within 24 h",
+      "coverage": "{{metered}} metered per machine · data {{complete}} complete"
+    }
+  },
+  "flow": {
+    "title": "Energy flow this month",
+    "wasteLink": "See the waste",
+    "grid": "Grid",
+    "others": "Others ({{count}})",
+    "unmetered": "Not per machine",
+    "unmeteredHint": "Measured at the main incomer but not by a machine meter (lighting circuits, sockets, losses).",
+    "notPerMachine": "Not per machine",
+    "productive": "Productive",
+    "waste": "Waste",
+    "aria": "Energy flow this month: {{kwh}} from the grid, of which {{waste}} waste.",
+    "note": "Waste is what EnergyFlow's detectors quantified (after hours, idle, efficiency drift); everything else a machine used counts as productive."
+  },
+  "alertDetail": {
+    "title": "Alert",
+    "peak": "Peak power",
+    "z": "robust z = {{z}}",
+    "normal": "Normal peak",
+    "rated": "Nameplate rating",
+    "ofRating": "peak = {{pct}} of it",
+    "duration": "Duration",
+    "ongoing": "still going on",
+    "chartTitle": "Highest 10-second reading in each minute",
+    "peakMinute": "Peak",
+    "avgMinute": "Average",
+    "limitLine": "Normal limit (z = 6): {{kw}}",
+    "overloadLine": "110 % of rating: {{kw}}",
+    "overloadAdvice": "The machine drew {{pct}} of its nameplate power. Running above the rating overheats motors and wiring: check for a jam, a seizing bearing or a blocked filter before it runs again.",
+    "whyTitle": "Why am I seeing this?",
+    "rule": "Each minute's peak is compared with the machine's own normal peaks: robust z = (peak − median) ÷ (1.4826 × MAD). A spike is z > {{z}} in at least {{min}} consecutive minutes and ends after {{clear}} normal minutes. It is critical when a reading exceeds {{overload}} % of the nameplate rating.",
+    "baseline": "Normal for {{slot}}: median peak {{median}}, MAD {{mad}}, from {{samples}} 15-minute periods while running ({{from}} – {{to}}).",
+    "slot": "{{days}}, {{from}}:00–{{to}}:00",
+    "dayType": {
+      "working": "working days",
+      "non_working": "weekends and holidays"
+    },
+    "openMachine": "Open {{code}}",
+    "keySpike": "Spike minutes",
+    "keyNormal": "Normal minutes",
+    "allHours": "{{days}}, all hours"
   }
 }

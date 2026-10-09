@@ -48,3 +48,5 @@ services:
         value: openai/gpt-oss-120b
       - key: GROQ_MODEL_FALLBACK
         value: openai/gpt-oss-20b
+      - key: GROQ_VISION_MODEL
+        value: qwen/qwen3.8-27b

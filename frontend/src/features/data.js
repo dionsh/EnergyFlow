@@ -18,6 +18,14 @@ export function useOverview() {
   return useQuery({ queryKey: ['overview'], queryFn: () => get('/overview'), refetchInterval: OVERVIEW_MS, placeholderData: keepPreviousData })
 }
 
+export function useScore() {
+  return useQuery({ queryKey: ['score'], queryFn: () => get('/score'), staleTime: 5 * 60_000, placeholderData: keepPreviousData })
+}
+
+export function useEnergyFlow() {
+  return useQuery({ queryKey: ['energy-flow'], queryFn: () => get('/energy-flow'), refetchInterval: 5 * 60_000, placeholderData: keepPreviousData })
+}
+
 export function useMachines() {
   return useQuery({ queryKey: ['machines'], queryFn: () => get('/machines'), refetchInterval: 15_000, placeholderData: keepPreviousData })
 }
@@ -64,6 +72,10 @@ export function useWasteEvent(id) {
     enabled: Boolean(id),
     refetchInterval: (q) => (q.state.data?.data?.ongoing ? 10_000 : false),
   })
+}
+
+export function useAlert(id) {
+  return useQuery({ queryKey: ['alerts', 'one', id], queryFn: () => get(`/alerts/${id}`), enabled: Boolean(id), refetchInterval: 30_000 })
 }
 
 export function useAlerts(status = 'active') {
@@ -151,6 +163,18 @@ export function useReport(id) {
 
 export function useNotifications() {
   return useQuery({ queryKey: ['notifications'], queryFn: () => get('/notifications'), refetchInterval: OVERVIEW_MS })
+}
+
+export function useBills() {
+  return useQuery({ queryKey: ['bills'], queryFn: () => get('/bills') })
+}
+
+export function useFuelRecords() {
+  return useQuery({ queryKey: ['fuel-records'], queryFn: () => get('/fuel-records') })
+}
+
+export function useMeterReadings() {
+  return useQuery({ queryKey: ['meter-readings'], queryFn: () => get('/meter-readings') })
 }
 
 export function useConversation(id) {

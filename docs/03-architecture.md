@@ -327,7 +327,7 @@ Every detection carries an **evidence** object: `{metric, window, baseline, obse
 | `IDLE_WASTE` | Rule | Standby/unloaded > 30 min during schedule (heaters on, no cycles; compressor unloaded) | Info / Warning |
 | `NIGHT_CYCLING` | Pattern | Compressor load/unload cycles per hour outside production above baseline, indicating a leak | Warning |
 | `CONSUMPTION_DRIFT` | Statistical (CUSUM on daily kWh per running hour vs 28-day baseline) | Sustained increase | Warning ≥ 10 % · Critical ≥ 25 % |
-| `SPIKE` | Statistical (robust z = (P − median_how) / (1.4826·MAD)) | z > 6 for ≥ 2 min | Warning · Critical if > 110 % of rated power |
+| `SPIKE` | Statistical (robust z = (P − median) / (1.4826·MAD); P = the minute's peak 10-s power; median and MAD of the machine's own 15-min peaks **while running**, per day type × hour over 28 days, kept in `machine_baselines`; σ ≥ 2 % of the median) | z > 6 for ≥ 2 consecutive min; ends after 5 normal min | Warning · Critical if a reading > 110 % of rated power |
 | `LOW_PF` | Rule | PF < 0.80 for 1 h while running | Info (Warning if the tariff has reactive charges) |
 | `OVER_TEMP` | Rule | Temperature over the machine's limit, or rising faster than load explains | Critical |
 | `PEAK_COINCIDENCE` | Pattern | Site 15-min kW > P95 of 30 days, with ≥ 3 large starts within 10 min | Info / Warning |

@@ -178,7 +178,7 @@ export function NotificationsButton() {
           {unread > 9 ? '9+' : unread}
         </span>
       )}
-      <Popover open={open} onClose={close} className="w-[min(22rem,calc(100vw-2rem))] p-0">
+      <Popover open={open} onClose={close} className="w-[min(22rem,calc(100vw-2rem))] p-0 max-sm:fixed max-sm:inset-x-4 max-sm:top-14 max-sm:w-auto">
         <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
           <p className="text-sm font-semibold text-ink">{t('topbar.notifications')}</p>
           {unread > 0 && (

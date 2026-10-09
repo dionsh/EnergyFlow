@@ -17,6 +17,8 @@ import { WasteNow } from '../live/LiveParts'
 import { OpenAlertsCard } from '../waste/InsightCards'
 import { TopOpportunitiesCard } from '../opportunities/TopOpportunitiesCard'
 import { TodayChart } from './TodayChart'
+import { ScoreCard } from './ScoreCard'
+import { EnergyFlowCard } from './EnergyFlowCard'
 
 const STEP_META = {
   company: { icon: Building2, to: '/settings' },
@@ -69,6 +71,40 @@ function SetupChecklist() {
   )
 }
 
+/** Month so far (measured) + the rest of the month (forecast), with its P10–P90 range. */
+function ForecastBar({ month, projection }) {
+  const { t } = useTranslation()
+  const range = projection.range
+  const max = Math.max(range?.kwh_p90 ?? 0, projection.kwh, month.kwh) || 1
+  const pct = (v) => `${(v / max) * 100}%`
+  return (
+    <div className="border-b border-line pb-3 pt-1">
+      <p className="text-[12px] text-ink-3">{t('overviewData.forecastTitle')}</p>
+      <p className="mt-0.5 text-[15px] font-semibold text-ink">
+        {formatKwh(projection.kwh)} · {formatEur(projection.bill?.subtotal)}
+        {range && <span className="ml-1.5 text-[12px] font-normal text-ink-2">{t('overviewData.forecastRange', { low: formatEur(range.bill_p10), high: formatEur(range.bill_p90) })}</span>}
+      </p>
+      <div className="relative mt-2.5 h-3" aria-hidden="true">
+        <span className="absolute inset-y-0 left-0 w-full rounded-full bg-surface-2" />
+        <span className="absolute inset-y-0 left-0 rounded-l-full bg-brand/30 [background-image:repeating-linear-gradient(135deg,transparent_0_4px,rgb(0_0_0/0.06)_4px_8px)]" style={{ width: pct(projection.kwh) }} />
+        <span className="absolute inset-y-0 left-0 rounded-l-full bg-brand" style={{ width: pct(month.kwh) }} />
+        {range && (
+          <span className="absolute -inset-y-1 border-x-2 border-ink-2" style={{ left: pct(range.kwh_p10), width: `calc(${pct(range.kwh_p90)} - ${pct(range.kwh_p10)})` }}>
+            <span className="absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2 bg-ink-2" />
+          </span>
+        )}
+      </div>
+      <div className="mt-1.5 flex justify-between text-[11.5px] text-ink-3">
+        <span><span className="mr-1 inline-block size-2 rounded-full bg-brand align-middle" />{t('overviewData.measuredSoFar', { kwh: formatKwh(month.kwh) })}</span>
+        <span><span className="mr-1 inline-block size-2 rounded-full bg-brand/30 align-middle" />{t('overviewData.forecastRest')}</span>
+      </div>
+      <p className="mt-1.5 text-[11.5px] text-ink-3">
+        {range ? t('overviewData.forecastMethodRange', { co2: formatCo2(projection.co2_kg), wape: formatPercent(projection.backtest.wape), days: projection.backtest.days }) : t('overviewData.forecastMethod', { co2: formatCo2(projection.co2_kg) })}
+      </p>
+    </div>
+  )
+}
+
 function BillCard({ month, projection, tariff }) {
   const { t } = useTranslation()
   const bill = month.bill_so_far
@@ -77,6 +113,7 @@ function BillCard({ month, projection, tariff }) {
     <Card>
       <CardHeader title={t('overviewData.billTitle')} />
       <CardBody className="py-2">
+        <ForecastBar month={month} projection={projection} />
         <dl>
           {bill.lines.map((line) => (
             <div key={line.key} className="flex items-baseline justify-between gap-4 border-b border-line py-2 text-[13px]">
@@ -92,9 +129,7 @@ function BillCard({ month, projection, tariff }) {
             <dd className="tabular font-semibold text-ink">{formatEur(bill.subtotal, { compact: false })}</dd>
           </div>
         </dl>
-        <p className="border-t border-line pt-2.5 text-[12.5px] text-ink-2">
-          {t('overviewData.projection', { eur: formatEur(projection.bill?.subtotal), kwh: formatKwh(projection.kwh) })}
-        </p>
+
         {tariff && <p className="pb-2 pt-1 text-[11.5px] leading-snug text-ink-3">{t('overviewData.tariffSource', { name: tariff.name })}</p>}
       </CardBody>
     </Card>
@@ -154,6 +189,11 @@ function Dashboard({ overview, live }) {
             <TodayChart curve={overview.today_curve} />
           </CardBody>
         </Card>
+        <ScoreCard />
+      </div>
+
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,8fr)_minmax(0,4fr)]">
+        <EnergyFlowCard />
         <BillCard month={month} projection={projection} tariff={overview.tariff} />
       </div>
 

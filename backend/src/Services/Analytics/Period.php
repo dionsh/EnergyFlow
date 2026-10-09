@@ -63,6 +63,12 @@ final class Period
         };
     }
 
+    /** Any window [from, to), compared with the equally long window before it. */
+    public static function between(int $from, int $to, string $key = 'custom'): self
+    {
+        return new self($key, $from, $to, $from - ($to - $from), $from);
+    }
+
     public function meta(): array
     {
         return [

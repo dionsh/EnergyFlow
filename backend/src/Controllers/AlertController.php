@@ -50,26 +50,43 @@ final class AlertController
               LIMIT 200",
             $args,
         );
-        return Response::ok(
-            array_map(static fn (array $a): array => [
-                'id' => (int) $a['id'],
-                'type' => $a['type'],
-                'method' => $a['method'],
-                'severity' => $a['severity'],
-                'status' => $a['status'],
-                'title_key' => $a['title_key'],
-                'params' => json_decode((string) $a['params'], true) ?: [],
-                'waste_event_id' => $a['waste_event_id'] === null ? null : (int) $a['waste_event_id'],
-                'machine' => $a['machine_id'] === null ? null : ['id' => (int) $a['machine_id'], 'code' => $a['machine_code'], 'name' => $a['machine_name']],
-                'device' => $a['device_id'] === null ? null : ['id' => (int) $a['device_id'], 'serial' => $a['device_serial']],
-                'opened_at' => Time::iso($a['opened_at']),
-                'last_seen_at' => Time::iso($a['last_seen_at']),
-                'acknowledged_at' => Time::iso($a['acknowledged_at']),
-                'acknowledged_by' => $a['acknowledged_by'],
-                'resolved_at' => Time::iso($a['resolved_at']),
-            ], $rows),
-            ['counts' => WasteReport::openAlertCounts($companyId)],
-        );
+        return Response::ok(array_map(self::format(...), $rows), ['counts' => WasteReport::openAlertCounts($companyId)]);
+    }
+
+    /** One alert with its evidence: the numbers and thresholds behind it ("Why am I seeing this?"). */
+    public function show(Request $request, array $params): Response
+    {
+        $a = Database::one(
+            "SELECT a.*, u.full_name AS acknowledged_by, m.code AS machine_code, m.name AS machine_name, m.rated_power_kw, d.serial AS device_serial
+               FROM alerts a
+               LEFT JOIN users u ON u.id = a.acknowledged_by
+               LEFT JOIN machines m ON m.id = a.machine_id
+               LEFT JOIN devices d ON d.id = a.device_id
+              WHERE a.id = ? AND a.company_id = ?",
+            [(int) $params['id'], $request->companyId()],
+        ) ?? throw HttpException::notFound('alert_not_found', 'Alert not found.');
+        return Response::ok(self::format($a) + ['evidence' => json_decode((string) $a['evidence'], true) ?: []]);
+    }
+
+    private static function format(array $a): array
+    {
+        return [
+            'id' => (int) $a['id'],
+            'type' => $a['type'],
+            'method' => $a['method'],
+            'severity' => $a['severity'],
+            'status' => $a['status'],
+            'title_key' => $a['title_key'],
+            'params' => json_decode((string) $a['params'], true) ?: [],
+            'waste_event_id' => $a['waste_event_id'] === null ? null : (int) $a['waste_event_id'],
+            'machine' => $a['machine_id'] === null ? null : ['id' => (int) $a['machine_id'], 'code' => $a['machine_code'], 'name' => $a['machine_name']],
+            'device' => $a['device_id'] === null ? null : ['id' => (int) $a['device_id'], 'serial' => $a['device_serial']],
+            'opened_at' => Time::iso($a['opened_at']),
+            'last_seen_at' => Time::iso($a['last_seen_at']),
+            'acknowledged_at' => Time::iso($a['acknowledged_at']),
+            'acknowledged_by' => $a['acknowledged_by'],
+            'resolved_at' => Time::iso($a['resolved_at']),
+        ];
     }
 
     public function acknowledge(Request $request, array $params): Response

@@ -60,6 +60,7 @@ final class DataAnswers
             'savings' => $this->savings(),
             'carbon' => $this->carbon($this->period($intent['period'] ?? 'mtd')),
             'forecast' => $this->forecast(),
+            'score' => $this->score(),
             default => null,
         };
     }
@@ -568,6 +569,12 @@ final class DataAnswers
                 $this->say->eur($p['bill']['subtotal']), $this->say->eur($p['bill']['total']),
             );
         }
+        if (($p['range'] ?? null) !== null && $p['range']['bill_p10'] !== null) {
+            $text .= ' ' . sprintf(
+                $this->say->t('Likely range: %s – %s (%s – %s).', 'Intervali i mundshëm: %s – %s (%s – %s).'),
+                $this->say->eur($p['range']['bill_p10']), $this->say->eur($p['range']['bill_p90']), $this->say->kwh($p['range']['kwh_p10']), $this->say->kwh($p['range']['kwh_p90']),
+            );
+        }
         $text .= "\n\n" . sprintf(
             $this->say->t('So far: %s, %s month-to-date vs the same days last month.', 'Deri tani: %s, %s krahasuar me të njëjtat ditë të muajit të kaluar.'),
             $this->say->kwh($o['month']['kwh']), $this->say->change($o['month']['change_ratio']),
@@ -576,11 +583,50 @@ final class DataAnswers
             'Method: actual consumption so far plus, for each remaining day, the average of the same kind of day over the last 28 days.',
             'Metoda: konsumi aktual deri tani plus, për çdo ditë të mbetur, mesatarja e të njëjtit lloj dite në 28 ditët e fundit.',
         );
+        if (($p['backtest']['wape'] ?? null) !== null) {
+            $text .= ' ' . sprintf(
+                $this->say->t('Tested on the last %d days: typical error %s.', 'Testuar në %d ditët e fundit: gabimi tipik %s.'),
+                $p['backtest']['days'], $this->say->pct($p['backtest']['wape']),
+            );
+        }
         return [
             'text' => $text,
             'sources' => [['label' => $this->say->t('Month-end projection · Overview', 'Parashikimi për fund të muajit · Përmbledhje'), 'to' => '/']],
             'actions' => [['type' => 'ask', 'text' => $this->say->t('What should we change tomorrow?', 'Çfarë duhet të ndryshojmë nesër?')]],
         ];
+    }
+
+    private function score(): array
+    {
+        $s = \EnergyFlow\Services\Analytics\ScoreService::summary($this->companyId);
+        if ($s['score'] === null) {
+            return $this->noData(null);
+        }
+        $names = [
+            'waste' => ['Waste', 'Humbjet'], 'schedule' => ['Schedule discipline', 'Disiplina e orarit'], 'health' => ['Equipment health', 'Gjendja e pajisjeve'],
+            'peak' => ['Peak management', 'Menaxhimi i pikut'], 'follow_through' => ['Follow-through', 'Veprimi i ndërmarrë'], 'coverage' => ['Data coverage', 'Mbulimi me të dhëna'],
+        ];
+        $text = sprintf($this->say->t('Your **EnergyFlow Score** is **%s / 100** (last 7 days)', '**Pikët EnergyFlow** janë **%s / 100** (7 ditët e fundit)'), $this->say->number($s['score']));
+        if ($s['change'] !== null) {
+            $text .= sprintf($this->say->t(', %s points vs the week before.', ', %s pikë krahasuar me javën më parë.'), ($s['change'] >= 0 ? '+' : '−') . $this->say->number(abs($s['change']), 1));
+        } else {
+            $text .= '.';
+        }
+        foreach ($s['parts'] as $key => $part) {
+            [$en, $sq] = $names[$key];
+            $text .= "
+- " . $this->say->t($en, $sq) . ': ' . ($part['value'] === null ? '—' : $this->say->number($part['value'])) . ' (' . $this->say->pct($part['weight'], 0) . ')';
+        }
+        $actions = [];
+        if ($s['next'] !== null) {
+            [$en, $sq] = $names[$s['next']['key']];
+            $text .= "
+
+" . sprintf($this->say->t('Biggest gain next: **%s**, up to %s points.', 'Fitimi më i madh më pas: **%s**, deri në %s pikë.'), $this->say->t($en, $sq), $this->say->number($s['next']['points']));
+            $actions[] = ['type' => 'ask', 'text' => $s['next']['key'] === 'waste' ? $this->say->t('How much did we waste this week?', 'Sa humbëm këtë javë?') : $this->say->t('What should we change tomorrow?', 'Çfarë duhet të ndryshojmë nesër?')];
+        }
+        $actions[] = ['type' => 'navigate', 'to' => '/', 'page' => 'overview'];
+        return ['text' => $text, 'sources' => [['label' => $this->say->t('EnergyFlow Score · Overview', 'Pikët EnergyFlow · Përmbledhje'), 'to' => '/']], 'actions' => $actions];
     }
 
     // ---------------------------------------------------------------- helpers
@@ -682,6 +728,9 @@ final class DataAnswers
             'idle' => sprintf($this->say->t('%s idled during production', '%s qëndroi në pritje gjatë prodhimit'), $machine) . $money,
             'drift' => sprintf($this->say->t('%s: running power %s above its reference', '%s: fuqia gjatë punës %s mbi referencën'), $machine, $this->say->number((float) ($p['deviation_pct'] ?? 0), 1) . '%') . $money,
             'device_offline' => sprintf($this->say->t('%s stopped reporting', '%s ndaloi raportimin'), $serial ?? ($p['serial'] ?? '')),
+            'spike' => sprintf($this->say->t('%s: power spike to %s kW (normal peak %s kW)', '%s: kulm fuqie deri në %s kW (kulmi normal %s kW)'), $machine,
+                $this->say->number((float) ($p['peak_kw'] ?? 0), 1), $this->say->number((float) ($p['normal_kw'] ?? 0), 1))
+                . (($p['overload'] ?? false) ? sprintf($this->say->t(', %s%% of its rating', ', %s%% e fuqisë nominale'), $this->say->number((float) $p['rated_pct'], 0)) : ''),
             'command_failed' => sprintf($this->say->t('Turn Off not confirmed for %s', 'Fikja nuk u konfirmua për %s'), $machine),
             default => $key,
         };
@@ -716,7 +765,7 @@ final class DataAnswers
     {
         $names = [
             'overview' => ['Overview', 'Përmbledhje'], 'live' => ['Live', 'Live'], 'machines' => ['Machines', 'Makineritë'],
-            'devices' => ['Devices', 'Pajisjet'], 'waste' => ['Waste & Alerts', 'Humbjet & alarmet'], 'opportunities' => ['Opportunities', 'Mundësitë'],
+            'devices' => ['Devices', 'Pajisjet'], 'scan' => ['Scan', 'Skano'], 'waste' => ['Waste & Alerts', 'Humbjet & alarmet'], 'opportunities' => ['Opportunities', 'Mundësitë'],
             'automations' => ['Automations', 'Automatizimet'], 'impact' => ['Impact', 'Ndikimi'], 'carbon' => ['Carbon & ESG', 'Karboni & ESG'],
             'reports' => ['Reports', 'Raportet'], 'settings' => ['Settings', 'Cilësimet'],
         ];

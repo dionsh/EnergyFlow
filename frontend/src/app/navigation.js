@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   Leaf,
   Lightbulb,
+  ScanLine,
   Settings,
   TrendingDown,
   TriangleAlert,
@@ -21,6 +22,7 @@ export const NAVIGATION = [
       { to: '/live', key: 'live', icon: Activity },
       { to: '/machines', key: 'machines', icon: Factory },
       { to: '/devices', key: 'devices', icon: Cpu },
+      { to: '/scan', key: 'scan', icon: ScanLine },
     ],
   },
   {

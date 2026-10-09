@@ -19,6 +19,7 @@ use EnergyFlow\Controllers\OnboardingController;
 use EnergyFlow\Controllers\OpportunityController;
 use EnergyFlow\Controllers\PolicyController;
 use EnergyFlow\Controllers\ProveController;
+use EnergyFlow\Controllers\ScanController;
 use EnergyFlow\Controllers\WasteController;
 use EnergyFlow\Core\Router;
 use EnergyFlow\Middleware\Authenticate;
@@ -60,6 +61,8 @@ $router->group('/api/v1', [], static function (Router $r): void {
 
             $r->get('/live', [LiveController::class, 'show']);
             $r->get('/overview', [LiveController::class, 'overview']);
+            $r->get('/score', [LiveController::class, 'score']);
+            $r->get('/energy-flow', [LiveController::class, 'flow']);
             $r->get('/machines', [MachineController::class, 'index']);
             $r->get('/machines/{id}', [MachineController::class, 'show']);
             $r->get('/machines/{id}/timeseries', [MachineController::class, 'timeseries']);
@@ -96,8 +99,18 @@ $router->group('/api/v1', [], static function (Router $r): void {
             $r->get('/waste-events/{id}', [WasteController::class, 'show']);
             $r->post('/waste-events/{id}/dismiss', [WasteController::class, 'dismiss'], [new RequireRole('manager')]);
             $r->get('/alerts', [AlertController::class, 'index']);
+            $r->get('/alerts/{id}', [AlertController::class, 'show']);
             $r->post('/alerts/{id}/acknowledge', [AlertController::class, 'acknowledge'], [new RequireRole('manager')]);
             $r->post('/alerts/{id}/resolve', [AlertController::class, 'resolve'], [new RequireRole('manager')]);
+            $r->post('/scan/read', [ScanController::class, 'read']);
+            $r->post('/scan/check', [ScanController::class, 'check']);
+            $r->post('/scan/save', [ScanController::class, 'save'], [new RequireRole('manager')]);
+            $r->get('/bills', [ScanController::class, 'bills']);
+            $r->delete('/bills/{id}', [ScanController::class, 'destroy'], [new RequireRole('manager')]);
+            $r->get('/meter-readings', [ScanController::class, 'readings']);
+            $r->delete('/meter-readings/{id}', [ScanController::class, 'destroy'], [new RequireRole('manager')]);
+            $r->get('/fuel-records', [ScanController::class, 'fuel']);
+            $r->delete('/fuel-records/{id}', [ScanController::class, 'destroy'], [new RequireRole('manager')]);
             $r->get('/assistant/conversations', [AssistantController::class, 'index']);
             $r->post('/assistant/conversations', [AssistantController::class, 'create']);
             $r->get('/assistant/conversations/{id}', [AssistantController::class, 'show']);
@@ -112,6 +125,7 @@ $router->group('/api/v1', [], static function (Router $r): void {
             $r->group('/demo', [RequireDemoAdmin::class], static function (Router $r): void {
                 $r->get('/state', [DemoController::class, 'state']);
                 $r->post('/advance', [DemoController::class, 'advance']);
+                $r->post('/spike', [DemoController::class, 'spike']);
                 $r->post('/reset', [DemoController::class, 'reset']);
             });
         });

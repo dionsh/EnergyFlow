@@ -88,7 +88,7 @@ final class AlertManager
             SeverityPolicy::category($alert['severity']),
             'alert.' . $alert['title_key'] . ($event === 'escalated' ? '.escalated' : ''),
             $alert['params'],
-            $alert['link'] ?? '/waste?tab=alerts',
+            str_replace('{id}', (string) $alertId, $alert['link'] ?? '/waste?tab=alerts'),
             'alert',
             $alertId,
             $now,
