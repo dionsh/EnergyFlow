@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { FOOTER_NAVIGATION, NAVIGATION } from '../../app/navigation'
 import { cn } from '../../lib/cn'
+import { useAuth } from '../../providers/AuthProvider'
 import { Logo } from '../ui/Logo'
 
 function NavItem({ item, onNavigate }) {
@@ -29,6 +30,8 @@ function NavItem({ item, onNavigate }) {
 
 export function Sidebar({ onNavigate }) {
   const { t } = useTranslation()
+  const { user } = useAuth()
+  const footer = FOOTER_NAVIGATION.filter((item) => !item.platformAdmin || user?.is_platform_admin)
   return (
     <div className="flex h-full flex-col">
       <div className="flex h-14 shrink-0 items-center border-b border-line px-4">
@@ -53,7 +56,7 @@ export function Sidebar({ onNavigate }) {
         ))}
       </nav>
       <div className="border-t border-line px-3 py-3">
-        {FOOTER_NAVIGATION.map((item) => (
+        {footer.map((item) => (
           <NavItem key={item.to} item={item} onNavigate={onNavigate} />
         ))}
       </div>

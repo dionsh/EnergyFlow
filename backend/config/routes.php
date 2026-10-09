@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use EnergyFlow\Controllers\AdminController;
 use EnergyFlow\Controllers\AlertController;
 use EnergyFlow\Controllers\AssistantController;
 use EnergyFlow\Controllers\AuthController;
@@ -27,6 +28,7 @@ use EnergyFlow\Middleware\CronAuth;
 use EnergyFlow\Middleware\DeviceAuth;
 use EnergyFlow\Middleware\RequireClientHeader;
 use EnergyFlow\Middleware\RequireDemoAdmin;
+use EnergyFlow\Middleware\RequirePlatformAdmin;
 use EnergyFlow\Middleware\RequireRole;
 
 $router = new Router();
@@ -129,6 +131,16 @@ $router->group('/api/v1', [], static function (Router $r): void {
                 $r->post('/advance', [DemoController::class, 'advance']);
                 $r->post('/spike', [DemoController::class, 'spike']);
                 $r->post('/reset', [DemoController::class, 'reset']);
+            });
+
+            // Platform admin panel: EnergyFlow staff only (bin/platform-admin.php grants it).
+            $r->group('/admin', [RequirePlatformAdmin::class], static function (Router $r): void {
+                $r->get('/overview', [AdminController::class, 'overview']);
+                $r->get('/users', [AdminController::class, 'users']);
+                $r->patch('/users/{id}', [AdminController::class, 'updateUser']);
+                $r->delete('/users/{id}', [AdminController::class, 'deleteUser']);
+                $r->post('/users/{id}/password-reset', [AdminController::class, 'sendPasswordReset']);
+                $r->get('/companies', [AdminController::class, 'companies']);
             });
         });
     });

@@ -8,6 +8,7 @@ import {
   Lightbulb,
   ScanLine,
   Settings,
+  ShieldCheck,
   TrendingDown,
   TriangleAlert,
   Workflow,
@@ -43,4 +44,8 @@ export const NAVIGATION = [
   },
 ]
 
-export const FOOTER_NAVIGATION = [{ to: '/settings', key: 'settings', icon: Settings }]
+// `platformAdmin` items show only for EnergyFlow staff (the API enforces it as well).
+export const FOOTER_NAVIGATION = [
+  { to: '/admin', key: 'admin', icon: ShieldCheck, platformAdmin: true },
+  { to: '/settings', key: 'settings', icon: Settings },
+]

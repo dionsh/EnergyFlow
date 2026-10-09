@@ -177,6 +177,19 @@ export function useMeterReadings() {
   return useQuery({ queryKey: ['meter-readings'], queryFn: () => get('/meter-readings') })
 }
 
+// Platform admin panel (EnergyFlow staff only; the API answers 403 to everyone else).
+export function useAdminOverview() {
+  return useQuery({ queryKey: ['admin', 'overview'], queryFn: () => get('/admin/overview'), refetchInterval: 60_000 })
+}
+
+export function useAdminUsers(params) {
+  return useQuery({ queryKey: ['admin', 'users', params], queryFn: () => get(`/admin/users${query(params)}`), placeholderData: keepPreviousData })
+}
+
+export function useAdminCompanies(q) {
+  return useQuery({ queryKey: ['admin', 'companies', q], queryFn: () => get(`/admin/companies${query({ q })}`), placeholderData: keepPreviousData })
+}
+
 export function useConversation(id) {
   return useQuery({ queryKey: ['assistant', 'conversation', id], queryFn: () => get(`/assistant/conversations/${id}`), enabled: Boolean(id), retry: false })
 }

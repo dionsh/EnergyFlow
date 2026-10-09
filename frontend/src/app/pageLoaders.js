@@ -17,6 +17,7 @@ export const pageLoaders = {
   reports: () => import('../features/reports/ReportsPage'),
   reportView: () => import('../features/reports/ReportView'),
   settings: () => import('../features/settings/SettingsPage'),
+  admin: () => import('../features/admin/AdminPage'),
   notFound: () => import('../features/NotFoundPage'),
 }
 

@@ -9,7 +9,7 @@ use EnergyFlow\Utils\Time;
 
 final class User
 {
-    private const PUBLIC_COLUMNS = 'id, company_id, email, full_name, role, locale, last_login_at, created_at';
+    private const PUBLIC_COLUMNS = 'id, company_id, email, full_name, role, is_platform_admin, locale, last_login_at, created_at';
 
     public static function find(int $id): ?array
     {
@@ -68,6 +68,7 @@ final class User
     {
         $row['id'] = (int) $row['id'];
         $row['company_id'] = (int) $row['company_id'];
+        $row['is_platform_admin'] = (bool) $row['is_platform_admin'];
         return Time::isoColumns($row, ['last_login_at', 'created_at']);
     }
 }

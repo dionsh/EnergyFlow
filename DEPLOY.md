@@ -66,6 +66,22 @@ You don't need to create tables. The API runs its migrations automatically every
 
 ---
 
+## 5. Platform admin panel
+
+The panel at `/admin` lists every company and user, and lets EnergyFlow staff edit or delete accounts. Nobody has access until you grant it, and only from the command line:
+
+1. Sign up in the deployed app with your own e-mail (a normal company account).
+2. On your computer, point `backend/.env` at Aiven (`DB_HOST`, `DB_PORT`, `DB_NAME=defaultdb`, `DB_USER=avnadmin`, `DB_PASS`, `DB_SSL=1`, `DB_SSL_CA_CONTENT`) and run:
+   ```
+   php bin/platform-admin.php grant you@example.com
+   ```
+   `php bin/platform-admin.php list` shows who has access; `revoke` takes it away. Switch `.env` back to your local database afterwards.
+3. Reload the app. **Admin** appears at the bottom of the sidebar.
+
+Demo accounts can never be platform admins, and demo users cannot be edited or deleted from the panel (the Demo Director rebuilds them).
+
+---
+
 ## Gotchas (learned on SproutSync and VenueSphere)
 
 - **Aiven refuses unencrypted connections.** `DB_SSL_CA_CONTENT` must contain the full certificate.
