@@ -1163,6 +1163,7 @@
     "types": { "daily": "ditor", "weekly": "javor", "monthly": "mujor" },
     "period": "Periudha",
     "today": "Sot ({{date}})",
+    "thisWeek": "Kjo javë ({{range}})",
     "month": "Muaji",
     "language": "Gjuha",
     "monthPartial": "{{month}} (deri tani)",
@@ -1265,7 +1266,7 @@
     "simulatedLine": "Ky raport përshkruan një kompani demo fiktive me makineri të simuluara. Metodat janë të njëjtat si për matës realë.",
     "footer": "EnergyFlow · inteligjencë energjetike për NVM-të e Kosovës",
     "periodPartial": "(deri tani)",
-    "vsmeScope": "Të dhëna vjetore për vitin kalendarik {{year}}, të matura nga {{from}} deri më {{to}} (kur u krijua ky raport) — jo vetëm për këtë muaj."
+    "vsmeScope": "Të dhëna vjetore për vitin kalendarik {{year}}, të matura nga {{from}} deri më {{to}} (kur u krijua ky raport) — jo vetëm për periudhën e raportit."
   },
   "assistant": {
     "title": "Pyet EnergyFlow",

@@ -23,6 +23,11 @@ final class NarrativeWriter
         'sq' => ['previous_day' => 'të njëjtat orë të ditës së kaluar', 'previous_week' => 'të njëjtat ditë të javës së kaluar', 'previous_month' => 'të njëjtat ditë të muajit të kaluar'],
     ];
 
+    private const MONTHS = [
+        'en' => ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        'sq' => ['janar', 'shkurt', 'mars', 'prill', 'maj', 'qershor', 'korrik', 'gusht', 'shtator', 'tetor', 'nëntor', 'dhjetor'],
+    ];
+
     /** @return array{sections: array{summary: string, changes: string, outlook: string}, source: string} */
     public static function write(array $snapshot, string $language): array
     {
@@ -40,9 +45,11 @@ final class NarrativeWriter
     /** The compact, plain facts the model may use (and the grounding check compares against). */
     private static function facts(array $s, string $language): array
     {
+        [$kind, $name] = self::period($s['period']['month'], $language);
         return [
             'company' => $s['company']['name'],
-            'period' => $s['period']['month'],
+            'period' => $name,
+            'period_type' => $kind,
             'partial_period' => $s['period']['partial'],
             'energy_kwh' => $s['energy']['kwh'],
             'energy_cost_eur_excl_vat' => $s['energy']['eur'],
@@ -72,14 +79,17 @@ final class NarrativeWriter
     private static function ai(array $facts, string $language): ?array
     {
         $name = $language === 'sq' ? 'Albanian (Shqip, Kosovo usage)' : 'English';
+        $style = $language === 'sq'
+            ? 'Albanian style: energy waste is "humbje" (never "mbetje"); decimal comma, a space for thousands and the euro sign after the amount (1 234,50 €).'
+            : 'English style: decimal point, comma for thousands, the euro sign before the amount (€1,234.50).';
         $system = <<<PROMPT
 You write the narrative of an energy and sustainability report for a small manufacturer in Kosovo.
 Write in {$name}. Use ONLY the facts and numbers in the JSON the user sends. Never invent a number, a cause, a comparison or a recommendation.
 Plain, specific sentences for a business owner; euros first; no marketing language, no emojis, no headings.
-Write CO2e as "CO₂e". Round sensibly (kWh without decimals, euros with two).
+Write CO2e as "CO₂e". Round sensibly (kWh without decimals, euros with two). {$style}
 Return a JSON object with exactly these keys:
 - "summary": 3-4 sentences: energy, cost (excl. VAT), CO₂e, waste and verified savings to date.
-- "changes": 2-3 sentences: change vs the comparison window (say which one, from previous.compared_with), and the largest waste event.
+- "changes": 2-3 sentences: change vs the comparison window (say which one, from previous.compared_with), and the largest waste event. If previous.change_ratio is null, say there is no earlier data to compare with. If waste.largest is null, say that no waste event was detected in the period.
 - "outlook": 2-3 sentences: the most valuable open opportunities and their total per month. Say if one saves cost only.
 PROMPT;
         $result = GroqClient::chat([
@@ -110,13 +120,13 @@ PROMPT;
         $eur = static fn (float $v): string => $en ? '€' . $n($v, 2) : $n($v, 2) . ' €';
         $co2 = static fn (float $kg): string => $kg >= 1000 ? $n($kg / 1000, 1) . ' t CO₂e' : $n($kg) . ' kg CO₂e';
         $pct = static fn (?float $r): string => $r === null ? '—' : $n(abs($r) * 100, 1) . '%';
-        $month = $s['period']['month'];
+        $when = self::when($s['period'], $language);
         $company = $s['company']['name'];
         $verified = $s['impact']['verified'];
 
         $summary = $en
-            ? "In {$month}, {$company} used {$n($s['energy']['kwh'])} kWh of electricity, costing {$eur($s['energy']['eur'])} in energy charges (excl. VAT) and emitting {$co2($s['carbon']['scope2_location_kg'])} (Scope 2, location-based). EnergyFlow found {$n($s['waste']['kwh'])} kWh of waste ({$pct($s['waste']['share'])} of consumption), worth {$eur($s['waste']['eur'])}."
-            : "Në {$month}, {$company} konsumoi {$n($s['energy']['kwh'])} kWh energji elektrike, me kosto energjie {$eur($s['energy']['eur'])} (pa TVSH) dhe emetime {$co2($s['carbon']['scope2_location_kg'])} (Scope 2, sipas vendndodhjes). EnergyFlow gjeti {$n($s['waste']['kwh'])} kWh humbje ({$pct($s['waste']['share'])} e konsumit), me vlerë {$eur($s['waste']['eur'])}.";
+            ? "{$when}, {$company} used {$n($s['energy']['kwh'])} kWh of electricity, costing {$eur($s['energy']['eur'])} in energy charges (excl. VAT) and emitting {$co2($s['carbon']['scope2_location_kg'])} (Scope 2, location-based). EnergyFlow found {$n($s['waste']['kwh'])} kWh of waste ({$pct($s['waste']['share'])} of consumption), worth {$eur($s['waste']['eur'])}."
+            : "{$when}, {$company} konsumoi {$n($s['energy']['kwh'])} kWh energji elektrike, me kosto energjie {$eur($s['energy']['eur'])} (pa TVSH) dhe emetime {$co2($s['carbon']['scope2_location_kg'])} (Scope 2, sipas vendndodhjes). EnergyFlow gjeti {$n($s['waste']['kwh'])} kWh humbje ({$pct($s['waste']['share'])} e konsumit), me vlerë {$eur($s['waste']['eur'])}.";
         if ($verified['kwh'] > 0) {
             $summary .= $en
                 ? " Verified savings from the actions taken so far amount to {$n($verified['kwh'])} kWh, {$eur($verified['eur'])} and {$co2($verified['co2_kg'])}."
@@ -190,4 +200,47 @@ PROMPT;
         return $labels[$language][$type] ?? $type;
     }
 
+    /**
+     * The snapshot's period label ("2026-09", "2026-10-08", "2026-10-05 – 2026-10-11")
+     * as words: ['month', "September 2026"], ['day', "8 October 2026"], ['week', "5–11 October 2026"].
+     *
+     * @return array{0: string, 1: string}
+     */
+    private static function period(string $label, string $language): array
+    {
+        $months = self::MONTHS[$language];
+        $day = static function (string $date) use ($months): array {
+            [$y, $m, $d] = array_map('intval', explode('-', $date));
+            return [$y, $months[$m - 1], $d];
+        };
+        if (preg_match('/^(\d{4}-\d{2}-\d{2}) – (\d{4}-\d{2}-\d{2})$/u', $label, $range)) {
+            [$y1, $m1, $d1] = $day($range[1]);
+            [$y2, $m2, $d2] = $day($range[2]);
+            return ['week', match (true) {
+                $y1 === $y2 && $m1 === $m2 => "{$d1}–{$d2} {$m2} {$y2}",
+                $y1 === $y2 => "{$d1} {$m1} – {$d2} {$m2} {$y2}",
+                default => "{$d1} {$m1} {$y1} – {$d2} {$m2} {$y2}",
+            }];
+        }
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $label)) {
+            [$y, $m, $d] = $day($label);
+            return ['day', "{$d} {$m} {$y}"];
+        }
+        if (preg_match('/^(\d{4})-(\d{2})$/', $label, $month)) {
+            return ['month', $months[(int) $month[2] - 1] . ' ' . $month[1]];
+        }
+        return ['period', $label];
+    }
+
+    /** "In September 2026", "On 8 October 2026", "In the week of 5–11 October 2026", plus "(so far)" while it runs. */
+    private static function when(array $period, string $language): string
+    {
+        [$kind, $name] = self::period($period['month'], $language);
+        $prefix = [
+            'en' => ['day' => 'On', 'week' => 'In the week of'],
+            'sq' => ['day' => 'Më', 'week' => 'Gjatë javës'],
+        ][$language][$kind] ?? ($language === 'en' ? 'In' : 'Në');
+        $text = "{$prefix} {$name}";
+        return $period['partial'] ? $text . ($language === 'en' ? ' (so far)' : ' (deri tani)') : $text;
+    }
 }

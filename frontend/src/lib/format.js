@@ -28,6 +28,12 @@ function parts(iso) {
 
 const pad = (n) => String(n).padStart(2, '0')
 
+/** The Kosovo calendar date of a moment, as YYYY-MM-DD. */
+export function localDate(iso) {
+  const p = parts(iso)
+  return `${p.year}-${pad(p.month)}-${pad(p.day)}`
+}
+
 /**
  * The number and date formatters for a language. The app uses the current UI
  * language; a report uses its own language (formattersFor), whatever the UI shows.

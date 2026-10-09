@@ -54,8 +54,9 @@ export default function App() {
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/register" element={<RegisterPage />} />
                   <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                  <Route path="/reset-password" element={<ForgotPasswordPage />} />
                 </Route>
+                {/* Open while signed in too: a reset link works in any browser, and signs every session out. */}
+                <Route path="/reset-password" element={<ForgotPasswordPage />} />
                 <Route element={<RequireAuth />}>
                   <Route element={<AppShell />}>
                     <Route index element={<OverviewPage />} />

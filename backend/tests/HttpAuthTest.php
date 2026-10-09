@@ -103,6 +103,73 @@ test('changing the password signs out every other session', function (): void {
     assertSame(401, $phone->get('/auth/me')['status']);
 });
 
+/** Requests a reset link and returns the token from the local delivery log (no mail key in tests). */
+function requestResetToken(string $email, string $ip): ?string
+{
+    $log = (string) tempnam(sys_get_temp_dir(), 'ef-reset');
+    $previous = ini_set('error_log', $log);
+    try {
+        $result = (new Client($ip))->post('/auth/password/forgot', ['email' => $email]);
+    } finally {
+        ini_set('error_log', (string) $previous);
+    }
+    assertSame(200, $result['status'], json_encode($result['body']));
+    $logged = (string) file_get_contents($log);
+    unlink($log);
+    return preg_match('/reset-password\?token=([a-f0-9]{64})/', $logged, $m) ? $m[1] : null;
+}
+
+test('forgot password: the same answer for any e-mail, one hashed one-hour link, limited per address', function (): void {
+    registeredOwner('reset@example.com');
+    $unknown = (new Client('10.4.4.1'))->post('/auth/password/forgot', ['email' => 'nobody@example.com']);
+    assertSame(200, $unknown['status']);
+    assertSame(null, requestResetToken('nobody@example.com', '10.4.4.1'), 'nothing is sent for an unknown address');
+
+    $token = requestResetToken('RESET@example.com', '10.4.4.2');
+    assertTrue($token !== null, 'a known address gets a link');
+    $rows = Database::all(
+        'SELECT r.token_hash, TIMESTAMPDIFF(MINUTE, UTC_TIMESTAMP(), r.expires_at) AS minutes FROM password_resets r
+           JOIN users u ON u.id = r.user_id WHERE u.email = ? AND r.used_at IS NULL',
+        ['reset@example.com'],
+    );
+    assertSame(1, count($rows));
+    assertSame(hash('sha256', $token), $rows[0]['token_hash'], 'only the hash is stored');
+    assertTrue((int) $rows[0]['minutes'] >= 58 && (int) $rows[0]['minutes'] <= 60, 'expires in one hour');
+
+    $newer = requestResetToken('reset@example.com', '10.4.4.3');
+    assertSame(1, (int) Database::value('SELECT COUNT(*) FROM password_resets r JOIN users u ON u.id = r.user_id WHERE u.email = ? AND r.used_at IS NULL', ['reset@example.com']), 'a new link replaces the old one');
+    assertSame(400, (new Client('10.4.4.4'))->post('/auth/password/reset', ['token' => $token, 'password' => 'a-brand-new-password'])['status'], 'the replaced link no longer works');
+    assertTrue($newer !== null);
+
+    assertSame(200, (new Client('10.4.4.5'))->post('/auth/password/forgot', ['email' => 'reset@example.com'])['status']);
+    assertSame(429, (new Client('10.4.4.6'))->post('/auth/password/forgot', ['email' => 'reset@example.com'])['status'], 'a 4th request within the hour, from any IP');
+});
+
+test('a reset link sets the new password once and signs every session out', function (): void {
+    $signedIn = registeredOwner('reset2@example.com');
+    $token = requestResetToken('reset2@example.com', '10.4.5.1');
+    $browser = new Client('10.4.5.2');
+
+    assertSame(422, $browser->post('/auth/password/reset', ['token' => $token, 'password' => 'short'])['status']);
+    assertSame(400, $browser->post('/auth/password/reset', ['token' => str_repeat('0', 64), 'password' => 'a-brand-new-password'])['status']);
+    assertSame(200, $browser->post('/auth/password/reset', ['token' => $token, 'password' => 'a-brand-new-password'])['status']);
+    assertSame(401, $signedIn->get('/auth/me')['status'], 'existing sessions are revoked');
+
+    $again = $browser->post('/auth/password/reset', ['token' => $token, 'password' => 'another-new-password']);
+    assertSame(400, $again['status'], 'a link works once');
+    assertSame('invalid_reset_token', $again['body']['error']['code']);
+    assertSame(401, (new Client('10.4.5.3'))->post('/auth/login', ['email' => 'reset2@example.com', 'password' => 'correct-horse-battery'])['status']);
+    assertSame(200, (new Client('10.4.5.3'))->post('/auth/login', ['email' => 'reset2@example.com', 'password' => 'a-brand-new-password'])['status']);
+
+    // An expired link is refused even if it was never used.
+    $expired = bin2hex(random_bytes(32));
+    Database::run(
+        "INSERT INTO password_resets (user_id, token_hash, expires_at) SELECT id, ?, UTC_TIMESTAMP() - INTERVAL 1 MINUTE FROM users WHERE email = 'reset2@example.com'",
+        [hash('sha256', $expired)],
+    );
+    assertSame(400, $browser->post('/auth/password/reset', ['token' => $expired, 'password' => 'a-third-new-password'])['status']);
+});
+
 test('each user only ever sees their own company', function (): void {
     $a = registeredOwner('a@tenant.test', 'Company A');
     $b = registeredOwner('b@tenant.test', 'Company B');
