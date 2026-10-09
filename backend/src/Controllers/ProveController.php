@@ -84,11 +84,12 @@ final class ProveController
     public function createReport(Request $request, array $params): Response
     {
         $input = Validator::validate($request->json(), [
-            'month' => ['required', 'regex:/^\d{4}-(0[1-9]|1[0-2])$/'],
+            'type' => ['required', 'in:daily,weekly,monthly'],
+            'period' => ['required', 'regex:/^\d{4}-(\d{2}-\d{2}|\d{2})$/'],
             'language' => ['required', Locales::rule()],
         ]);
         $companyId = $this->fresh($request);
-        return Response::created(ReportBuilder::create($companyId, (int) $request->user()['id'], $input['month'], $input['language']));
+        return Response::created(ReportBuilder::create($companyId, (int) $request->user()['id'], $input['type'], $input['period'], $input['language']));
     }
 
     public function report(Request $request, array $params): Response

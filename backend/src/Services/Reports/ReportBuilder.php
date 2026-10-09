@@ -22,7 +22,7 @@ use EnergyFlow\Services\Tariff\TariffBook;
 use EnergyFlow\Utils\Time;
 
 /**
- * Monthly sustainability report (docs/06-ux-design.md §3.9). The snapshot freezes
+ * Period sustainability report (docs/06-ux-design.md §3.9). The snapshot freezes
  * every figure, the factor and the tariff it used, so a finalised report never
  * changes when data or settings change later. The narrative is written over the
  * frozen snapshot (Groq when configured, checked against the numbers; a
@@ -30,24 +30,52 @@ use EnergyFlow\Utils\Time;
  */
 final class ReportBuilder
 {
-    public static function create(int $companyId, int $userId, string $month, string $language): array
+    public static function create(int $companyId, int $userId, string $type, string $periodKey, string $language): array
     {
         RateLimiter::hit('reports:' . $companyId, 10, 3600);
         $now = Clock::now($companyId);
         $time = LocalTime::forCompany($companyId);
-        $period = Period::parse("month:{$month}", $now, $time);
-        $snapshot = self::snapshot($companyId, $period, $month, $now, $time);
+        $period = self::resolvePeriod($type, $periodKey, $now, $time);
+        $label = match ($type) {
+            'monthly' => $periodKey,
+            'daily' => $time->date($period->from),
+            'weekly' => $time->date($period->from) . ' – ' . $time->date($period->to - 1),
+        };
+        $snapshot = self::snapshot($companyId, $period, $label, $now, $time);
         $narrative = NarrativeWriter::write($snapshot, $language);
 
         $id = Database::insert(
             "INSERT INTO reports (company_id, type, title, period_start, period_end, status, language, snapshot, narrative, narrative_source, version, created_by, created_at)
-             VALUES (?, 'monthly_sustainability', ?, ?, ?, 'draft', ?, ?, ?, ?, 1, ?, FROM_UNIXTIME(?))",
-            [$companyId, $snapshot['company']['name'] . ' · ' . $month, gmdate('Y-m-d', $period->from + 43200), gmdate('Y-m-d', $period->to - 1),
+             VALUES (?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?, 1, ?, FROM_UNIXTIME(?))",
+            [$companyId, $type . '_sustainability', $snapshot['company']['name'] . ' · ' . $label, gmdate('Y-m-d', $period->from + 43200), gmdate('Y-m-d', $period->to - 1),
              $language, json_encode($snapshot, JSON_UNESCAPED_UNICODE), json_encode($narrative['sections'], JSON_UNESCAPED_UNICODE),
              $narrative['source'], $userId, $now],
         );
-        AuditLog::record($companyId, $userId, 'report.create', 'report', $id, ['month' => $month, 'language' => $language, 'narrative' => $narrative['source']]);
+        AuditLog::record($companyId, $userId, 'report.create', 'report', $id, ['type' => $type, 'period' => $label, 'language' => $language, 'narrative' => $narrative['source']]);
         return self::find($companyId, $id);
+    }
+
+    private static function resolvePeriod(string $type, string $key, int $now, LocalTime $time): Period
+    {
+        if ($type === 'monthly') {
+            return Period::parse('month:' . $key, $now, $time);
+        }
+        $date = \DateTimeImmutable::createFromFormat('!Y-m-d', $key, $time->zone());
+        if ($date === false || $date->format('Y-m-d') !== $key) {
+            throw HttpException::validation(['period' => 'invalid_date']);
+        }
+        if ($type === 'daily') {
+            $from = $time->at($key);
+            $to = min($now, $time->at($date->modify('+1 day')->format('Y-m-d')));
+        } else {
+            $monday = $date->modify('-' . ((int) $date->format('N') - 1) . ' days');
+            $from = $time->at($monday->format('Y-m-d'));
+            $to = min($now, $time->at($monday->modify('+7 days')->format('Y-m-d')));
+        }
+        if ($from >= $now) {
+            throw HttpException::badRequest('invalid_period', 'That period has not started yet.');
+        }
+        return Period::between($from, $to, $type . ':' . $key);
     }
 
     public static function list(int $companyId): array
@@ -159,7 +187,7 @@ final class ReportBuilder
                 'turnover_eur' => $company['annual_turnover_eur'] === null ? null : (float) $company['annual_turnover_eur'],
                 'city' => $company['city'], 'country' => $company['country'], 'demo' => (bool) $company['is_demo'],
             ],
-            'period' => ['month' => $month, 'from' => $iso($period->from), 'to' => $iso($period->to), 'days' => round($days, 1), 'partial' => $period->to < $time->startOfMonth($period->from + 32 * 86400)],
+            'period' => ['month' => $month, 'from' => $iso($period->from), 'to' => $iso($period->to), 'days' => round($days, 1), 'partial' => $period->to >= $now],
             'energy' => [
                 'kwh' => round($site['kwh'], 1), 'kwh_high' => round($site['kwh_high'], 1), 'kwh_low' => round($site['kwh_low'], 1),
                 'eur' => round(EnergyQuery::energyCost($site, $tariff), 2), 'peak_kw' => round($peak, 1), 'bill' => $bill,

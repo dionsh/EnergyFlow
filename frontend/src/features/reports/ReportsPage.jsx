@@ -34,17 +34,47 @@ function useMonths() {
   }, [nowIso, t])
 }
 
+function usePeriods(type) {
+  const { t } = useTranslation()
+  const nowIso = useLive().data?.data?.now
+  const months = useMonths()
+  return useMemo(() => {
+    if (type === 'monthly') return months.map((m) => ({ key: m.key, label: m.label }))
+    const now = nowIso ? new Date(nowIso) : new Date()
+    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
+    if (type === 'daily') {
+      return Array.from({ length: 14 }, (_, i) => {
+        const d = new Date(today)
+        d.setUTCDate(d.getUTCDate() - i)
+        const key = d.toISOString().slice(0, 10)
+        return { key, label: i === 0 ? t('reportsPage.today', { date: key }) : key }
+      })
+    }
+    const monday = new Date(today)
+    monday.setUTCDate(monday.getUTCDate() - ((monday.getUTCDay() + 6) % 7))
+    return Array.from({ length: 12 }, (_, i) => {
+      const from = new Date(monday)
+      from.setUTCDate(from.getUTCDate() - i * 7)
+      const to = new Date(from)
+      to.setUTCDate(to.getUTCDate() + 6)
+      const key = from.toISOString().slice(0, 10)
+      return { key, label: `${key} – ${to.toISOString().slice(0, 10)}` }
+    })
+  }, [months, nowIso, t, type])
+}
+
 function NewReportDialog({ open, onClose }) {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { errorMessage } = useApiErrors()
-  const months = useMonths()
+  const [type, setType] = useState('monthly')
+  const periods = usePeriods(type)
   const [month, setMonth] = useState(null)
   const [language, setLanguage] = useState(i18n.language)
-  const chosen = month ?? months[1]?.key ?? months[0]?.key
+  const chosen = periods.some((p) => p.key === month) ? month : periods[type === 'monthly' ? 1 : 0]?.key
   const create = useMutation({
-    mutationFn: () => api.post('/reports', { month: chosen, language }),
+    mutationFn: () => api.post('/reports', { type, period: chosen, language }),
     onSuccess: ({ data }) => {
       queryClient.invalidateQueries({ queryKey: ['reports'] })
       navigate(`/reports/${data.id}`)
@@ -54,7 +84,7 @@ function NewReportDialog({ open, onClose }) {
     <Modal
       open={open}
       onClose={onClose}
-      title={t('reportsPage.newTitle')}
+      title={t('reportsPage.newTitle', { type: t(`reportsPage.types.${type}`) })}
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>{t('common.cancel')}</Button>
@@ -66,9 +96,15 @@ function NewReportDialog({ open, onClose }) {
     >
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="report-month" className="mb-1.5 block text-[13px] font-medium text-ink">{t('reportsPage.month')}</label>
-          <Select id="report-month" value={chosen} onChange={(e) => setMonth(e.target.value)}>
-            {months.map((m) => <option key={m.key} value={m.key}>{m.label}</option>)}
+          <label htmlFor="report-type" className="mb-1.5 block text-[13px] font-medium text-ink">{t('reportsPage.type')}</label>
+          <Select id="report-type" value={type} onChange={(e) => { setType(e.target.value); setMonth(null) }}>
+            {['daily', 'weekly', 'monthly'].map((value) => <option key={value} value={value}>{t(`reportsPage.types.${value}`)}</option>)}
+          </Select>
+        </div>
+        <div>
+          <label htmlFor="report-period" className="mb-1.5 block text-[13px] font-medium text-ink">{t('reportsPage.period')}</label>
+          <Select id="report-period" value={chosen} onChange={(e) => setMonth(e.target.value)}>
+            {periods.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
           </Select>
         </div>
         <div>

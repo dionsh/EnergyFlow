@@ -17,11 +17,6 @@ use EnergyFlow\Services\Assistant\Grounding;
  */
 final class NarrativeWriter
 {
-    private const MONTHS = [
-        'en' => ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-        'sq' => ['janar', 'shkurt', 'mars', 'prill', 'maj', 'qershor', 'korrik', 'gusht', 'shtator', 'tetor', 'nëntor', 'dhjetor'],
-    ];
-
     /** @return array{sections: array{summary: string, changes: string, outlook: string}, source: string} */
     public static function write(array $snapshot, string $language): array
     {
@@ -41,8 +36,8 @@ final class NarrativeWriter
     {
         return [
             'company' => $s['company']['name'],
-            'month' => self::monthLabel($s['period']['month'], $language),
-            'partial_month' => $s['period']['partial'],
+            'period' => $s['period']['month'],
+            'partial_period' => $s['period']['partial'],
             'energy_kwh' => $s['energy']['kwh'],
             'energy_cost_eur_excl_vat' => $s['energy']['eur'],
             'peak_kw' => $s['energy']['peak_kw'],
@@ -69,13 +64,13 @@ final class NarrativeWriter
     {
         $name = $language === 'sq' ? 'Albanian (Shqip, Kosovo usage)' : 'English';
         $system = <<<PROMPT
-You write the narrative of a monthly energy and sustainability report for a small manufacturer in Kosovo.
+You write the narrative of an energy and sustainability report for a small manufacturer in Kosovo.
 Write in {$name}. Use ONLY the facts and numbers in the JSON the user sends. Never invent a number, a cause, a comparison or a recommendation.
 Plain, specific sentences for a business owner; euros first; no marketing language, no emojis, no headings.
 Write CO2e as "CO₂e". Round sensibly (kWh without decimals, euros with two).
 Return a JSON object with exactly these keys:
 - "summary": 3-4 sentences: energy, cost (excl. VAT), CO₂e, waste and verified savings to date.
-- "changes": 2-3 sentences: change vs the same days of the previous month and the largest waste event.
+- "changes": 2-3 sentences: change vs the preceding comparison period and the largest waste event.
 - "outlook": 2-3 sentences: the most valuable open opportunities and their total per month. Say if one saves cost only.
 PROMPT;
         $result = GroqClient::chat([
@@ -106,7 +101,7 @@ PROMPT;
         $eur = static fn (float $v): string => $en ? '€' . $n($v, 2) : $n($v, 2) . ' €';
         $co2 = static fn (float $kg): string => $kg >= 1000 ? $n($kg / 1000, 1) . ' t CO₂e' : $n($kg) . ' kg CO₂e';
         $pct = static fn (?float $r): string => $r === null ? '—' : $n(abs($r) * 100, 1) . '%';
-        $month = self::monthLabel($s['period']['month'], $language);
+        $month = $s['period']['month'];
         $company = $s['company']['name'];
         $verified = $s['impact']['verified'];
 
@@ -121,8 +116,8 @@ PROMPT;
 
         $change = $s['previous']['change_ratio'];
         $changes = $change === null ? '' : ($en
-            ? 'Compared with the same days of the previous month, consumption ' . ($change >= 0 ? 'rose' : 'fell') . " by {$pct($change)}."
-            : 'Krahasuar me të njëjtat ditë të muajit të kaluar, konsumi ' . ($change >= 0 ? 'u rrit' : 'ra') . " me {$pct($change)}.");
+            ? 'Compared with the preceding period of the same length, consumption ' . ($change >= 0 ? 'rose' : 'fell') . " by {$pct($change)}."
+            : 'Krahasuar me periudhën paraprake me kohëzgjatje të njëjtë, konsumi ' . ($change >= 0 ? 'u rrit' : 'ra') . " me {$pct($change)}.");
         $largest = $s['waste']['largest'];
         if ($largest !== null) {
             $type = self::wasteType($largest['type'], $language);
@@ -185,9 +180,4 @@ PROMPT;
         return $labels[$language][$type] ?? $type;
     }
 
-    private static function monthLabel(string $month, string $language): string
-    {
-        [$year, $m] = array_map('intval', explode('-', $month));
-        return self::MONTHS[$language][$m - 1] . ' ' . $year;
-    }
 }

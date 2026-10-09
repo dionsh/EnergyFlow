@@ -157,7 +157,7 @@ Photos are read by a vision model on Groq and never stored. The user reviews eve
 | Method | Path | Role | Purpose |
 |---|---|---|---|
 | GET | `/reports` | V | List |
-| POST | `/reports` `{type, period_start, period_end, language}` | M | Build the snapshot (deterministic) + narrative (LLM, optional) → draft |
+| POST | `/reports` `{type: daily\|weekly\|monthly, period, language}` | M | Build a frozen snapshot + grounded narrative → draft. `period` is `YYYY-MM-DD` for daily or a week anchor date for weekly, and `YYYY-MM` for monthly. |
 | GET | `/reports/{id}` | V | Snapshot + narrative (the frontend renders the web view and the PDF) |
 | PATCH | `/reports/{id}/narrative` | M | Edit narrative sections before finalising |
 | POST | `/reports/{id}/finalize` | A | Locks the report (audited); a new version is needed to change it |

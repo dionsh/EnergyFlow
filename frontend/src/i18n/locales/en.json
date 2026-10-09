@@ -1135,9 +1135,13 @@
     "scanFuel": "Scan a fuel receipt"
   },
   "reportsPage": {
-    "subtitle": "Monthly energy and sustainability reports, generated from measured data.",
+    "subtitle": "Daily, weekly and monthly energy and sustainability reports, generated from measured data.",
     "new": "New report",
-    "newTitle": "New monthly report",
+    "newTitle": "New {{type}} report",
+    "type": "Report type",
+    "types": { "daily": "Daily", "weekly": "Weekly", "monthly": "Monthly" },
+    "period": "Period",
+    "today": "Today ({{date}})",
     "month": "Month",
     "language": "Language",
     "monthPartial": "{{month}} (so far)",
@@ -1167,7 +1171,7 @@
     "save": "Save text",
     "finalize": "Finalize",
     "finalizeConfirm": "Finalize this report? It can't be changed afterwards.",
-    "title": "Monthly energy and sustainability report",
+    "title": { "daily": "Daily energy and sustainability report", "weekly": "Weekly energy and sustainability report", "monthly": "Monthly energy and sustainability report" },
     "demo": "Demo company (fictional) — simulated data",
     "draft": "Draft",
     "final": "Final",
@@ -1239,7 +1243,7 @@
     "mvLine": "Savings are verified against an adjusted baseline with a 90 % confidence interval (IPMVP-inspired, Option B). This is not a certified M&V.",
     "simulatedLine": "This report describes a fictional demo company with simulated machines. The methods are the same as for real meters.",
     "footer": "EnergyFlow · energy intelligence for Kosovo SMEs",
-    "periodPartial": "(month to date)",
+    "periodPartial": "(so far)",
     "vsmeScope": "Annual datapoints for the calendar year {{year}}, measured from {{from}} to {{to}} (when this report was generated) — not only this month."
   },
   "assistant": {
