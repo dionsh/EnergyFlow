@@ -8,6 +8,7 @@ import { AppShell } from './components/layout/AppShell'
 import { GuestOnly, RequireAuth } from './components/layout/RouteGuards'
 import { LoginPage } from './features/auth/LoginPage'
 import { RegisterPage } from './features/auth/RegisterPage'
+import { ForgotPasswordPage } from './features/auth/ForgotPasswordPage'
 import { pageLoaders } from './app/pageLoaders'
 
 const page = (load, name) => lazy(() => load().then((module) => ({ default: module[name] })))
@@ -52,6 +53,8 @@ export default function App() {
                 <Route element={<GuestOnly />}>
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/register" element={<RegisterPage />} />
+                  <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                  <Route path="/reset-password" element={<ForgotPasswordPage />} />
                 </Route>
                 <Route element={<RequireAuth />}>
                   <Route element={<AppShell />}>

@@ -88,6 +88,9 @@ export function LoginPage() {
           error={fields.password}
           required
         />
+        <Link to="/forgot-password" className="-mt-2 self-end text-[13px] font-medium text-brand hover:underline">
+          {t('auth.forgot.link')}
+        </Link>
         <Button type="submit" size="lg" loading={submitting} className="mt-2 w-full">
           {t('auth.login.submit')}
         </Button>

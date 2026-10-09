@@ -93,10 +93,31 @@
       "submit": "Create account",
       "haveAccount": "Already have an account?",
       "login": "Sign in"
+    },
+    "forgot": {
+      "link": "Forgot password?",
+      "title": "Reset your password",
+      "hint": "Enter the email address you used to create your account.",
+      "submit": "Send reset link",
+      "submitting": "Please wait…",
+      "sentTitle": "Check your email",
+      "sentHint": "If an account exists for that email, a reset link will be sent.",
+      "sentMessage": "Check your inbox for a password reset link. It expires in one hour.",
+      "resetTitle": "Choose a new password",
+      "resetHint": "Your new password must be at least 10 characters.",
+      "confirmPassword": "Confirm new password",
+      "resetSubmit": "Save new password",
+      "resetDoneTitle": "Password updated",
+      "resetDoneHint": "You can now sign in with your new password.",
+      "resetDoneMessage": "Your password has been changed. Sign in to continue.",
+      "backToLogin": "Back to sign in",
+      "localHint": "For local development, the reset link appears in the backend terminal."
     }
   },
   "errors": {
     "generic": "Something went wrong.",
+    "passwords_do_not_match": "The passwords do not match.",
+    "invalid_reset_token": "This password reset link is invalid or has expired. Request a new one.",
     "network_error": "Couldn't reach the server. Check your connection and try again.",
     "server_error": "Something went wrong on our side. Please try again.",
     "invalid_credentials": "The email or password is incorrect.",

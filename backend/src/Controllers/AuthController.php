@@ -13,6 +13,7 @@ use EnergyFlow\Core\Validator;
 use EnergyFlow\Models\Company;
 use EnergyFlow\Models\User;
 use EnergyFlow\Services\Auth\AuthService;
+use EnergyFlow\Services\Auth\PasswordResetService;
 use EnergyFlow\Services\Auth\SessionService;
 use EnergyFlow\Utils\Locales;
 
@@ -48,6 +49,23 @@ final class AuthController
             Response::ok(['user' => $result['user'], 'company' => $result['company']]),
             $result['token'],
         );
+    }
+
+    public function forgotPassword(Request $request, array $params): Response
+    {
+        $input = Validator::validate($request->json(), ['email' => ['required', 'email', 'max:190']]);
+        PasswordResetService::request($input['email'], $request->ip);
+        return Response::ok(['message' => 'If an account exists for that email, a reset link will be sent.']);
+    }
+
+    public function resetPassword(Request $request, array $params): Response
+    {
+        $input = Validator::validate($request->json(), [
+            'token' => ['required', 'string', 'regex:/^[a-f0-9]{64}$/'],
+            'password' => ['required', 'string', 'min:10', 'max:200'],
+        ]);
+        PasswordResetService::reset($input['token'], $input['password'], $request->ip);
+        return Response::ok(['message' => 'Password updated. You can now sign in.']);
     }
 
     /**

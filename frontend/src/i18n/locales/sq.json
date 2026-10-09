@@ -93,10 +93,31 @@
       "submit": "Krijo llogarinë",
       "haveAccount": "Ke tashmë llogari?",
       "login": "Kyçu"
+    },
+    "forgot": {
+      "link": "E ke harruar fjalëkalimin?",
+      "title": "Rivendos fjalëkalimin",
+      "hint": "Shkruaj email-in që përdore për ta krijuar llogarinë.",
+      "submit": "Dërgo lidhjen për rivendosje",
+      "submitting": "Prit pak…",
+      "sentTitle": "Kontrollo email-in",
+      "sentHint": "Nëse ekziston llogari me këtë email, do të dërgohet një lidhje rivendosjeje.",
+      "sentMessage": "Kontrollo kutinë hyrëse për lidhjen e rivendosjes. Ajo skadon pas një ore.",
+      "resetTitle": "Zgjidh fjalëkalim të ri",
+      "resetHint": "Fjalëkalimi i ri duhet të ketë të paktën 10 karaktere.",
+      "confirmPassword": "Konfirmo fjalëkalimin e ri",
+      "resetSubmit": "Ruaj fjalëkalimin e ri",
+      "resetDoneTitle": "Fjalëkalimi u ndryshua",
+      "resetDoneHint": "Tani mund të kyçesh me fjalëkalimin e ri.",
+      "resetDoneMessage": "Fjalëkalimi u ndryshua. Kyçu për të vazhduar.",
+      "backToLogin": "Kthehu te kyçja",
+      "localHint": "Në zhvillim lokal, lidhja shfaqet në terminalin e backend-it."
     }
   },
   "errors": {
     "generic": "Diçka shkoi keq.",
+    "passwords_do_not_match": "Fjalëkalimet nuk përputhen.",
+    "invalid_reset_token": "Kjo lidhje është e pavlefshme ose ka skaduar. Kërko një të re.",
     "network_error": "Serveri nuk u arrit. Kontrollo lidhjen dhe provo përsëri.",
     "server_error": "Diçka shkoi keq nga ana jonë. Provo përsëri.",
     "invalid_credentials": "Email-i ose fjalëkalimi është i pasaktë.",

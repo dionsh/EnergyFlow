@@ -48,6 +48,8 @@ $router->group('/api/v1', [], static function (Router $r): void {
     $r->group('', [RequireClientHeader::class], static function (Router $r): void {
         $r->post('/auth/register', [AuthController::class, 'register']);
         $r->post('/auth/login', [AuthController::class, 'login']);
+        $r->post('/auth/password/forgot', [AuthController::class, 'forgotPassword']);
+        $r->post('/auth/password/reset', [AuthController::class, 'resetPassword']);
         $r->post('/auth/demo', [AuthController::class, 'demo']);
         $r->post('/auth/logout', [AuthController::class, 'logout']);
 
