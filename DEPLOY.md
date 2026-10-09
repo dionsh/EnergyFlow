@@ -36,10 +36,15 @@ You don't need to create tables. The API runs its migrations automatically every
    | `DB_PASS` | Aiven password |
    | `DB_SSL_CA_CONTENT` | the **entire contents** of `ca.pem`, including the BEGIN/END lines |
    | `GROQ_API_KEY` | your Groq key (can be added later) |
+   | `FRONTEND_URL` | the deployed Vercel app URL, used in password-reset links |
+   | `RESEND_API_KEY` | Resend sending key for password-reset emails |
+   | `MAIL_FROM` | sender address on a domain verified in Resend |
 
    `CRON_SECRET` is generated automatically. `DB_NAME=defaultdb` and `DB_USER=avnadmin` are already set.
 3. Deploy. The first Docker build takes a few minutes. Then open
    `https://energyflow-api.onrender.com/api/v1/health`. You should see `"database":"ok"` and a migration version.
+
+   Password reset emails use Resend. Verify a sending domain in Resend, create a sending API key, and set the three values above. Locally, when no mail key is configured, the reset link is printed in the backend terminal.
 4. If Render gave the service a different URL (the name was taken), copy it. You need it in step 3.
 
 **Free-tier behaviour:** the service sleeps after 15 minutes without traffic, and the first request then takes about 1 minute. Step 4 keeps it awake.

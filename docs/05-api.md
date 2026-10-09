@@ -27,6 +27,8 @@ Roles: **V** viewer, **M** manager, **A** admin, **O** owner. Each role includes
 |---|---|---|---|
 | POST | `/auth/register` | public | Create company + owner (name, email, password, company name, city) |
 | POST | `/auth/login` | public | Set session cookie (rate-limited) |
+| POST | `/auth/password/forgot` | public | Request a one-hour reset link; always returns the same message to prevent account discovery |
+| POST | `/auth/password/reset` | public | Use the one-time token and a new password; revokes existing sessions |
 | POST | `/auth/logout` | V | Revoke session |
 | GET | `/auth/me` | V | User, role, company summary, locale, `is_demo` |
 | PATCH | `/auth/me` | V | Name, locale, password change |
