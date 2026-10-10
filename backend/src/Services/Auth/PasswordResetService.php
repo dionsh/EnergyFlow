@@ -13,13 +13,16 @@ final class PasswordResetService
 {
     public static function request(string $email, string $ip): void
     {
+        if (!self::mailConfigured()) {
+            throw new HttpException(503, 'email_not_configured', 'Password reset email delivery is not configured.');
+        }
         RateLimiter::hit('password-reset-ip:' . $ip, 5, 3600);
         // Per address too, so nobody can flood one inbox from many IPs. Applied before the
         // lookup, so the limit behaves the same whether or not the account exists.
         RateLimiter::hit('password-reset-email:' . mb_strtolower($email), 3, 3600);
         Database::run('DELETE FROM password_resets WHERE expires_at < UTC_TIMESTAMP() OR used_at < UTC_TIMESTAMP() - INTERVAL 30 DAY');
         $user = Database::one(
-            "SELECT u.id, u.email, u.full_name, COALESCE(u.locale, 'sq') AS locale FROM users u WHERE u.email = ? AND u.disabled_at IS NULL LIMIT 1",
+            "SELECT u.id, u.email, COALESCE(u.locale, 'sq') AS locale FROM users u WHERE u.email = ? AND u.disabled_at IS NULL LIMIT 1",
             [mb_strtolower($email)],
         );
         if ($user === null) {
@@ -36,7 +39,7 @@ final class PasswordResetService
 
         $base = rtrim(Env::get('FRONTEND_URL', 'http://localhost:5173') ?? '', '/');
         $url = $base . '/reset-password?token=' . rawurlencode($token);
-        self::deliver((string) $user['email'], (string) $user['full_name'], (string) $user['locale'], $url);
+        self::deliver((string) $user['email'], (string) $user['locale'], $url);
     }
 
     public static function reset(string $token, string $newPassword, string $ip): void
@@ -62,38 +65,57 @@ final class PasswordResetService
         });
     }
 
-    private static function deliver(string $email, string $name, string $locale, string $url): void
+    private static function deliver(string $email, string $locale, string $url): void
     {
         $apiKey = Env::get('RESEND_API_KEY');
-        $from = Env::get('MAIL_FROM');
-        if ($apiKey === null || $from === null) {
-            if (!Env::isProduction()) {
-                error_log('[EnergyFlow] Local password reset link for ' . $email . ': ' . $url);
-            } else {
-                error_log('[EnergyFlow] Password reset email unavailable: configure RESEND_API_KEY and MAIL_FROM.');
-            }
-            return;
+        $fromEmail = Env::get('RESEND_FROM_EMAIL');
+        if ($apiKey === null || $fromEmail === null) {
+            throw new HttpException(503, 'email_not_configured', 'Password reset email delivery is not configured.');
         }
 
-        $escapedName = htmlspecialchars($name, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $albanian = $locale === 'sq';
         $subject = $albanian ? 'Rivendos fjalëkalimin e EnergyFlow' : 'Reset your EnergyFlow password';
-        $htmlBody = $albanian
-            ? '<p>Përshëndetje ' . $escapedName . ',</p><p>Përdore këtë lidhje për të zgjedhur një fjalëkalim të ri për EnergyFlow. Lidhja skadon pas një ore.</p><p><a href="' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . '">Rivendos fjalëkalimin</a></p><p>Nëse nuk e kërkove këtë, mund ta shpërfillësh email-in.</p>'
-            : '<p>Hello ' . $escapedName . ',</p><p>Use this link to choose a new EnergyFlow password. It expires in one hour.</p><p><a href="' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . '">Reset password</a></p><p>If you did not request this, you can ignore this email.</p>';
-        $textBody = $albanian
-            ? "Përshëndetje {$name},\n\nPërdore këtë lidhje për të zgjedhur një fjalëkalim të ri për EnergyFlow. Lidhja skadon pas një ore:\n{$url}\n\nNëse nuk e kërkove këtë, mund ta shpërfillësh email-in."
-            : "Hello {$name},\n\nUse this link to choose a new EnergyFlow password. It expires in one hour:\n{$url}\n\nIf you did not request this, you can ignore this email.";
+        $copy = $albanian ? [
+            'eyebrow' => 'Siguria e llogarisë',
+            'heading' => 'Rivendos fjalëkalimin',
+            'intro' => 'Kemi marrë një kërkesë për të ndryshuar fjalëkalimin e llogarisë sate në EnergyFlow. Kliko butonin më poshtë për të vendosur një fjalëkalim të ri.',
+            'button_text' => 'Ndrysho fjalëkalimin',
+            'expiration_notice' => 'Ky link skadon pas 1 ore dhe mund të përdoret vetëm një herë.',
+            'fallback_intro' => 'Nëse butoni nuk hapet, kopjoje këtë adresë në shfletues:',
+            'ignore_notice' => 'Nëse nuk e ke kërkuar ti këtë ndryshim, mund ta injorosh këtë email. Fjalëkalimi yt nuk do të ndryshohet.',
+            'footer' => 'Menaxhim më i mençur i energjisë',
+        ] : [
+            'eyebrow' => 'Account security',
+            'heading' => 'Reset your password',
+            'intro' => 'We received a request to change your EnergyFlow account password. Click the button below to choose a new password.',
+            'button_text' => 'Reset password',
+            'expiration_notice' => 'This link expires in 1 hour and can only be used once.',
+            'fallback_intro' => 'If the button does not work, copy and paste this address into your browser:',
+            'ignore_notice' => 'If you did not request this change, you can ignore this email. Your password will not be changed.',
+            'footer' => 'Smarter energy management',
+        ];
+        $templatePath = dirname(__DIR__, 3) . '/templates/password-reset.html';
+        $template = file_get_contents($templatePath);
+        if ($template === false) {
+            error_log('[EnergyFlow] Password reset email template could not be read.');
+            throw new HttpException(503, 'email_not_configured', 'Password reset email delivery is not configured.');
+        }
+        $variables = ['subject' => $subject, 'link' => $url, ...$copy];
+        $html = preg_replace_callback('/{{([a-z_]+)}}/', static function (array $match) use ($variables): string {
+            return htmlspecialchars($variables[$match[1]] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        }, $template) ?? '';
+        $plainText = $copy['intro'] . "\n\n" . $copy['button_text'] . ': ' . $url . "\n\n"
+            . $copy['expiration_notice'] . "\n" . $copy['ignore_notice'];
         $payload = json_encode([
-            'from' => $from,
+            'from' => $fromEmail,
             'to' => [$email],
             'subject' => $subject,
-            'html' => $htmlBody,
-            'text' => $textBody,
+            'html' => $html,
+            'text' => $plainText,
         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         $context = stream_context_create(['http' => [
             'method' => 'POST',
-            'header' => "Authorization: Bearer {$apiKey}\r\nContent-Type: application/json\r\nAccept: application/json\r\n",
+            'header' => "Content-Type: application/json\r\nAccept: application/json\r\nAuthorization: Bearer {$apiKey}\r\n",
             'content' => $payload,
             'timeout' => 10,
             'ignore_errors' => true,
@@ -101,7 +123,21 @@ final class PasswordResetService
         $response = @file_get_contents('https://api.resend.com/emails', false, $context);
         $statusLine = $http_response_header[0] ?? '';
         if ($response === false || !preg_match('/\s2\d\d\s/', $statusLine)) {
-            error_log('[EnergyFlow] Password reset email delivery failed. HTTP response: ' . ($statusLine ?: 'unavailable'));
+            $diagnostic = trim(strip_tags((string) $response));
+            $diagnostic = str_replace($apiKey, '[credential hidden]', $diagnostic);
+            $diagnostic = preg_replace('/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i', '[email hidden]', $diagnostic) ?? '';
+            $diagnostic = preg_replace('/https?:\/\/\S+/i', '[link hidden]', $diagnostic) ?? '';
+            $diagnostic = preg_replace('/\b[a-f0-9]{64}\b/i', '[token hidden]', $diagnostic) ?? '';
+            $diagnostic = mb_substr($diagnostic, 0, 300);
+            error_log('[EnergyFlow] Password reset email delivery failed via Resend. HTTP response: '
+                . ($statusLine ?: 'unavailable')
+                . ($diagnostic !== '' ? '; Resend says: ' . $diagnostic : ''));
         }
+    }
+
+    private static function mailConfigured(): bool
+    {
+        return Env::get('RESEND_API_KEY') !== null
+            && Env::get('RESEND_FROM_EMAIL') !== null;
     }
 }

@@ -224,6 +224,7 @@ export function NotificationsButton() {
 
 export function UserMenu() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const { user, logout } = useAuth()
   const [open, setOpen] = useState(false)
   const close = useCallback(() => setOpen(false), [])
@@ -260,9 +261,13 @@ export function UserMenu() {
         <div className="pt-1">
           <MenuItem
             icon={LogOut}
-            onClick={() => {
+            onClick={async () => {
               close()
-              logout()
+              try {
+                await logout()
+              } finally {
+                navigate('/login', { replace: true })
+              }
             }}
           >
             {t('topbar.signOut')}

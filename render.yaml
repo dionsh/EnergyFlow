@@ -24,7 +24,7 @@ services:
         sync: false
       - key: RESEND_API_KEY
         sync: false
-      - key: MAIL_FROM
+      - key: RESEND_FROM_EMAIL
         sync: false
       # Aiven for MySQL (free). Host and port come from the Aiven console.
       - key: DB_HOST
