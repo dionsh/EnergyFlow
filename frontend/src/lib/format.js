@@ -51,7 +51,8 @@ function makeFormatters(language) {
   }
 
   return {
-    formatNumber: (value, digits = 0) => number(value, digits),
+    // minDigits keeps trailing zeros where a fixed width reads better (cos φ 0,850 next to 0,809).
+    formatNumber: (value, digits = 0, minDigits = 0) => number(value, digits, minDigits),
 
     /** kW: 1 decimal, 2 below 1 kW. */
     formatKw: (value) => `${number(value, Math.abs(value) < 1 ? 2 : 1, Math.abs(value) < 1 ? 2 : 1)} kW`,

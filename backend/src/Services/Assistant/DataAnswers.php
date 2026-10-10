@@ -732,6 +732,14 @@ final class DataAnswers
                 $this->say->number((float) ($p['peak_kw'] ?? 0), 1), $this->say->number((float) ($p['normal_kw'] ?? 0), 1))
                 . (($p['overload'] ?? false) ? sprintf($this->say->t(', %s%% of its rating', ', %s%% e fuqisë nominale'), $this->say->number((float) $p['rated_pct'], 0)) : ''),
             'command_failed' => sprintf($this->say->t('Turn Off not confirmed for %s', 'Fikja nuk u konfirmua për %s'), $machine),
+            'low_pf' => ($p['billed'] ?? false)
+                ? sprintf($this->say->t('Power factor %s this month (charged below %s): %s of reactive energy so far', 'Faktori i fuqisë %s këtë muaj (paguhet nën %s): %s për energji reaktive deri tani'),
+                    $this->say->number((float) ($p['cos_phi'] ?? 0), 2), $this->say->number((float) ($p['threshold'] ?? 0.95), 2), $this->say->eur((float) ($p['eur'] ?? 0)))
+                : sprintf($this->say->t('Power factor %s this month', 'Faktori i fuqisë %s këtë muaj'), $this->say->number((float) ($p['cos_phi'] ?? 0), 2)),
+            'peak_coincidence' => sprintf(
+                $this->say->t('Monthly peak %s kW: flexible loads (%s) added %s kW, %s a month in engaged power', 'Kulmi mujor %s kW: ngarkesat fleksibile (%s) shtuan %s kW, %s në muaj për fuqinë e angazhuar'),
+                $this->say->number((float) ($p['peak_kw'] ?? 0), 1), $p['flexible'] ?? '', $this->say->number((float) ($p['avoidable_kw'] ?? 0), 1), $this->say->eur((float) ($p['eur'] ?? 0)),
+            ),
             default => $key,
         };
     }

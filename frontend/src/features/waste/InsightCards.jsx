@@ -6,7 +6,7 @@ import { Card, CardHeader } from '../../components/ui/Card'
 import { MethodChip, SeverityBadge } from '../../components/ui/Chips'
 import { Skeleton } from '../../components/ui/States'
 import { useAlerts, useWasteEvents } from '../data'
-import { alertText } from './alertText'
+import { DETAIL_TYPES, alertText } from './alertText'
 
 /** Overview: the top 3 things that need attention, linked to their evidence. */
 export function OpenAlertsCard() {
@@ -33,7 +33,7 @@ export function OpenAlertsCard() {
             return (
               <li key={alert.id}>
                 <Link
-                  to={alert.waste_event_id ? `/waste?event=${alert.waste_event_id}` : alert.type === 'SPIKE' ? `/waste?tab=alerts&alert=${alert.id}` : '/waste?tab=alerts'}
+                  to={alert.waste_event_id ? `/waste?event=${alert.waste_event_id}` : DETAIL_TYPES.has(alert.type) ? `/waste?tab=alerts&alert=${alert.id}` : '/waste?tab=alerts'}
                   className="flex items-start gap-3 px-5 py-3 hover:bg-surface-2"
                 >
                   <SeverityBadge severity={alert.severity} className="mt-0.5 shrink-0" />

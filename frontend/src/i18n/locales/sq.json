@@ -849,7 +849,13 @@
     "command_failed_detail": "{{serial}} · {{reason}}",
     "spike": "{{machine}}: kulm fuqie deri në {{peak}}",
     "spike_detail": "{{date}} · {{duration}} · kulmi normal {{normal}}",
-    "overload": "{{ratedPct}} e fuqisë nominale"
+    "overload": "{{ratedPct}} e fuqisë nominale",
+    "low_pf": "Faktori i fuqisë {{cos}} në {{month}}",
+    "low_pf_detail": "{{excess}} mbi lejimin për cos φ {{threshold}} · {{eur}} të ngarkuara deri tani",
+    "low_pf_unbilled": "Nën cos φ 0,80 · nuk ngarkohet në tarifën tuaj",
+    "atThisPace": "{{projected}} me këtë ritëm",
+    "peak_coincidence": "Kulmi mujor ({{month}}): ngarkesat fleksibile shtuan {{avoidable}}",
+    "peak_coincidence_detail": "{{peak}} më {{peakAt}} · {{eur}} në muaj për fuqinë e angazhuar · {{flexible}}"
   },
   "notifications": {
     "markAllRead": "Shëno të gjitha si të lexuara",
@@ -864,7 +870,11 @@
     "command_verified": "{{machine}} u fik · u verifikua nga matësi",
     "impact_verified": "Kursime të verifikuara për {{code}}: {{kwh}} · {{eur}} në {{days}} ditë",
     "alert_spike": "{{machine}}: kulm fuqie deri në {{peak}}",
-    "alert_spike_escalated": "{{machine}}: kulmi tani {{peak}} ({{ratedPct}} e fuqisë nominale)"
+    "alert_spike_escalated": "{{machine}}: kulmi tani {{peak}} ({{ratedPct}} e fuqisë nominale)",
+    "alert_low_pf": "Faktor i ulët i fuqisë këtë muaj: cos φ {{cos}}",
+    "alert_low_pf_escalated": "Faktor i ulët i fuqisë: {{eur}} për energji reaktive deri tani",
+    "alert_peak_coincidence": "Ngarkesat fleksibile shtuan {{avoidable}} në kulmin e këtij muaji",
+    "alert_peak_coincidence_escalated": "Përputhja në kulm tani kushton {{eur}} në muaj"
   },
   "overviewAlerts": {
     "title": "Alarmet e hapura",
@@ -1862,6 +1872,50 @@
     "openMachine": "Hap {{code}}",
     "keySpike": "Minutat me kulm",
     "keyNormal": "Minutat normale",
-    "allHours": "{{days}}, të gjitha orët"
+    "allHours": "{{days}}, të gjitha orët",
+    "pf": {
+      "cos": "Faktori i fuqisë (cos φ)",
+      "cosHint": "nga fillimi i muajit · ngarkohet nën {{threshold}}",
+      "excess": "Mbi lejimin",
+      "excessHint": "{{kvarh}} të tërhequra, {{allowed}} të lejuara",
+      "charge": "Pagesa për energji reaktive",
+      "chargeHint": "deri tani, me {{rate}} €c/kVArh",
+      "projected": "deri tani · {{eur}} me këtë ritëm për muajin",
+      "notCharged": "nuk ngarkohet në tarifën tuaj",
+      "capacitor": "Kompensimi i fuqisë reaktive",
+      "capacitorHint": "për të arritur {{target}} me ngarkesë pune {{kw}}",
+      "machinesTitle": "Kush e tërheq energjinë reaktive",
+      "machine": "Makineria",
+      "share": "Pjesa",
+      "poor": "Faktor i dobët i fuqisë",
+      "poorKey": "Të shënuara: cos φ nën {{poor}}.",
+      "unmonitored": "Ngarkesat pa matës të vetin: {{kvarh}}.",
+      "advice": "Një bateri kondensatorësh prej rreth {{kvar}} në tabelën kryesore, ose kompensim te motorët më të mëdhenj, do ta çonte cos φ në {{target}} dhe do ta hiqte këtë pagesë. Madhësinë le ta përcaktojë një elektricist nga një matje e ngarkesës.",
+      "unbilledAdvice": "Tarifa juaj nuk e ngarkon energjinë reaktive, por një faktor fuqie kaq i ulët i ngarkon kabllot dhe transformatorët me rrymë që nuk kryen punë.",
+      "rule": "ZRRE e ngarkon energjinë reaktive mbi lejimin që i përgjigjet cos φ {{threshold}}: kVArh e lejuara = kWh × tan(arccos {{threshold}}). EnergyFlow e zbaton të njëjtin rregull për kWh dhe kVArh të muajit në matësin kryesor. Makineritë nën cos φ {{poor}} shënohen.",
+      "formula": "Madhësia e kompensimit: Qc = P × (tan φ − tan φ i synuar), ku P është ngarkesa mesatare gjatë punës.",
+      "source": "Burimi: Vendimi i ZRRE-së V_2703_2025 (16 prill 2025), tarifat me pakicë, shënimi i tabelës; 0,87 €c/kVArh për 0,4 kV Kategoria I. Tarifat u mbajtën për 2026 (Bordi i ZRRE-së, 7 maj 2026)."
+    },
+    "peak": {
+      "peak": "Kulmi i këtij muaji",
+      "billed": "Pagesa për fuqinë e angazhuar",
+      "billedHint": "kulmi × {{rate}} për kW në muaj",
+      "without": "Pa ngarkesat fleksibile",
+      "avoidable": "E shmangshme",
+      "avoidableHint": "{{eur}} në muaj",
+      "chartTitle": "Fuqia e objektit për çdo çerek ore rreth kulmit",
+      "site": "Objekti",
+      "keyRest": "Ngarkesat e tjera",
+      "keyFlexible": "Ngarkesat fleksibile",
+      "achievableLine": "Kulmi pa ngarkesat fleksibile: {{kw}}",
+      "loadsTitle": "Në punë në çerek orën e kulmit ({{time}})",
+      "flexible": "fleksibile",
+      "started": "sapo u ndez",
+      "unmonitored": "Pa matës të vetin",
+      "advice": "Punoni me {{flexible}} jashtë çerek orëve më të ngarkuara, për shembull para ndërrimit ose gjatë pushimeve: kulmi i muajit bie në rreth {{kw}} dhe pagesa për fuqinë e angazhuar me {{eur}} në muaj.",
+      "rule": "Maksigrafi i furnizuesit e mat fuqinë mesatare për 15 minuta dhe ruan vlerën më të lartë të muajit; fuqia e angazhuar paguhet sipas saj. EnergyFlow e gjen atë çerek ore dhe më të lartën që objekti do ta kishte pasur pa makineritë e shënuara si ngarkesa fleksibile. Diferenca llogaritet nga {{min}}.",
+      "p95": "Për krahasim, 95 % e çerek orëve të këtij muaji mbetën nën {{kw}}.",
+      "source": "Burimet: Vendimi i ZRRE-së V_2703_2025 (fuqia e angazhuar për kW, 3,87 € në muaj për 0,4 kV Kategoria I); tarifat e ZRRE-së, shënimi 5 (maksigrafi mat 15 minuta dhe ruan vlerën më të lartë të muajit); Kodi i Matjes i KEDS 2020 (kërkesa maksimale për çdo periudhë 15-minutëshe)."
+    }
   }
 }

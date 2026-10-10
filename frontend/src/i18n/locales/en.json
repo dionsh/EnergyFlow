@@ -849,7 +849,13 @@
     "command_failed_detail": "{{serial}} · {{reason}}",
     "spike": "{{machine}}: power spike to {{peak}}",
     "spike_detail": "{{date}} · {{duration}} · normal peak {{normal}}",
-    "overload": "{{ratedPct}} of its rating"
+    "overload": "{{ratedPct}} of its rating",
+    "low_pf": "Power factor {{cos}} in {{month}}",
+    "low_pf_detail": "{{excess}} over the cos φ {{threshold}} allowance · {{eur}} charged so far",
+    "low_pf_unbilled": "Below cos φ 0.80 · not charged on your tariff",
+    "atThisPace": "{{projected}} at this pace",
+    "peak_coincidence": "Monthly peak ({{month}}): flexible loads added {{avoidable}}",
+    "peak_coincidence_detail": "{{peak}} on {{peakAt}} · {{eur}} a month in engaged power · {{flexible}}"
   },
   "notifications": {
     "markAllRead": "Mark all as read",
@@ -864,7 +870,11 @@
     "command_verified": "{{machine}} switched off · verified by the meter",
     "impact_verified": "Savings verified on {{code}}: {{kwh}} · {{eur}} over {{days}} days",
     "alert_spike": "{{machine}}: power spike to {{peak}}",
-    "alert_spike_escalated": "{{machine}}: power spike now {{peak}} ({{ratedPct}} of its rating)"
+    "alert_spike_escalated": "{{machine}}: power spike now {{peak}} ({{ratedPct}} of its rating)",
+    "alert_low_pf": "Low power factor this month: cos φ {{cos}}",
+    "alert_low_pf_escalated": "Low power factor: {{eur}} of reactive energy charges so far",
+    "alert_peak_coincidence": "Flexible loads added {{avoidable}} to this month's peak",
+    "alert_peak_coincidence_escalated": "The peak coincidence now costs {{eur}} a month"
   },
   "overviewAlerts": {
     "title": "Open alerts",
@@ -1862,6 +1872,50 @@
     "openMachine": "Open {{code}}",
     "keySpike": "Spike minutes",
     "keyNormal": "Normal minutes",
-    "allHours": "{{days}}, all hours"
+    "allHours": "{{days}}, all hours",
+    "pf": {
+      "cos": "Power factor (cos φ)",
+      "cosHint": "month to date · charged below {{threshold}}",
+      "excess": "Over the allowance",
+      "excessHint": "{{kvarh}} drawn, {{allowed}} allowed",
+      "charge": "Reactive energy charge",
+      "chargeHint": "so far, at {{rate}} €c/kVArh",
+      "projected": "so far · {{eur}} at this pace for the month",
+      "notCharged": "not charged on your tariff",
+      "capacitor": "Power-factor correction",
+      "capacitorHint": "to reach {{target}} at {{kw}} working load",
+      "machinesTitle": "Who draws the reactive energy",
+      "machine": "Machine",
+      "share": "Share",
+      "poor": "Poor power factor",
+      "poorKey": "Marked: cos φ below {{poor}}.",
+      "unmonitored": "Loads without their own meter: {{kvarh}}.",
+      "advice": "A capacitor bank of about {{kvar}} at the main board, or compensation at the largest motors, would bring cos φ to {{target}} and remove this charge. Have an electrician size it from a load measurement.",
+      "unbilledAdvice": "Your tariff does not charge reactive energy, but a power factor this low loads cables and transformers with current that does no work.",
+      "rule": "ERO charges reactive energy above the allowance that corresponds to cos φ {{threshold}}: allowed kVArh = kWh × tan(arccos {{threshold}}). EnergyFlow applies the same rule to the month's kWh and kVArh at the main incomer. Machines below cos φ {{poor}} are marked.",
+      "formula": "Correction size: Qc = P × (tan φ − tan φ target), with P the average load while the plant is working.",
+      "source": "Source: ERO Decision V_2703_2025 (16 April 2025), retail tariffs, table footnote; 0.87 €c/kVArh for 0.4 kV Category I. Tariffs kept for 2026 (ERO Board, 7 May 2026)."
+    },
+    "peak": {
+      "peak": "This month's peak",
+      "billed": "Engaged power charge",
+      "billedHint": "peak × {{rate}} per kW a month",
+      "without": "Without flexible loads",
+      "avoidable": "Avoidable",
+      "avoidableHint": "{{eur}} a month",
+      "chartTitle": "Site power per quarter-hour around the peak",
+      "site": "Site",
+      "keyRest": "Other loads",
+      "keyFlexible": "Flexible loads",
+      "achievableLine": "Peak without flexible loads: {{kw}}",
+      "loadsTitle": "Running in the peak quarter-hour ({{time}})",
+      "flexible": "flexible",
+      "started": "just started",
+      "unmonitored": "Not sub-metered",
+      "advice": "Run {{flexible}} outside the busiest quarter-hours, for example before the shift or during breaks: the month's peak drops to about {{kw}} and the engaged-power charge by {{eur}} a month.",
+      "rule": "The utility's maximeter averages power over 15 minutes and keeps the month's highest value; engaged power is billed on it. EnergyFlow finds that quarter-hour, and the highest one the plant would have had without the machines marked as flexible loads. The difference counts from {{min}}.",
+      "p95": "For comparison, 95 % of this month's quarter-hours stayed below {{kw}}.",
+      "source": "Sources: ERO Decision V_2703_2025 (engaged power per kW, 3.87 € a month for 0.4 kV Category I); ERO tariff schedule, footnote 5 (the maximeter measures 15 minutes and keeps the month's highest value); KEDS Metering Code 2020 (maximum demand per 15-minute period)."
+    }
   }
 }

@@ -106,14 +106,16 @@ final class ScoreService
         $parts['peak'] = ['value' => $loadFactor === null ? null : 100 * min(1, $loadFactor / $config['load_factor_full']),
             'detail' => ['load_factor' => $loadFactor === null ? null : round($loadFactor, 3), 'peak_kw' => round($peak, 1)]];
 
-        // Follow-through: opportunities acted on, and alerts resolved within 24 h (last 30 days).
+        // Follow-through: opportunities acted on, and alerts resolved within 24 h (last 30 days). The
+        // monthly billing alerts (reactive energy, engaged-power peak) run for the whole month by design.
         $recs = Database::one(
             "SELECT SUM(status IN ('accepted','implemented','verified')) AS acted, SUM(status <> 'dismissed') AS total FROM recommendations WHERE company_id = ? AND created_at < FROM_UNIXTIME(?)",
             [$companyId, $to],
         );
         $alerts = Database::one(
-            'SELECT COUNT(*) AS total, SUM(resolved_at IS NOT NULL AND resolved_at <= opened_at + INTERVAL 1 DAY) AS quick FROM alerts
-              WHERE company_id = ? AND opened_at >= FROM_UNIXTIME(?) AND opened_at < FROM_UNIXTIME(?)',
+            "SELECT COUNT(*) AS total, SUM(resolved_at IS NOT NULL AND resolved_at <= opened_at + INTERVAL 1 DAY) AS quick FROM alerts
+              WHERE company_id = ? AND opened_at >= FROM_UNIXTIME(?) AND opened_at < FROM_UNIXTIME(?)
+                AND type NOT IN ('LOW_PF', 'PEAK_COINCIDENCE')",
             [$companyId, $to - 30 * 86400, $to - 86400],
         );
         $actedShare = (int) $recs['total'] > 0 ? (int) $recs['acted'] / (int) $recs['total'] : null;

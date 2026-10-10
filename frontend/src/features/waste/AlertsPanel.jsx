@@ -13,7 +13,7 @@ import { MethodChip, SeverityBadge } from '../../components/ui/Chips'
 import { Segmented } from '../../components/ui/Tabs'
 import { EmptyState, ErrorState, Skeleton } from '../../components/ui/States'
 import { useAlerts } from '../data'
-import { alertText } from './alertText'
+import { DETAIL_TYPES, alertText } from './alertText'
 
 const FILTERS = ['active', 'resolved', 'all']
 
@@ -55,8 +55,8 @@ export function AlertsPanel({ onOpenEvent, onOpenAlert }) {
             <tbody>
               {alerts.data.data.map((alert) => {
                 const text = alertText(t, alert)
-                const detail = alert.waste_event_id || alert.type === 'SPIKE'
-                const open = () => (alert.waste_event_id ? onOpenEvent(alert.waste_event_id) : alert.type === 'SPIKE' && onOpenAlert(alert.id))
+                const detail = alert.waste_event_id || DETAIL_TYPES.has(alert.type)
+                const open = () => (alert.waste_event_id ? onOpenEvent(alert.waste_event_id) : DETAIL_TYPES.has(alert.type) && onOpenAlert(alert.id))
                 return (
                   <tr key={alert.id} className={cn('border-b border-line last:border-0', detail && 'cursor-pointer hover:bg-surface-2')} onClick={open}>
                     <td className="px-5 py-3 align-top"><SeverityBadge severity={alert.severity} /></td>

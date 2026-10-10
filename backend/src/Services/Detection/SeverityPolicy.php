@@ -41,6 +41,18 @@ final class SeverityPolicy
         return $overload ? 'critical' : 'warning';
     }
 
+    /** Reactive energy on the bill: a warning from €1 a month (at this pace), else info; unbilled low cos φ is info. */
+    public static function lowPowerFactor(bool $billed, float $eurMonth): string
+    {
+        return $billed && $eurMonth >= 1.0 ? 'warning' : 'info';
+    }
+
+    /** Engaged power that flexible loads added to the month's peak: a warning from €1 a month, else info. */
+    public static function peakCoincidence(float $eurMonth): string
+    {
+        return $eurMonth >= 1.0 ? 'warning' : 'info';
+    }
+
     /** Notification category for a severity (critical / warning / insight). */
     public static function category(string $severity): string
     {

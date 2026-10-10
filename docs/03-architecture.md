@@ -328,9 +328,9 @@ Every detection carries an **evidence** object: `{metric, window, baseline, obse
 | `NIGHT_CYCLING` | Pattern | Compressor load/unload cycles per hour outside production above baseline, indicating a leak | Warning |
 | `CONSUMPTION_DRIFT` | Statistical (CUSUM on daily kWh per running hour vs 28-day baseline) | Sustained increase | Warning ≥ 10 % · Critical ≥ 25 % |
 | `SPIKE` | Statistical (robust z = (P − median) / (1.4826·MAD); P = the minute's peak 10-s power; median and MAD of the machine's own 15-min peaks **while running**, per day type × hour over 28 days, kept in `machine_baselines`; σ ≥ 2 % of the median) | z > 6 for ≥ 2 consecutive min; ends after 5 normal min | Warning · Critical if a reading > 110 % of rated power |
-| `LOW_PF` | Rule | PF < 0.80 for 1 h while running | Info (Warning if the tariff has reactive charges) |
+| `LOW_PF` | Rule (as billed: ERO V_2703_2025 charges reactive energy above the allowance for cos φ 0.95) | Over the billing month at the main incomer: kVArh > kWh × tan(arccos 0.95), priced at the plan's €/kVArh; machines below cos φ 0.80 are flagged in the breakdown; correction size Qc = P · (tan φ − tan φ target) at the usual working load. Without a reactive charge: site cos φ < 0.80 | Warning from €1/month (at this pace), else Info; without a charge Info |
 | `OVER_TEMP` | Rule | Temperature over the machine's limit, or rising faster than load explains | Critical |
-| `PEAK_COINCIDENCE` | Pattern | Site 15-min kW > P95 of 30 days, with ≥ 3 large starts within 10 min | Info / Warning |
+| `PEAK_COINCIDENCE` | Pattern (as billed: engaged power per kW per month on the month's highest 15-min maximeter value) | The month's peak quarter-hour vs the highest quarter-hour of (site − machines marked *flexible*); the difference ≥ 0.5 kW, priced at the plan's €/kW, is what the coincidence costs. Starts in the peak quarter-hour and the month's P95 are shown as context | Warning from €1/month, else Info |
 | `POWER_QUALITY` | Rule | V outside 230 V ± 10 % for > 1 s; frequency deviation | Info / Warning |
 | `DEVICE_OFFLINE` | Rule | No data for > 2 min | Warning |
 

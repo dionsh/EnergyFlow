@@ -11,6 +11,8 @@ use EnergyFlow\Services\Impact\ImpactService;
 use EnergyFlow\Services\Control\PolicyEngine;
 use EnergyFlow\Services\Detection\DeviceHealth;
 use EnergyFlow\Services\Detection\DriftDetector;
+use EnergyFlow\Services\Detection\PeakDetector;
+use EnergyFlow\Services\Detection\PowerFactorDetector;
 use EnergyFlow\Services\Detection\SpikeDetector;
 use EnergyFlow\Services\Detection\WasteDetector;
 use EnergyFlow\Services\Optimization\Recommendations;
@@ -32,6 +34,8 @@ final class AnalyticsPipeline
             'waste_episodes' => $waste['episodes'],
             'drift' => DriftDetector::run($companyId, $now),
             'spikes' => SpikeDetector::run($companyId, $now),
+            'power_factor' => PowerFactorDetector::run($companyId, $now),
+            'peak_coincidence' => PeakDetector::run($companyId, $now),
             'device_alerts' => DeviceHealth::run($companyId, $now),
             'commands_decided' => CommandService::verify($companyId, $now),
             'policy_commands' => PolicyEngine::tick($companyId, $now),
