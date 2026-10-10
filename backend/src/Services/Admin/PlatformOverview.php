@@ -85,7 +85,8 @@ final class PlatformOverview
                 ) / 1048576, 1),
                 'php' => PHP_VERSION,
                 'ai_configured' => Env::get('GROQ_API_KEY') !== null,
-                'mail_configured' => Env::get('RESEND_API_KEY') !== null && Env::get('MAIL_FROM') !== null,
+                'mail_configured' => Env::get('RESEND_API_KEY') !== null
+                    && Env::get('RESEND_FROM_EMAIL') !== null,
             ],
             'admin_activity' => AdminLog::recent(10),
         ];

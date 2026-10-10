@@ -46,7 +46,13 @@ export function AuthProvider({ children }) {
     try {
       await api.post('/auth/logout')
     } finally {
-      queryClient.clear()
+      // Keep the active auth query and set it to anonymous. Clearing the whole
+      // cache here makes useQuery refetch /auth/me while logout is in flight,
+      // which can race the server logout and restore a stale signed-in state.
+      await queryClient.cancelQueries()
+      queryClient.removeQueries({
+        predicate: (query) => query.queryKey[0] !== ME[0] || query.queryKey[1] !== ME[1],
+      })
       setSession(null)
     }
   }, [queryClient, setSession])

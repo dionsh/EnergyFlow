@@ -263,7 +263,7 @@
       "resetDoneHint": "You can now sign in with your new password.",
       "resetDoneMessage": "Your password has been changed. Sign in to continue.",
       "backToLogin": "Back to sign in",
-      "localHint": "For local development, the reset link appears in the backend terminal."
+      "localHint": "Password reset email needs Resend configured in backend/.env."
     }
   },
   "errors": {
@@ -277,6 +277,7 @@
     "generic": "Something went wrong.",
     "passwords_do_not_match": "The passwords do not match.",
     "invalid_reset_token": "This password reset link is invalid or has expired. Request a new one.",
+    "email_not_configured": "Password reset email is not configured yet. Ask the project administrator to set it up.",
     "network_error": "Couldn't reach the server. Check your connection and try again.",
     "server_error": "Something went wrong on our side. Please try again.",
     "invalid_credentials": "The email or password is incorrect.",
