@@ -265,6 +265,8 @@ export function UserMenu() {
               close()
               try {
                 await logout()
+              } catch {
+                // The local session is cleared in logout's finally block.
               } finally {
                 navigate('/login', { replace: true })
               }

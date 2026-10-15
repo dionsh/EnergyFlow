@@ -37,14 +37,16 @@ You don't need to create tables. The API runs its migrations automatically every
    | `DB_SSL_CA_CONTENT` | the **entire contents** of `ca.pem`, including the BEGIN/END lines |
    | `GROQ_API_KEY` | your Groq key (can be added later) |
    | `FRONTEND_URL` | the deployed Vercel app URL, used in password-reset links |
-   | `RESEND_API_KEY` | Resend API key (keep server-side) |
-   | `RESEND_FROM_EMAIL` | Sender address on a domain verified in Resend |
+   | `EMAILJS_SERVICE_ID` | EmailJS email service ID |
+   | `EMAILJS_TEMPLATE_ID` | EmailJS password-reset template ID |
+   | `EMAILJS_PUBLIC_KEY` | EmailJS public key |
+   | `EMAILJS_PRIVATE_KEY` | EmailJS private key (keep server-side) |
 
    `CRON_SECRET` is generated automatically. `DB_NAME=defaultdb` and `DB_USER=avnadmin` are already set.
 3. Deploy. The first Docker build takes a few minutes. Then open
    `https://energyflow-api.onrender.com/api/v1/health`. You should see `"database":"ok"` and a migration version.
 
-   Password reset emails use Resend. Verify a sending domain, then set the Resend values above. See [`docs/forgot-password-email.md`](docs/forgot-password-email.md) for setup and troubleshooting.
+   Password reset emails use EmailJS. Create an email service and reset template, then set the EmailJS values above. See [`docs/forgot-password-email.md`](docs/forgot-password-email.md) for setup.
 4. If Render gave the service a different URL (the name was taken), copy it. You need it in step 3.
 
 **Free-tier behaviour:** the service sleeps after 15 minutes without traffic, and the first request then takes about 1 minute. Step 4 keeps it awake.

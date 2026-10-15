@@ -46,9 +46,10 @@ export function AuthProvider({ children }) {
     try {
       await api.post('/auth/logout')
     } finally {
-      // Keep the active auth query and set it to anonymous. Clearing the whole
-      // cache here makes useQuery refetch /auth/me while logout is in flight,
-      // which can race the server logout and restore a stale signed-in state.
+      // Preserve the active auth query and mark it anonymous. Clearing the
+      // entire cache can make useQuery refetch /auth/me during logout, racing
+      // the server response and leaving protected pages in an unauthenticated
+      // error state instead of letting the route guard redirect to login.
       await queryClient.cancelQueries()
       queryClient.removeQueries({
         predicate: (query) => query.queryKey[0] !== ME[0] || query.queryKey[1] !== ME[1],

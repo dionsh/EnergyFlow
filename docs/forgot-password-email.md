@@ -1,26 +1,29 @@
 # Password reset email setup
 
-EnergyFlow sends password reset links through the Resend API from the backend. Reset tokens are never sent from the browser or printed in the backend terminal. The HTML email is maintained in [`backend/templates/password-reset.html`](../backend/templates/password-reset.html) and rendered with the user's selected language.
+EnergyFlow sends password reset links through EmailJS from the backend. Reset tokens are never sent from the browser or printed in the backend terminal. The email template is in [`emailjs-password-reset-template.html`](emailjs-password-reset-template.html).
 
-## Resend setup
+## EmailJS setup
 
-1. Create a Resend account and add a domain you own under **Domains**.
-2. Add the DNS records Resend provides, then wait until the domain is verified. A verified sending domain is needed to send to users' arbitrary addresses.
-3. Create a Resend API key with permission to send email.
-4. Put these values in `backend/.env` for local development:
+1. In EmailJS, connect the email service you want to send from.
+2. Open the existing password reset template (`template_kr0bemn`) or create one. Paste the HTML from `emailjs-password-reset-template.html` into its content and save it.
+3. In the template settings, set **To Email** to `{{email}}` and **Subject** to `{{subject}}`.
+4. In **Account → Security**, enable **Allow EmailJS API for non-browser applications**. Keep the private key server-side.
+5. Add these values to `backend/.env` for local development:
 
    ```env
    FRONTEND_URL=http://localhost:5173
-   RESEND_API_KEY=re_your_api_key
-   RESEND_FROM_EMAIL=EnergyFlow <no-reply@your-verified-domain.com>
+   EMAILJS_SERVICE_ID=your_service_id
+   EMAILJS_TEMPLATE_ID=template_kr0bemn
+   EMAILJS_PUBLIC_KEY=your_public_key
+   EMAILJS_PRIVATE_KEY=your_private_key
    ```
 
-   Replace the example sender address with an address on your verified domain. Keep the API key private; do not put it in frontend code, commit it, or paste it into chat.
+   The template ID is the value shown in the template's Settings, not the short slug in the dashboard URL. Do not put these keys in frontend code, commit them, or paste them into chat.
 
-5. Restart the PHP backend and request a password reset. Check the backend log and Resend's email logs if delivery fails.
+6. Restart the PHP backend and request a password reset. Check the backend log and EmailJS email history if delivery fails.
 
 ## Production
 
-Set `FRONTEND_URL`, `RESEND_API_KEY`, and `RESEND_FROM_EMAIL` as Render environment variables. `FRONTEND_URL` must be the deployed Vercel app URL. Keep the API key only on the backend; do not configure it in Vercel.
+Set `FRONTEND_URL` and the four `EMAILJS_*` values as Render environment variables. `FRONTEND_URL` must be the deployed Vercel app URL. Do not configure the EmailJS private key in Vercel.
 
 If the mail settings are missing, the API returns `email_not_configured`; it does not create a reset token or print a link to the terminal.

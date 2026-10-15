@@ -67,9 +67,11 @@ final class PasswordResetService
 
     private static function deliver(string $email, string $locale, string $url): void
     {
-        $apiKey = Env::get('RESEND_API_KEY');
-        $fromEmail = Env::get('RESEND_FROM_EMAIL');
-        if ($apiKey === null || $fromEmail === null) {
+        $serviceId = Env::get('EMAILJS_SERVICE_ID');
+        $templateId = Env::get('EMAILJS_TEMPLATE_ID');
+        $publicKey = Env::get('EMAILJS_PUBLIC_KEY');
+        $privateKey = Env::get('EMAILJS_PRIVATE_KEY');
+        if ($serviceId === null || $templateId === null || $publicKey === null || $privateKey === null) {
             throw new HttpException(503, 'email_not_configured', 'Password reset email delivery is not configured.');
         }
 
@@ -94,44 +96,37 @@ final class PasswordResetService
             'ignore_notice' => 'If you did not request this change, you can ignore this email. Your password will not be changed.',
             'footer' => 'Smarter energy management',
         ];
-        $templatePath = dirname(__DIR__, 3) . '/templates/password-reset.html';
-        $template = file_get_contents($templatePath);
-        if ($template === false) {
-            error_log('[EnergyFlow] Password reset email template could not be read.');
-            throw new HttpException(503, 'email_not_configured', 'Password reset email delivery is not configured.');
-        }
-        $variables = ['subject' => $subject, 'link' => $url, ...$copy];
-        $html = preg_replace_callback('/{{([a-z_]+)}}/', static function (array $match) use ($variables): string {
-            return htmlspecialchars($variables[$match[1]] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        }, $template) ?? '';
-        $plainText = $copy['intro'] . "\n\n" . $copy['button_text'] . ': ' . $url . "\n\n"
-            . $copy['expiration_notice'] . "\n" . $copy['ignore_notice'];
         $payload = json_encode([
-            'from' => $fromEmail,
-            'to' => [$email],
-            'subject' => $subject,
-            'html' => $html,
-            'text' => $plainText,
+            'service_id' => $serviceId,
+            'template_id' => $templateId,
+            'user_id' => $publicKey,
+            'accessToken' => $privateKey,
+            'template_params' => [
+                'email' => $email,
+                'link' => $url,
+                'subject' => $subject,
+                ...$copy,
+            ],
         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         $context = stream_context_create(['http' => [
             'method' => 'POST',
-            'header' => "Content-Type: application/json\r\nAccept: application/json\r\nAuthorization: Bearer {$apiKey}\r\n",
+            'header' => "Content-Type: application/json\r\nAccept: application/json\r\n",
             'content' => $payload,
             'timeout' => 10,
             'ignore_errors' => true,
         ]]);
-        $response = @file_get_contents('https://api.resend.com/emails', false, $context);
+        $response = @file_get_contents('https://api.emailjs.com/api/v1.0/email/send', false, $context);
         $statusLine = $http_response_header[0] ?? '';
         if ($response === false || !preg_match('/\s2\d\d\s/', $statusLine)) {
             $diagnostic = trim(strip_tags((string) $response));
-            $diagnostic = str_replace($apiKey, '[credential hidden]', $diagnostic);
+            $diagnostic = str_replace([$publicKey, $privateKey], '[credential hidden]', $diagnostic);
             $diagnostic = preg_replace('/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i', '[email hidden]', $diagnostic) ?? '';
             $diagnostic = preg_replace('/https?:\/\/\S+/i', '[link hidden]', $diagnostic) ?? '';
             $diagnostic = preg_replace('/\b[a-f0-9]{64}\b/i', '[token hidden]', $diagnostic) ?? '';
             $diagnostic = mb_substr($diagnostic, 0, 300);
-            error_log('[EnergyFlow] Password reset email delivery failed via Resend. HTTP response: '
+            error_log('[EnergyFlow] Password reset email delivery failed via EmailJS. HTTP response: '
                 . ($statusLine ?: 'unavailable')
-                . ($diagnostic !== '' ? '; Resend says: ' . $diagnostic : ''));
+                . ($diagnostic !== '' ? '; EmailJS says: ' . $diagnostic : ''));
         }
     }
 
