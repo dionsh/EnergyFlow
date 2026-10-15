@@ -204,6 +204,7 @@
       "system": "System"
     },
     "account": "Account",
+    "profile": "Profile",
     "signOut": "Sign out"
   },
   "roles": {
@@ -409,6 +410,16 @@
       "hint": "Used in sustainability reports (VSME B1) and for energy intensity per employee and per € of turnover.",
       "readOnly": "Only owners and admins can change the company profile.",
       "name": "Company name",
+      "logo": "Company logo",
+      "logoAlt": "{{name}} logo",
+      "logoHint": "Upload a logo to show on the profile. PNG, JPG, or WebP; the image is resized automatically.",
+      "addLogo": "Add logo",
+      "changeLogo": "Change logo",
+      "removeLogo": "Remove",
+      "logoError": {
+        "format": "Choose a PNG, JPG, or WebP image.",
+        "size": "The image is too large. Choose a smaller file."
+      },
       "legalForm": "Legal form",
       "legalFormPlaceholder": "e.g. Sh.p.k.",
       "businessNumber": "Business number (NUI)",
@@ -431,6 +442,10 @@
       "changePassword": "Change password",
       "passwordChanged": "Password changed. Other devices were signed out."
     }
+  },
+  "profilePage": {
+    "title": "Profile",
+    "subtitle": "Manage your account details and company identity."
   },
   "notFound": {
     "title": "Page not found",

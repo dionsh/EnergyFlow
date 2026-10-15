@@ -21,6 +21,7 @@ final class CompanyController
     {
         $input = Validator::validate($request->json(), [
             'name' => ['string', 'min:2', 'max:160'],
+            'logo_data_url' => ['nullable', 'string', 'max:700000', 'regex:/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+\/=]+$/'],
             'legal_form' => ['nullable', 'string', 'max:40'],
             'business_number' => ['nullable', 'string', 'max:20'],
             'nace_code' => ['nullable', 'string', 'max:10'],

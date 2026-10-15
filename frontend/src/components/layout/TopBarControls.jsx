@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Bell, Check, ChevronDown, CircleAlert, CircleCheck, Info, LogOut, MessageSquareText, Monitor, Moon, Sun, TriangleAlert } from 'lucide-react'
+import { Bell, Check, ChevronDown, CircleAlert, CircleCheck, Info, LogOut, MessageSquareText, Monitor, Moon, Sun, TriangleAlert, UserRound } from 'lucide-react'
 import { api } from '../../lib/api'
 import { cn } from '../../lib/cn'
 import { formatDate } from '../../lib/format'
@@ -259,6 +259,9 @@ export function UserMenu() {
           <p className="mt-1 text-xs text-ink-2">{t(`roles.${user.role}`)}</p>
         </div>
         <div className="pt-1">
+          <MenuItem icon={UserRound} onClick={() => { close(); navigate('/profile') }}>
+            {t('topbar.profile')}
+          </MenuItem>
           <MenuItem
             icon={LogOut}
             onClick={async () => {
