@@ -90,7 +90,7 @@
       "database": "Database size",
       "php": "PHP",
       "ai": "Language model (Groq)",
-      "mail": "Reset e-mails (Resend)",
+      "mail": "Reset e-mails (EmailJS)",
       "configured": "Configured",
       "notConfigured": "Not configured"
     },

@@ -90,7 +90,7 @@
       "database": "Madhësia e bazës së të dhënave",
       "php": "PHP",
       "ai": "Modeli gjuhësor (Groq)",
-      "mail": "Email-et e rivendosjes (Resend)",
+      "mail": "Email-et e rivendosjes (EmailJS)",
       "configured": "I konfiguruar",
       "notConfigured": "I pakonfiguruar"
     },

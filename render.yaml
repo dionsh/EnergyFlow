@@ -22,9 +22,13 @@ services:
         value: "7"
       - key: FRONTEND_URL
         sync: false
-      - key: RESEND_API_KEY
+      - key: EMAILJS_SERVICE_ID
         sync: false
-      - key: MAIL_FROM
+      - key: EMAILJS_TEMPLATE_ID
+        sync: false
+      - key: EMAILJS_PUBLIC_KEY
+        sync: false
+      - key: EMAILJS_PRIVATE_KEY
         sync: false
       # Aiven for MySQL (free). Host and port come from the Aiven console.
       - key: DB_HOST
