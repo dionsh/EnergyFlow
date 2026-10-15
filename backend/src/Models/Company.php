@@ -11,11 +11,11 @@ final class Company
 {
     /** Columns a company admin may edit (VSME B1 basics). */
     public const EDITABLE = [
-        'name', 'legal_form', 'business_number', 'nace_code', 'employees',
+        'name', 'logo_data_url', 'legal_form', 'business_number', 'nace_code', 'employees',
         'annual_turnover_eur', 'city', 'locale',
     ];
 
-    private const PUBLIC_COLUMNS = 'id, name, legal_form, business_number, nace_code, employees,
+    private const PUBLIC_COLUMNS = 'id, name, logo_data_url, legal_form, business_number, nace_code, employees,
         annual_turnover_eur, country, city, timezone, currency, locale, emission_factor_id, is_demo, created_at';
 
     public static function find(int $id): ?array

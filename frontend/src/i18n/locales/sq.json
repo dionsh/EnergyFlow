@@ -204,6 +204,7 @@
       "system": "Sipas sistemit"
     },
     "account": "Llogaria",
+    "profile": "Profili",
     "signOut": "Dil"
   },
   "roles": {
@@ -409,6 +410,16 @@
       "hint": "Përdoret në raportet e qëndrueshmërisë (VSME B1) dhe për intensitetin e energjisë për punonjës dhe për € qarkullimi.",
       "readOnly": "Vetëm pronarët dhe administratorët mund ta ndryshojnë profilin e kompanisë.",
       "name": "Emri i kompanisë",
+      "logo": "Logoja e kompanisë",
+      "logoAlt": "Logoja e {{name}}",
+      "logoHint": "Ngarko logon që të shfaqet në profil. PNG, JPG ose WebP; imazhi përshtatet automatikisht.",
+      "addLogo": "Shto logo",
+      "changeLogo": "Ndrysho logon",
+      "removeLogo": "Hiqe",
+      "logoError": {
+        "format": "Zgjidh një imazh PNG, JPG ose WebP.",
+        "size": "Imazhi është shumë i madh. Zgjidh një skedar më të vogël."
+      },
       "legalForm": "Forma juridike",
       "legalFormPlaceholder": "p.sh. Sh.p.k.",
       "businessNumber": "Numri unik identifikues (NUI)",
@@ -431,6 +442,10 @@
       "changePassword": "Ndrysho fjalëkalimin",
       "passwordChanged": "Fjalëkalimi u ndryshua. Pajisjet e tjera u çkyçën."
     }
+  },
+  "profilePage": {
+    "title": "Profili",
+    "subtitle": "Menaxho të dhënat e llogarisë dhe identitetin e kompanisë."
   },
   "notFound": {
     "title": "Faqja nuk u gjet",
