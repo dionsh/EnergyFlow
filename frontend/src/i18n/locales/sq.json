@@ -263,7 +263,7 @@
       "resetDoneHint": "Tani mund të kyçesh me fjalëkalimin e ri.",
       "resetDoneMessage": "Fjalëkalimi u ndryshua. Kyçu për të vazhduar.",
       "backToLogin": "Kthehu te kyçja",
-      "localHint": "Në zhvillim lokal, lidhja shfaqet në terminalin e backend-it."
+      "localHint": "Email-i për rivendosje kërkon konfigurimin e Resend në backend/.env."
     }
   },
   "errors": {
@@ -277,6 +277,7 @@
     "generic": "Diçka shkoi keq.",
     "passwords_do_not_match": "Fjalëkalimet nuk përputhen.",
     "invalid_reset_token": "Kjo lidhje është e pavlefshme ose ka skaduar. Kërko një të re.",
+    "email_not_configured": "Email-i për rivendosje nuk është konfiguruar ende. Kërko nga administratori ta aktivizojë.",
     "network_error": "Serveri nuk u arrit. Kontrollo lidhjen dhe provo përsëri.",
     "server_error": "Diçka shkoi keq nga ana jonë. Provo përsëri.",
     "invalid_credentials": "Email-i ose fjalëkalimi është i pasaktë.",

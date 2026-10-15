@@ -13,6 +13,9 @@ final class PasswordResetService
 {
     public static function request(string $email, string $ip): void
     {
+        if (!self::mailConfigured()) {
+            throw new HttpException(503, 'email_not_configured', 'Password reset email delivery is not configured.');
+        }
         RateLimiter::hit('password-reset-ip:' . $ip, 5, 3600);
         // Per address too, so nobody can flood one inbox from many IPs. Applied before the
         // lookup, so the limit behaves the same whether or not the account exists.
@@ -125,5 +128,11 @@ final class PasswordResetService
                 . ($statusLine ?: 'unavailable')
                 . ($diagnostic !== '' ? '; EmailJS says: ' . $diagnostic : ''));
         }
+    }
+
+    private static function mailConfigured(): bool
+    {
+        return Env::get('RESEND_API_KEY') !== null
+            && Env::get('RESEND_FROM_EMAIL') !== null;
     }
 }
