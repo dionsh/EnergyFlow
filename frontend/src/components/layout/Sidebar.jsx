@@ -28,7 +28,8 @@ function NavItem({ item, onNavigate }) {
   )
 }
 
-export function Sidebar({ onNavigate }) {
+/** `controls`: extra controls for the foot of the mobile drawer (language and theme, which leave the top bar on phones). */
+export function Sidebar({ onNavigate, controls }) {
   const { t } = useTranslation()
   const { user } = useAuth()
   const footer = FOOTER_NAVIGATION.filter((item) => !item.platformAdmin || user?.is_platform_admin)
@@ -59,6 +60,7 @@ export function Sidebar({ onNavigate }) {
         {footer.map((item) => (
           <NavItem key={item.to} item={item} onNavigate={onNavigate} />
         ))}
+        {controls && <div className="mt-2 flex items-center justify-between gap-2 border-t border-line px-1 pt-3 sm:hidden">{controls}</div>}
       </div>
     </div>
   )

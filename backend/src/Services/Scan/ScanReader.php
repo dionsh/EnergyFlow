@@ -82,7 +82,7 @@ final class ScanReader
             ['models' => [Env::get('GROQ_VISION_MODEL', 'qwen/qwen3.8-27b')], 'json' => true, 'temperature' => 0.0, 'max_tokens' => 900, 'timeout' => 40],
         );
         if (!$result['ok']) {
-            throw new HttpException(str_starts_with((string) $result['error'], 'http_429') ? 429 : 502, 'scan_failed', 'The photo could not be read right now.');
+            throw new HttpException(str_starts_with((string) $result['error'], 'rate_limited') ? 429 : 502, 'scan_failed', 'The photo could not be read right now.');
         }
         $json = json_decode(preg_replace('/^```(?:json)?\s*|\s*```$/', '', trim($result['text'])) ?? '', true);
         if (!is_array($json)) {

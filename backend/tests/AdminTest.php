@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use EnergyFlow\Core\Database;
+use EnergyFlow\Core\Migrator;
 use EnergyFlow\Models\User;
 use EnergyFlow\Services\Auth\AuthService;
 use EnergyFlow\Services\Clock;
@@ -138,7 +139,7 @@ test('overview and companies: counts straight from the database, the demo compan
     assertSame(12, count($o['signups']));
     assertTrue(array_sum(array_column($o['signups'], 'companies')) >= 2, 'this run\'s sign-ups fall in the last 12 weeks');
     assertTrue($o['demo']['sessions_7d'] >= 1, 'the demo sign-in above');
-    assertTrue(str_starts_with((string) $o['system']['migration'], '0017'));
+    assertSame(Migrator::latestVersion(), $o['system']['migration']);
     assertTrue(count($o['admin_activity']) >= 3);
 
     $companies = $platform->get('/admin/companies')['body']['data'];

@@ -36,7 +36,7 @@ function Shell() {
         <div className="fixed inset-0 z-40 lg:hidden">
           <button type="button" aria-label={t('topbar.closeMenu')} className="absolute inset-0 bg-black/30" onClick={() => setMobileOpen(false)} />
           <aside className="absolute inset-y-0 left-0 w-64 border-r border-line bg-surface shadow-overlay">
-            <Sidebar onNavigate={() => setMobileOpen(false)} />
+            <Sidebar onNavigate={() => setMobileOpen(false)} controls={<><LanguageSwitch /><ThemeMenu side="top" /></>} />
             <IconButton label={t('topbar.closeMenu')} icon={X} className="absolute right-2 top-2.5" onClick={() => setMobileOpen(false)} />
           </aside>
         </div>
@@ -50,10 +50,13 @@ function Shell() {
             <p className="truncate text-sm font-medium text-ink">{company?.name}</p>
             {company?.city && <p className="truncate text-xs text-ink-3">{company.city}</p>}
           </div>
-          <div className="flex items-center gap-1 sm:gap-2">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
             <AssistantButton />
-            <LanguageSwitch />
-            <ThemeMenu />
+            {/* On phones these two move into the menu drawer, so the company name keeps its room. */}
+            <div className="hidden items-center gap-2 sm:flex">
+              <LanguageSwitch />
+              <ThemeMenu />
+            </div>
             <NotificationsButton />
             <UserMenu />
           </div>

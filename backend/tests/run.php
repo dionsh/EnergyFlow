@@ -27,6 +27,11 @@ require __DIR__ . '/support.php';
 // deterministic paths, so results don't depend on the network or a model.
 putenv('GROQ_API_KEY');
 unset($_ENV['GROQ_API_KEY']);
+// Nor do they send e-mail: without EmailJS, password reset requests are refused.
+foreach (['EMAILJS_SERVICE_ID', 'EMAILJS_TEMPLATE_ID', 'EMAILJS_PUBLIC_KEY', 'EMAILJS_PRIVATE_KEY'] as $mail) {
+    putenv($mail);
+    unset($_ENV[$mail]);
+}
 
 if (Env::isProduction()) {
     fwrite(STDERR, "Refusing to run tests with APP_ENV=production.\n");

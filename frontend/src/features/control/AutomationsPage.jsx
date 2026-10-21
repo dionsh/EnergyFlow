@@ -55,7 +55,7 @@ function PoliciesCard() {
       ) : policies.data.data.length === 0 ? (
         <EmptyState icon={Workflow} title={t('modules.automations.emptyTitle')} body={t('automationsPage.noPolicies')} />
       ) : (
-        <div className="overflow-x-auto">
+        <div className="relative overflow-x-auto">
           <table className="w-full min-w-[820px] border-collapse text-[13px]">
             <thead>
               <tr className="border-b border-line text-left text-xs text-ink-3">

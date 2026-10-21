@@ -248,11 +248,96 @@
   }
 }
 
+/*
+ * Landing hero (features/landing/EnergyFlowAnimation): one 12 s story on the
+ * compressor — running → after-hours waste detected → turned off, verified.
+ * Only opacity and transform are animated; everything pauses off screen.
+ */
+.ef-flow .ef-ph-run {
+  animation: ef-ph-run 12s linear infinite;
+}
+.ef-flow .ef-ph-waste {
+  opacity: 0;
+  animation: ef-ph-waste 12s linear infinite;
+}
+.ef-flow .ef-ph-off {
+  opacity: 0;
+  animation: ef-ph-off 12s linear infinite;
+}
+.ef-flow .ef-ping {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ef-ping 2.4s ease-out infinite;
+}
+.ef-flow .ef-step {
+  transition: color 300ms ease-out;
+}
+.ef-flow .ef-step-on {
+  color: var(--brand);
+}
+.ef-flow .ef-step-detect {
+  animation: ef-step-detect 12s linear infinite;
+}
+.ef-flow .ef-step-act {
+  animation: ef-step-act 12s linear infinite;
+}
+.ef-flow[data-paused="true"],
+.ef-flow[data-paused="true"] * {
+  animation-play-state: paused !important;
+}
+
+@keyframes ef-ph-run {
+  0%, 40% { opacity: 1; }
+  43%, 96% { opacity: 0; }
+  99%, 100% { opacity: 1; }
+}
+@keyframes ef-ph-waste {
+  0%, 40% { opacity: 0; }
+  43%, 67% { opacity: 1; }
+  69%, 100% { opacity: 0; }
+}
+@keyframes ef-ph-off {
+  0%, 69% { opacity: 0; }
+  71.5%, 94% { opacity: 1; }
+  97%, 100% { opacity: 0; }
+}
+@keyframes ef-step-detect {
+  0%, 40% { color: var(--text-3); }
+  43%, 68% { color: var(--warning-text); }
+  71%, 94% { color: var(--brand); }
+  97%, 100% { color: var(--text-3); }
+}
+@keyframes ef-step-act {
+  0%, 68% { color: var(--text-3); }
+  71%, 94% { color: var(--good-text); }
+  97%, 100% { color: var(--text-3); }
+}
+@keyframes ef-ping {
+  from { transform: scale(1); opacity: 0.5; }
+  to { transform: scale(3.4); opacity: 0; }
+}
+
+/* In-page links on the landing page glide, unless motion is reduced; sections clear the sticky header. */
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.ef-landing) {
+    scroll-behavior: smooth;
+  }
+}
+.ef-landing [id] {
+  scroll-margin-top: 4.5rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+
+  /* The landing diagram draws a still version instead; nothing in it may loop. */
+  .ef-flow,
+  .ef-flow * {
+    animation: none !important;
   }
 }

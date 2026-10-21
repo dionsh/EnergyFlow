@@ -24,57 +24,85 @@ const PERIODS = ['7d', 'mtd', '30d']
 function EventsTable({ events, onOpen }) {
   const { t } = useTranslation()
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[900px] border-collapse text-[13px]">
-        <thead>
-          <tr className="border-b border-line text-left text-xs text-ink-3">
-            <th className="px-5 py-2.5 font-medium">{t('wastePage.table.machine')}</th>
-            <th className="px-3 py-2.5 font-medium">{t('wastePage.table.type')}</th>
-            <th className="px-3 py-2.5 font-medium">{t('wastePage.table.when')}</th>
-            <th className="px-3 py-2.5 font-medium">{t('wastePage.table.duration')}</th>
-            <th className="px-3 py-2.5 text-right font-medium">{t('wastePage.table.energy')} (kWh)</th>
-            <th className="px-3 py-2.5 text-right font-medium">{t('wastePage.table.cost')}</th>
-            <th className="px-3 py-2.5 text-right font-medium">{t('wastePage.table.co2')}</th>
-            <th className="px-3 py-2.5 font-medium">{t('wastePage.table.severity')}</th>
-            <th className="px-5 py-2.5 font-medium">{t('wastePage.table.status')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {events.map((event) => (
-            <tr
-              key={event.id}
-              tabIndex={0}
-              onClick={() => onOpen(event.id)}
-              onKeyDown={(e) => e.key === 'Enter' && onOpen(event.id)}
-              className="cursor-pointer border-b border-line last:border-0 hover:bg-surface-2 focus-visible:bg-surface-2"
-            >
-              <td className="px-5 py-2.5">
-                <span className="flex items-center gap-2.5">
-                  <MachineIcon type={event.machine.type} className="size-4 shrink-0 text-ink-3" />
-                  <span className="min-w-0">
-                    <span className="block truncate font-medium text-ink">{event.machine.name}</span>
-                    <span className="block font-mono text-[11px] text-ink-3">{event.machine.code}</span>
+    <>
+      {/* Phones: one card per event (opening the same evidence drawer) instead of a 900 px table. */}
+      <ul className="divide-y divide-line md:hidden">
+        {events.map((event) => (
+          <li key={event.id}>
+            <button type="button" onClick={() => onOpen(event.id)} className="flex w-full flex-col gap-2 px-4 py-3.5 text-left hover:bg-surface-2">
+              <span className="flex w-full items-start gap-2.5">
+                <MachineIcon type={event.machine.type} className="mt-0.5 size-4 shrink-0 text-ink-3" />
+                <span className="min-w-0 flex-1">
+                  <span className="block font-medium text-ink">{event.machine.name}</span>
+                  <span className="block text-[12.5px] text-ink-2">
+                    {t(`wasteTypes.${event.type}`)}
+                    {event.signals.includes('leak_signature') && ` · ${t('alertText.leak')}`}
                   </span>
                 </span>
-              </td>
-              <td className="px-3 py-2.5 text-ink-2">
-                {t(`wasteTypes.${event.type}`)}
-                {event.signals.includes('leak_signature') && <span className="block text-xs text-ink-3">{t('alertText.leak')}</span>}
-              </td>
-              <td className="whitespace-nowrap px-3 py-2.5 tabular text-ink-2">{formatDate(event.started_at, 'dateTime')}</td>
-              <td className={cn('whitespace-nowrap px-3 py-2.5 tabular', event.ongoing && event.type !== 'excess_vs_baseline' ? 'text-warning-text' : 'text-ink-2')}>
-                {formatDuration(event.duration_s)}
-              </td>
-              <td className="whitespace-nowrap px-3 py-2.5 text-right tabular text-ink">{formatNumber(event.kwh, event.kwh < 100 ? 1 : 0)}</td>
-              <td className="whitespace-nowrap px-3 py-2.5 text-right tabular text-ink">{formatEur(event.eur)}</td>
-              <td className="whitespace-nowrap px-3 py-2.5 text-right tabular text-ink-2">{formatCo2(event.co2_kg)}</td>
-              <td className="px-3 py-2.5"><SeverityBadge severity={event.severity} /></td>
-              <td className="px-5 py-2.5"><StatusBadge event={event} /></td>
+                <SeverityBadge severity={event.severity} />
+              </span>
+              <span className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 pl-6 text-[12.5px] tabular text-ink-2">
+                <span>{formatDate(event.started_at, 'dateTime')}</span>
+                <span className={cn(event.ongoing && event.type !== 'excess_vs_baseline' && 'text-warning-text')}>{formatDuration(event.duration_s)}</span>
+                <span className="font-medium text-ink">{formatKwh(event.kwh)} · {formatEur(event.eur)}</span>
+              </span>
+              <span className="pl-6"><StatusBadge event={event} /></span>
+            </button>
+          </li>
+        ))}
+      </ul>
+      <div className="relative hidden overflow-x-auto md:block">
+        <table className="w-full min-w-[900px] border-collapse text-[13px]">
+          <thead>
+            <tr className="border-b border-line text-left text-xs text-ink-3">
+              <th className="px-5 py-2.5 font-medium">{t('wastePage.table.machine')}</th>
+              <th className="px-3 py-2.5 font-medium">{t('wastePage.table.type')}</th>
+              <th className="px-3 py-2.5 font-medium">{t('wastePage.table.when')}</th>
+              <th className="px-3 py-2.5 font-medium">{t('wastePage.table.duration')}</th>
+              <th className="px-3 py-2.5 text-right font-medium">{t('wastePage.table.energy')} (kWh)</th>
+              <th className="px-3 py-2.5 text-right font-medium">{t('wastePage.table.cost')}</th>
+              <th className="px-3 py-2.5 text-right font-medium">{t('wastePage.table.co2')}</th>
+              <th className="px-3 py-2.5 font-medium">{t('wastePage.table.severity')}</th>
+              <th className="px-5 py-2.5 font-medium">{t('wastePage.table.status')}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {events.map((event) => (
+              <tr
+                key={event.id}
+                tabIndex={0}
+                onClick={() => onOpen(event.id)}
+                onKeyDown={(e) => e.key === 'Enter' && onOpen(event.id)}
+                className="cursor-pointer border-b border-line last:border-0 hover:bg-surface-2 focus-visible:bg-surface-2"
+              >
+                <td className="px-5 py-2.5">
+                  <span className="flex items-center gap-2.5">
+                    <MachineIcon type={event.machine.type} className="size-4 shrink-0 text-ink-3" />
+                    <span className="min-w-0">
+                      <span className="block truncate font-medium text-ink">{event.machine.name}</span>
+                      <span className="block font-mono text-[11px] text-ink-3">{event.machine.code}</span>
+                    </span>
+                  </span>
+                </td>
+                <td className="px-3 py-2.5 text-ink-2">
+                  {t(`wasteTypes.${event.type}`)}
+                  {event.signals.includes('leak_signature') && <span className="block text-xs text-ink-3">{t('alertText.leak')}</span>}
+                </td>
+                <td className="whitespace-nowrap px-3 py-2.5 tabular text-ink-2">{formatDate(event.started_at, 'dateTime')}</td>
+                <td className={cn('whitespace-nowrap px-3 py-2.5 tabular', event.ongoing && event.type !== 'excess_vs_baseline' ? 'text-warning-text' : 'text-ink-2')}>
+                  {formatDuration(event.duration_s)}
+                </td>
+                <td className="whitespace-nowrap px-3 py-2.5 text-right tabular text-ink">{formatNumber(event.kwh, event.kwh < 100 ? 1 : 0)}</td>
+                <td className="whitespace-nowrap px-3 py-2.5 text-right tabular text-ink">{formatEur(event.eur)}</td>
+                <td className="whitespace-nowrap px-3 py-2.5 text-right tabular text-ink-2">{formatCo2(event.co2_kg)}</td>
+                <td className="px-3 py-2.5"><SeverityBadge severity={event.severity} /></td>
+                <td className="px-5 py-2.5"><StatusBadge event={event} /></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   )
 }
 

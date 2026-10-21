@@ -136,7 +136,7 @@ export function AdminOverview({ onOpenUsers }) {
         {o.jobs.length === 0 ? (
           <EmptyState title={t('admin.jobs.empty')} />
         ) : (
-          <div className="overflow-x-auto">
+          <div className="relative overflow-x-auto">
             <table className="w-full min-w-[560px] border-collapse text-[13px]">
               <thead>
                 <tr className="border-b border-line text-left text-xs text-ink-3">

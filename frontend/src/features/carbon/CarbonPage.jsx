@@ -154,7 +154,7 @@ function Vsme() {
     <Card className="overflow-hidden">
       <CardHeader title={t('carbonPage.vsmeTitle')} description={t('carbonPage.vsmeYear', { year: v.year })} />
       {v.partial_year && <p className="border-b border-line px-5 py-2.5 text-[12.5px] text-ink-3">{t('carbonPage.partialYear', { date: formatDate(v.rows[0]?.since ?? v.from) })}</p>}
-      <div className="overflow-x-auto">
+      <div className="relative overflow-x-auto">
         <table className="w-full min-w-[720px] border-collapse text-[13px]">
           <thead>
             <tr className="border-b border-line text-left text-xs text-ink-3">

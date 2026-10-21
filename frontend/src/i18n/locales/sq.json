@@ -1455,7 +1455,7 @@
   },
   "assistant": {
     "title": "Pyet EnergyFlow",
-    "subtitle": "Përgjigje nga matësit tuaj",
+    "subtitle": "Të dhënat tuaja dhe njohuri të përgjithshme për energjinë",
     "button": "Pyet EnergyFlow",
     "shortcut": "Ctrl K",
     "placeholder": "Pyet për energjinë, kostot, humbjet ose CO₂…",
@@ -1465,13 +1465,14 @@
     "noHistory": "Ende nuk ka biseda.",
     "deleteChat": "Fshi bisedën",
     "backToChat": "Kthehu te biseda",
-    "thinking": "Po kontrolloj të dhënat…",
+    "thinking": "Po mendoj…",
     "welcomeTitle": "Çfarë dëshironi të dini?",
-    "welcomeBody": "Përgjigjem nga matësit e kompanisë suaj: konsumi, kostot, humbjet, karboni dhe kursimet. Mund të hap edhe faqe dhe, pasi ta konfirmoni, të fik një makineri.",
-    "scope": "Vetëm energjia, kostot, karboni juaj dhe EnergyFlow. Numrat vijnë nga të dhënat tuaja dhe nuk vlerësohen kurrë përafërsisht.",
+    "welcomeBody": "Pyetni për konsumin, kostot, humbjet, karbonin dhe kursimet tuaja, me përgjigje nga matësit tuaj, ose në përgjithësi për efikasitetin e energjisë, llogaritjen e karbonit dhe ESG. Mund të hap edhe faqe dhe, pasi ta konfirmoni, të fik një makineri.",
+    "scope": "Vetëm energjia, qëndrueshmëria dhe EnergyFlow. Shifrat për kompaninë tuaj vijnë nga të dhënat tuaja dhe nuk vlerësohen kurrë përafërsisht; përgjigjet e përgjithshme shënohen si të tilla.",
     "source": {
       "data": "Nga të dhënat tuaja",
       "ai": "AI · e kontrolluar me të dhënat tuaja",
+      "aiGeneral": "AI · njohuri të përgjithshme",
       "aiUnverified": "AI · jo plotësisht e verifikuar",
       "refusal": "Jashtë fushës",
       "fallback": "Përgjigje e kufizuar"
@@ -1479,6 +1480,7 @@
     "sourceHint": {
       "data": "Përgjigje direkt nga matjet tuaja, pa model gjuhësor.",
       "ai": "Shkruar nga një model gjuhësor (Groq) mbi të dhënat tuaja; çdo numër u kontrollua me to.",
+      "aiGeneral": "Udhëzim i përgjithshëm nga një model gjuhësor (Groq), jo nga matjet tuaja. Shifrat tipike janë orientuese: kontrollojini para se të veproni.",
       "aiUnverified": "Disa numra në këtë përgjigje nuk u përputhën me të dhënat tuaja. Kontrollojini te faqet e lidhura para se të veproni.",
       "refusal": "Asistenti mbulon vetëm energjinë, kostot, karbonin tuaj dhe EnergyFlow.",
       "fallback": "Modeli gjuhësor nuk ishte i disponueshëm, ndaj tani mund t'u përgjigjem vetëm pyetjeve për të dhënat."
@@ -1493,7 +1495,7 @@
       "sent": "Komanda u dërgua te {{code}}",
       "reason": "Kërkuar përmes Pyet EnergyFlow"
     },
-    "error": "Asistenti nuk arriti të përgjigjet. Provoni përsëri.",
+    "error": "Asistenti nuk arriti të përgjigjet.",
     "retry": "Provo përsëri",
     "chars": "{{count}} / 1000",
     "askAbout": "Pyet EnergyFlow",
@@ -1502,7 +1504,7 @@
       "machine": "Shpjego konsumin e {{code}} këtë muaj",
       "opportunity": "Shpjego këtë mundësi dhe si u llogarit kursimi"
     },
-    "footer": "Përgjigjet e AI kontrollohen me të dhënat tuaja. Makineritë fiken vetëm pasi ta konfirmoni."
+    "footer": "Përgjigjet për kompaninë tuaj kontrollohen me të dhënat tuaja. Makineritë fiken vetëm pasi ta konfirmoni."
   },
   "scan": {
     "subtitle": "Përdorni kamerën për të kontrolluar faturën e rrymës, për të lexuar njehsorin ose pllakën e makinerisë, dhe për kuponët e karburantit.",
@@ -1932,6 +1934,196 @@
       "rule": "Maksigrafi i furnizuesit e mat fuqinë mesatare për 15 minuta dhe ruan vlerën më të lartë të muajit; fuqia e angazhuar paguhet sipas saj. EnergyFlow e gjen atë çerek ore dhe më të lartën që objekti do ta kishte pasur pa makineritë e shënuara si ngarkesa fleksibile. Diferenca llogaritet nga {{min}}.",
       "p95": "Për krahasim, 95 % e çerek orëve të këtij muaji mbetën nën {{kw}}.",
       "source": "Burimet: Vendimi i ZRRE-së V_2703_2025 (fuqia e angazhuar për kW, 3,87 € në muaj për 0,4 kV Kategoria I); tarifat e ZRRE-së, shënimi 5 (maksigrafi mat 15 minuta dhe ruan vlerën më të lartë të muajit); Kodi i Matjes i KEDS 2020 (kërkesa maksimale për çdo periudhë 15-minutëshe)."
+    }
+  },
+  "landing": {
+    "nav": {
+      "home": "Kreu",
+      "about": "Rreth nesh",
+      "features": "Veçoritë",
+      "how": "Si funksionon",
+      "contact": "Kontakti",
+      "login": "Kyçu",
+      "signup": "Regjistrohu",
+      "menu": "Hap menynë",
+      "closeMenu": "Mbyll menynë",
+      "label": "Kryesore"
+    },
+    "hero": {
+      "title": "Dini sa kushton çdo makineri. Mos paguani më për atë që humbet.",
+      "body": "EnergyFlow mat energjinë elektrike për çdo makineri, zbulon humbjet në kWh, € dhe CO₂e, rekomandon zgjidhje të llogaritura nga të dhënat tuaja, fik makineritë joaktive vetëm pasi ta konfirmoni dhe i shndërron të njëjtat matje në raporte për karbonin dhe ESG.",
+      "primary": "Fillo tani",
+      "secondary": "Shiko veçoritë",
+      "demoHint": "Pa llogari: një turne vetëm për lexim në një prodhues fiktiv plastike me makineri të simuluara."
+    },
+    "flow": {
+      "grid": "Rrjeti",
+      "meter": "Matësi kryesor",
+      "compressor": "Kompresori",
+      "moulder": "Makina e injektimit",
+      "chiller": "Ftohësi",
+      "lighting": "Ndriçimi",
+      "detected": "U zbulua punë pas orarit",
+      "verified": "U fik · e verifikuar nga matësi",
+      "steps": {
+        "measure": "Mat",
+        "detect": "Zbulo",
+        "act": "Vepro",
+        "prove": "Dëshmo"
+      },
+      "legendEnergy": "Energjia",
+      "legendWaste": "Humbja",
+      "legendVerified": "Veprim i verifikuar",
+      "caption": "Ilustrim i ciklit të produktit. Makineritë e kompanisë demo janë të simuluara.",
+      "aria": "Diagram: energjia elektrike rrjedh nga rrjeti përmes matësit kryesor te katër makineri. EnergyFlow zbulon kompresorin që punon pas orarit; ai fiket dhe matësi e konfirmon."
+    },
+    "facts": {
+      "label": "Pse një kilovat-orë ka më shumë peshë në Kosovë",
+      "items": [
+        {
+          "value": "0,901 kg CO₂e",
+          "label": "për kWh nga rrjeti i Kosovës në vitin 2025, kryesisht nga linjiti"
+        },
+        {
+          "value": "≈ 4,3×",
+          "label": "më shumë CO₂ se një kWh mesatare në BE (209,9 g në vitin 2025)"
+        },
+        {
+          "value": "cos φ 0,95",
+          "label": "nën këtë vlerë, energjia reaktive faturohet mbi kWh"
+        }
+      ],
+      "sources": "Burimet: Ember Yearly Electricity Data përmes Our World in Data (faktorët e emetimit); Drafti i PKEK 2025–2030 të Kosovës (linjiti); Vendimi i ZRRE-së V_2703_2025, 0,4 kV Kategoria I (energjia reaktive)."
+    },
+    "about": {
+      "eyebrow": "Pse ka rëndësi",
+      "title": "Për një prodhues të vogël, energjia është një kosto ku askush nuk sheh brenda.",
+      "body": "Një NVM tipike merr një faturë të energjisë në muaj: sa, por kurrë cila makineri, kur apo pse. Në Kosovë çdo kilovat-orë e humbur mbart edhe disa herë më shumë CO₂ se në BE, ndërsa klientët, bankat dhe blerësit nga BE-ja i kërkojnë gjithnjë e më shumë këto shifra.",
+      "challengesTitle": "Çfarë e bën të vështirë",
+      "challenges": [
+        {
+          "title": "Një matës, një faturë",
+          "body": "Fatura tregon totalin mujor, jo cila makineri e përdori energjinë apo në çfarë ore."
+        },
+        {
+          "title": "Humbjet fshihen pas orarit",
+          "body": "Kompresorët, ftohësit dhe dritat vazhdojnë të punojnë kur askush nuk prodhon."
+        },
+        {
+          "title": "Ngarkesa mbi kWh",
+          "body": "Energjia reaktive dhe fuqia e angazhuar faturohen veçmas dhe kalojnë lehtë pa u vënë re."
+        },
+        {
+          "title": "Kërkesa për të dhëna",
+          "body": "Blerësit nga BE-ja (CBAM) dhe huadhënësit kërkojnë shifra për energjinë dhe CO₂; standardi VSME përcakton çfarë mund të raportojë një NVM."
+        }
+      ],
+      "helpsTitle": "Si ndihmon EnergyFlow",
+      "helps": "Matni çdo makineri, gjeni humbjet me dëshmitë e tyre, veproni në mënyrë të sigurt, dëshmoni kursimin dhe raportoni rezultatin, gjithçka nga të njëjtat matje.",
+      "audienceTitle": "Për kë është",
+      "audience": [
+        "Pronarët dhe menaxherët e NVM-ve me makineri: kompresorë, makina injektimi, ftohës, pompa.",
+        "Menaxherët e prodhimit dhe të mirëmbajtjes që duhet të dinë çfarë po punon dhe pse.",
+        "Konsulentët e energjisë dhe të qëndrueshmërisë që ndjekin disa NVM."
+      ]
+    },
+    "features": {
+      "eyebrow": "Veçoritë",
+      "title": "Nga matja te dëshmia",
+      "body": "Çdo veçori më poshtë është e ndërtuar dhe mund të provohet në kompaninë demo. Etiketat tregojnë çfarë është ende prototip ose e planifikuar.",
+      "status": {
+        "available": "E disponueshme",
+        "prototype": "Prototip",
+        "planned": "E planifikuar"
+      },
+      "items": {
+        "live": {
+          "title": "Monitorim live për çdo makineri",
+          "body": "Fuqia e çdo makinerie çdo disa sekonda, me konsumin, koston dhe CO₂e për makineri dhe gjendjen e çdo pajisjeje. Të dhënat vijnë nga matësit e EnergyFlow ose nga releja të mençura Shelly Gen2 të mbështetura."
+        },
+        "waste": {
+          "title": "Zbulimi i humbjeve të energjisë",
+          "body": "Punë pas orarit dhe në pritje, shenja të rrjedhjeve të ajrit të kompresuar, rënie e efikasitetit, kulme fuqie dhe mbingarkesa të motorëve, faktor i ulët fuqie dhe përputhje e kulmeve, secila e matur në kWh, € dhe CO₂e me dëshmitë përkatëse."
+        },
+        "opportunities": {
+          "title": "Rekomandime dhe What-if",
+          "body": "Mundësi të renditura, secila e llogaritur duke riluajtur të dhënat e vetë makinerisë, dhe një simulator What-if për ta provuar një ndryshim para se ta bëni."
+        },
+        "control": {
+          "title": "Fikja dhe automatizimet",
+          "body": "Fikni një makineri joaktive ose vendosni një rregull si \"fike 15 minuta pas ndërrimit\". Çdo komandë verifikohet nga matësi. EnergyFlow nuk ndez kurrë një makineri dhe nuk fik kurrë një makineri kritike."
+        },
+        "impact": {
+          "title": "Kursime të verifikuara",
+          "body": "Dëshmi para/pas për çdo veprim: një bazë e rregulluar me interval besueshmërie 90 %, e frymëzuar nga IPMVP (jo M&V e certifikuar)."
+        },
+        "carbon": {
+          "title": "Ndjekja e karbonit dhe ESG",
+          "body": "Scope 2 nga energjia elektrike e matur, Scope 1 nga kuponët e karburantit të skanuar, pikat e të dhënave VSME B3, një listë gatishmërie dhe metodologjia pas çdo shifre."
+        },
+        "reports": {
+          "title": "Raportet",
+          "body": "Raporte ditore, javore dhe mujore për energjinë dhe qëndrueshmërinë me shifra të ngrira, gati për t'u shkarkuar si PDF."
+        },
+        "insights": {
+          "title": "Njohuri për biznesin",
+          "body": "Pikët EnergyFlow me atë që duhet rregulluar më pas, një parashikim për fund të muajit me intervalin e mundshëm dhe një diagram se ku shkoi energjia."
+        },
+        "assistant": {
+          "title": "Pyet EnergyFlow",
+          "body": "Një asistent AI (model gjuhësor i Groq) që u përgjigjet pyetjeve për të dhënat tuaja dhe shpjegon në përgjithësi efikasitetin e energjisë, karbonin dhe ESG. Shifrat për kompaninë tuaj kontrollohen me të dhënat tuaja."
+        },
+        "scan": {
+          "title": "Skano fatura dhe kuponë",
+          "body": "Fotografoni një faturë të energjisë për ta kontrolluar me tarifën dhe matësit tuaj, ose një kupon karburanti për të shtuar Scope 1. Ju konfirmoni çdo vlerë; fotot nuk ruhen."
+        },
+        "node": {
+          "title": "Nyja matëse EF-N3",
+          "body": "Nyja e vetë EnergyFlow, trefazore me kapëse, me ndalim të sigurt në distancë. Një dizajn prototip, ende jo produkt i certifikuar."
+        }
+      },
+      "plannedTitle": "E planifikuar",
+      "planned": [
+        "Ndërfaqja në gjermanisht dhe frëngjisht",
+        "Rekomandime për përmirësimin e pajisjeve, si inverterët dhe ndriçimi LED",
+        "Scope 2 sipas tregut, kur të publikohet një faktor i përzierjes së mbetur për Kosovën"
+      ]
+    },
+    "how": {
+      "eyebrow": "Si funksionon",
+      "title": "Katër hapa, një grup matjesh",
+      "steps": [
+        {
+          "title": "Lidhni",
+          "body": "Vendosni një matës me kapëse në furnizimin e çdo makinerie ose lidhni një rele të mençur të mbështetur, pastaj caktoni oraret e punës dhe tarifën. Për të parë fillimisht, hapni kompaninë demo."
+        },
+        {
+          "title": "Monitoroni",
+          "body": "Ndiqni fuqinë dhe koston live për çdo makineri. EnergyFlow i shënon automatikisht humbjet dhe sjelljet e pazakonta, me dëshmitë përkatëse."
+        },
+        {
+          "title": "Veproni",
+          "body": "Kaloni nëpër mundësitë e renditura, provojini në simulatorin What-if dhe fikni makineritë joaktive: gjithmonë pasi ta konfirmoni, gjithmonë të verifikuara nga matësi."
+        },
+        {
+          "title": "Dëshmoni dhe raportoni",
+          "body": "Ndiqni kursimet e verifikuara dhe CO₂e, dhe shkarkoni raporte për energjinë, karbonin dhe ESG të ndërtuara nga të njëjtat të dhëna."
+        }
+      ]
+    },
+    "contact": {
+      "eyebrow": "Kontakti",
+      "title": "Të interesuar për një pilot?",
+      "body": "EnergyFlow ndërtohet me dhe për prodhuesit e vegjël dhe të mesëm në Kosovë. Krijoni një llogari për ta provuar me të dhënat tuaja, ose eksploroni fillimisht kompaninë demo.",
+      "email": "Na shkruani",
+      "signup": "Krijo llogari"
+    },
+    "footer": {
+      "description": "Monitorim i energjisë, zbulim i humbjeve dhe raportim i karbonit për NVM-të në Kosovë.",
+      "built": "Ndërtuar për GPEK Digital Green Innovation Competition 2026.",
+      "product": "Produkti",
+      "account": "Llogaria",
+      "rights": "© {{year}} EnergyFlow"
     }
   }
 }

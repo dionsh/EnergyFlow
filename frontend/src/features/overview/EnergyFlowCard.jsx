@@ -109,7 +109,7 @@ export function EnergyFlowCard() {
         actions={<Link to="/waste" className="text-[13px] font-medium text-brand hover:underline">{t('flow.wasteLink')}</Link>}
       />
       <CardBody>
-        <div className="overflow-x-auto">
+        <div className="relative overflow-x-auto">
           <svg viewBox={`0 0 ${W} ${height}`} className="h-auto w-full min-w-[620px]" role="img" aria-label={t('flow.aria', { kwh: formatKwh(flow.site_kwh), waste: formatKwh(flow.waste_kwh) })}>
             {links.map((l) => (
               <path key={l.key} d={l.d} fill={l.color} fillOpacity={l.opacity}>

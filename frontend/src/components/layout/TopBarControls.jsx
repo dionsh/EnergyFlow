@@ -15,7 +15,7 @@ import { useDismiss } from '../../hooks/useDismiss'
 import { useAssistant } from '../../features/assistant/AssistantProvider'
 import { IconButton } from '../ui/Button'
 
-function Popover({ open, onClose, align = 'right', className, children }) {
+function Popover({ open, onClose, align = 'right', side = 'bottom', className, children }) {
   const ref = useRef(null)
   useDismiss(ref, onClose, open)
   if (!open) return null
@@ -23,7 +23,8 @@ function Popover({ open, onClose, align = 'right', className, children }) {
     <div
       ref={ref}
       className={cn(
-        'absolute top-full z-40 mt-2 min-w-48 rounded-lg border border-line bg-surface p-1 shadow-overlay',
+        'absolute z-40 min-w-48 rounded-lg border border-line bg-surface p-1 shadow-overlay',
+        side === 'top' ? 'bottom-full mb-2' : 'top-full mt-2',
         align === 'right' ? 'right-0' : 'left-0',
         className,
       )}
@@ -89,7 +90,8 @@ export function LanguageSwitch() {
 
 const THEME_ICONS = { light: Sun, dark: Moon, system: Monitor }
 
-export function ThemeMenu() {
+/** `side="top"` opens the menu upwards (at the foot of the mobile menu). */
+export function ThemeMenu({ side }) {
   const { t } = useTranslation()
   const { preference, resolved, themes, setPreference } = useTheme()
   const [open, setOpen] = useState(false)
@@ -103,7 +105,7 @@ export function ThemeMenu() {
         aria-haspopup="menu"
         onClick={() => setOpen((v) => !v)}
       />
-      <Popover open={open} onClose={close}>
+      <Popover open={open} onClose={close} side={side}>
         {themes.map((theme) => (
           <MenuItem
             key={theme}

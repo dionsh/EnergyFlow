@@ -1,8 +1,9 @@
 import { cn } from '../../lib/cn'
 
+/** min-w-0: as a grid or flex item a card may shrink below its content (a wide chart scrolls inside instead of widening the page). */
 export function Card({ className, children, ...props }) {
   return (
-    <section className={cn('rounded-md border border-line bg-surface', className)} {...props}>
+    <section className={cn('min-w-0 rounded-md border border-line bg-surface', className)} {...props}>
       {children}
     </section>
   )

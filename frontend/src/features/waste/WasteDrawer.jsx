@@ -109,7 +109,7 @@ function DismissDialog({ event, open, onClose }) {
         maxLength={200}
         value={reason}
         onChange={(e) => setReason(e.target.value)}
-        className="w-full rounded-sm border border-line-strong bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-3 hover:border-ink-3"
+        className="w-full rounded-sm border border-line-strong bg-surface px-3 py-2 text-base text-ink placeholder:text-ink-3 hover:border-ink-3 sm:text-sm"
       />
       <p className="mt-1.5 text-[13px] text-ink-3">{t('wasteDetail.dismissHint')}</p>
     </Modal>

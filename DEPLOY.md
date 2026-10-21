@@ -35,7 +35,7 @@ You don't need to create tables. The API runs its migrations automatically every
    | `DB_PORT` | Aiven port |
    | `DB_PASS` | Aiven password |
    | `DB_SSL_CA_CONTENT` | the **entire contents** of `ca.pem`, including the BEGIN/END lines |
-   | `GROQ_API_KEY` | your Groq key (can be added later) |
+   | `GROQ_API_KEY` | your Groq key (https://console.groq.com/keys). **Without it Ask EnergyFlow only answers data questions**, and report narratives and Scan are off |
    | `FRONTEND_URL` | the deployed Vercel app URL, used in password-reset links |
    | `EMAILJS_SERVICE_ID` | EmailJS email service ID |
    | `EMAILJS_TEMPLATE_ID` | EmailJS password-reset template ID |
@@ -44,7 +44,8 @@ You don't need to create tables. The API runs its migrations automatically every
 
    `CRON_SECRET` is generated automatically. `DB_NAME=defaultdb` and `DB_USER=avnadmin` are already set.
 3. Deploy. The first Docker build takes a few minutes. Then open
-   `https://energyflow-api.onrender.com/api/v1/health`. You should see `"database":"ok"` and a migration version.
+   `https://energyflow-api.onrender.com/api/v1/health`. You should see `"database":"ok"`, a migration version and **`"ai_configured":true`**.
+   `false` means `GROQ_API_KEY` is missing: add it under the service's **Environment** tab (a Blueprint never fills a `sync: false` value by itself), save, and let Render redeploy. A plain-text `Not Found` from Render (header `x-render-routing: no-server`) means no service answers at that URL: use the URL Render shows on the service page.
 
    Password reset emails use EmailJS. Create an email service and reset template, then set the EmailJS values above. See [`docs/forgot-password-email.md`](docs/forgot-password-email.md) for setup.
 4. If Render gave the service a different URL (the name was taken), copy it. You need it in step 3.
@@ -57,6 +58,7 @@ You don't need to create tables. The API runs its migrations automatically every
 2. Set **Root Directory: `frontend`**. The framework preset (Vite) is detected from `frontend/vercel.json`.
 3. If your Render URL is not `energyflow-api.onrender.com`, edit the first rewrite in `frontend/vercel.json`, then commit and push.
 4. Deploy. No environment variables are needed: `/api/*` is proxied to Render, so the browser stays on one origin. That means no CORS setup, and the login cookie is first-party.
+   Optional: `VITE_CONTACT_EMAIL` puts a public contact address on the landing page (build-time variable, so redeploy after setting it). Never put API keys in a `VITE_` variable: those end up in the browser.
 
 ## 4. cron-job.org: keep-warm and background jobs
 
@@ -81,6 +83,15 @@ The panel at `/admin` lists every company and user, and lets EnergyFlow staff ed
 3. Reload the app. **Admin** appears at the bottom of the sidebar.
 
 Demo accounts can never be platform admins, and demo users cannot be edited or deleted from the panel (the Demo Director rebuilds them).
+
+---
+
+## 6. Checking the AI assistant
+
+- **Deployed:** `GET /api/v1/health` → `"ai_configured": true`. The admin panel's overview shows the same flag.
+- **Locally:** `php bin/check-ai.php` (in `backend/`) checks that `GROQ_API_KEY` is set and accepted, that every configured model is still offered by Groq, and that each one answers. It never prints the key.
+- **In the app:** each answer carries a label. *From your data* = answered from the database; *AI · checked against your data* / *AI · general knowledge* = written by Groq; *Limited answer* = the model was unavailable, and the text says why (not configured, key rejected, or free-tier limit; the last clears within a minute).
+- The free tier allows 8,000 tokens per minute per model, about 2–3 open questions per minute per model; with the three-model chain, roughly 6–9 per minute in total.
 
 ---
 

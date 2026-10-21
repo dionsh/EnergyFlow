@@ -239,7 +239,7 @@ export function AdminUsers({ companyId, onClearCompany }) {
           {rows.length === 0 ? (
             <EmptyState icon={Users} title={t('admin.users.empty')} />
           ) : (
-            <div className="overflow-x-auto">
+            <div className="relative overflow-x-auto">
               <table className="w-full min-w-[980px] border-collapse text-[13px]">
                 <thead>
                   <tr className="border-b border-line text-left text-xs text-ink-3">

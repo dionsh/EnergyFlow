@@ -38,6 +38,9 @@ export function localDate(iso) {
  * The number and date formatters for a language. The app uses the current UI
  * language; a report uses its own language (formattersFor), whatever the UI shows.
  */
+// Between a value and its unit: a no-break space, so "883,13 €" never wraps into "883,13" / "€" on a phone.
+const NBSP = ' '
+
 function makeFormatters(language) {
   const spec = () => languageFor(language()).number
   const calendar = (key) => i18n.getFixedT(language())(`calendar.${key}`, { returnObjects: true })
@@ -55,10 +58,10 @@ function makeFormatters(language) {
     formatNumber: (value, digits = 0, minDigits = 0) => number(value, digits, minDigits),
 
     /** kW: 1 decimal, 2 below 1 kW. */
-    formatKw: (value) => `${number(value, Math.abs(value) < 1 ? 2 : 1, Math.abs(value) < 1 ? 2 : 1)} kW`,
+    formatKw: (value) => `${number(value, Math.abs(value) < 1 ? 2 : 1, Math.abs(value) < 1 ? 2 : 1)}${NBSP}kW`,
 
     /** kWh: no decimals from 100 up, 1 decimal below. */
-    formatKwh: (value) => `${number(value, Math.abs(value) >= 100 ? 0 : 1)} kWh`,
+    formatKwh: (value) => `${number(value, Math.abs(value) >= 100 ? 0 : 1)}${NBSP}kWh`,
 
     /** €: 2 decimals below 1,000; whole euros above (KPIs). */
     formatEur(value, { compact = true } = {}) {
@@ -66,16 +69,16 @@ function makeFormatters(language) {
       const digits = compact && Math.abs(value) >= 1000 ? 0 : 2
       const amount = number(Math.abs(value), digits, digits)
       const sign = value < 0 ? '−' : ''
-      return spec().currency === 'prefix' ? `${sign}€${amount}` : `${sign}${amount} €`
+      return spec().currency === 'prefix' ? `${sign}€${amount}` : `${sign}${amount}${NBSP}€`
     },
 
     /** CO₂e: kg below 1,000, tonnes (1 decimal) above. */
     formatCo2(kg) {
       if (kg === null || kg === undefined) return '—'
-      return Math.abs(kg) >= 1000 ? `${number(kg / 1000, 1, 1)} t CO₂e` : `${number(kg, kg < 10 ? 1 : 0)} kg CO₂e`
+      return Math.abs(kg) >= 1000 ? `${number(kg / 1000, 1, 1)}${NBSP}t${NBSP}CO₂e` : `${number(kg, kg < 10 ? 1 : 0)}${NBSP}kg${NBSP}CO₂e`
     },
 
-    formatPercent: (ratio, digits = 1) => (ratio === null || ratio === undefined ? '—' : `${number(ratio * 100, digits)}${spec().percentSpace ? ' ' : ''}%`),
+    formatPercent: (ratio, digits = 1) => (ratio === null || ratio === undefined ? '—' : `${number(ratio * 100, digits)}${spec().percentSpace ? NBSP : ''}%`),
 
     /**
      * Dates in local time. Variants:

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
-  ArrowUp, ArrowUpRight, Ban, ChevronLeft, CircleAlert, Database, History, Info, MessageSquareText, Power, ShieldCheck, SquarePen, Trash2,
+  ArrowUp, ArrowUpRight, Ban, BookOpen, ChevronLeft, CircleAlert, Database, History, Info, MessageSquareText, Power, ShieldCheck, SquarePen, Trash2,
   TriangleAlert, X,
 } from 'lucide-react'
 import { api } from '../../lib/api'
@@ -24,6 +24,7 @@ const MAX_CHARS = 1000
 const SOURCE = {
   data: { icon: Database, className: 'border-line-strong text-ink-2' },
   ai: { icon: ShieldCheck, className: 'border-line-strong text-ink-2' },
+  aiGeneral: { icon: BookOpen, className: 'border-line-strong text-ink-2' },
   aiUnverified: { icon: TriangleAlert, className: 'border-warning/60 bg-warning-subtle text-warning-text' },
   refusal: { icon: Ban, className: 'border-line-strong text-ink-3' },
   fallback: { icon: Info, className: 'border-line-strong text-ink-3' },
@@ -31,7 +32,7 @@ const SOURCE = {
 
 function SourceChip({ message }) {
   const { t } = useTranslation()
-  const key = message.source === 'ai' && message.grounded === false ? 'aiUnverified' : message.source ?? 'data'
+  const key = message.source !== 'ai' ? message.source ?? 'data' : message.intent === 'llm_general' ? 'aiGeneral' : message.grounded === false ? 'aiUnverified' : 'ai'
   const style = SOURCE[key] ?? SOURCE.data
   const Icon = style.icon
   return (
@@ -121,7 +122,7 @@ function AssistantMessage({ message, onAsk, onNavigate, busy, fresh }) {
   const turnOff = message.actions.find((a) => a.type === 'turn_off')
   return (
     <div className={cn('flex flex-col gap-2', fresh && 'animate-pop')}>
-      <div className="rounded-lg border border-line bg-surface px-3.5 py-3 text-[13.5px] leading-relaxed text-ink">
+      <div className="min-w-0 rounded-lg border border-line bg-surface px-3.5 py-3 text-[13.5px] leading-relaxed text-ink [overflow-wrap:anywhere]">
         <MarkdownLite text={message.content} />
         {turnOff && <TurnOffCard message={message} action={turnOff} />}
         <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1.5 border-t border-line pt-2.5">
@@ -175,16 +176,19 @@ function Chips({ items, onAsk, disabled }) {
   )
 }
 
-function UserMessage({ text, failed, onRetry }) {
+function UserMessage({ text, failed, error, onRetry }) {
   const { t } = useTranslation()
+  const { errorMessage } = useApiErrors()
   return (
     <div className="flex flex-col items-end gap-1">
-      <div className="max-w-[85%] whitespace-pre-wrap break-words rounded-lg rounded-br-sm bg-brand-subtle px-3.5 py-2.5 text-[13.5px] text-ink">{text}</div>
+      <div className="max-w-[85%] whitespace-pre-wrap rounded-lg rounded-br-sm bg-brand-subtle px-3.5 py-2.5 text-[13.5px] text-ink [overflow-wrap:anywhere]">{text}</div>
       {failed && (
-        <p className="flex items-center gap-1.5 text-[12px] text-critical-text">
-          <CircleAlert className="size-3.5" aria-hidden="true" />
-          {t('assistant.error')}
-          <button type="button" onClick={onRetry} className="font-medium underline underline-offset-2">{t('assistant.retry')}</button>
+        <p className="flex max-w-[85%] items-start gap-1.5 text-right text-[12px] text-critical-text" role="alert">
+          <CircleAlert className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
+          <span>
+            {t('assistant.error')} {error && errorMessage(error)}{' '}
+            <button type="button" onClick={onRetry} className="font-medium underline underline-offset-2">{t('assistant.retry')}</button>
+          </span>
         </p>
       )}
     </div>
@@ -274,7 +278,7 @@ function Composer({ onSend, busy }) {
     setText('')
   }
   return (
-    <div className="border-t border-line px-3 pb-3 pt-2.5">
+    <div className="border-t border-line px-3 pt-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
       <div className="flex items-end gap-2 rounded-lg border border-line-strong bg-surface px-3 py-2 focus-within:border-brand">
         <textarea
           ref={ref}
@@ -290,7 +294,7 @@ function Composer({ onSend, busy }) {
           }}
           placeholder={t('assistant.placeholder')}
           aria-label={t('assistant.placeholder')}
-          className="max-h-[140px] min-h-[24px] flex-1 resize-none bg-transparent text-[13.5px] leading-6 text-ink outline-none placeholder:text-ink-3"
+          className="max-h-[140px] min-h-[24px] min-w-0 flex-1 resize-none bg-transparent text-base leading-6 text-ink outline-none placeholder:text-ink-3 sm:text-[13.5px]"
         />
         <button
           type="button"
@@ -304,8 +308,8 @@ function Composer({ onSend, busy }) {
         </button>
       </div>
       <div className="mt-1.5 flex items-center justify-between gap-3 text-[11px] text-ink-3">
-        <span>{t('assistant.footer')}</span>
-        {text.length > MAX_CHARS * 0.8 && <span className="tabular">{t('assistant.chars', { count: text.length })}</span>}
+        <span className="min-w-0">{t('assistant.footer')}</span>
+        {text.length > MAX_CHARS * 0.8 && <span className="tabular shrink-0">{t('assistant.chars', { count: text.length })}</span>}
       </div>
     </div>
   )
@@ -357,7 +361,7 @@ export default function AssistantPanel() {
       const auto = data.assistant.actions.find((a) => a.type === 'navigate' && a.auto)
       if (auto) navigate(auto.to)
     },
-    onError: (_, variables) => setOptimistic({ ...variables, failed: true }),
+    onError: (error, variables) => setOptimistic({ ...variables, failed: true, error }),
   })
   const ask = (text, extra = {}) => {
     setShowHistory(false)
@@ -459,7 +463,7 @@ export default function AssistantPanel() {
             {messages.map((m) => (m.role === 'user'
               ? <UserMessage key={m.id} text={m.content} />
               : <AssistantMessage key={m.id} message={m} onAsk={ask} onNavigate={follow} busy={busy} fresh={m.id === fresh} />))}
-            {optimistic && <UserMessage text={optimistic.text} failed={optimistic.failed} onRetry={() => send({ text: optimistic.text, extra: optimistic.extra })} />}
+            {optimistic && <UserMessage text={optimistic.text} failed={optimistic.failed} error={optimistic.error} onRetry={() => send({ text: optimistic.text, extra: optimistic.extra })} />}
             {busy && <Thinking />}
           </div>
         )}

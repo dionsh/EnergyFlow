@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use EnergyFlow\Core\Database;
 use EnergyFlow\Services\Assistant\Grounding;
+use EnergyFlow\Services\Assistant\GroqClient;
 use EnergyFlow\Services\Assistant\Intents;
 use EnergyFlow\Services\Assistant\Lang;
 use EnergyFlow\Services\Assistant\MachineMatcher;
@@ -58,6 +59,72 @@ test('understands the common questions in English and Albanian, and leaves "why"
     assertSame('carbon', $intent('What is our CO2 this month?'), 'but our own CO₂ is data');
     assertSame('sq', Lang::detect('Sa konsumuam sot?', 'en'));
     assertSame('en', Lang::detect('Write me a python script', 'sq'));
+});
+
+test('general questions and advice go to the model; lookups stay deterministic', function () use ($askDemo): void {
+    $time = LocalTime::forCompany($askDemo);
+    $now = Clock::now($askDemo);
+    $intent = static fn (string $q): ?string => Intents::detect($q, $now, $time)['name'] ?? null;
+    assertSame(null, $intent('How much energy does a compressor typically use?'), 'a general question is not a lookup of our numbers');
+    assertSame(null, $intent('How can a small business reduce electricity consumption?'));
+    assertSame('consumption', $intent('How much energy did we use this month?'), 'ours stays a lookup');
+
+    // "Based on our data, how can we…" still names a lookup (its fallback), but asks for advice.
+    $combined = 'Based on our recent consumption, what changes could reduce our carbon emissions?';
+    assertSame('carbon', $intent($combined));
+    assertTrue(Intents::advisory($combined));
+    assertTrue(Intents::advisory('Si mund ta ulim konsumin?'));
+    assertTrue(!Intents::advisory('What should we change tomorrow?'), 'the ranked list answers this one');
+    assertTrue(!Intents::advisory('Which machine cost us the most this month?'));
+
+    assertTrue(Intents::general('What is ESG reporting and why does it matter for an SME?'));
+    assertTrue(Intents::general('How much energy does a compressor typically use?'));
+    assertTrue(!Intents::general('Why did our energy consumption increase this week?'));
+    assertTrue(!Intents::general('What is our CO2 this month?'));
+
+    assertTrue(!Intents::general('What is a carbon footprint and how is ours calculated?'), '"ours" is about us');
+    assertSame(null, $intent('How do solar panels help a factory?'), '"actor" is not in "factory"');
+    assertSame('off_topic', $intent('Who is the best actor?'));
+
+    assertTrue(Intents::inScope('What is a carbon footprint?'));
+    assertTrue(Intents::inScope('How do solar panels help a factory?'));
+    assertTrue(!Intents::inScope('Who won the match yesterday?'));
+});
+
+test('without a language model, advice built on our data still gets the data answer', function () use ($askOwner, $askOne): void {
+    $answer = $askOne($askOwner, 'Based on our recent consumption, what changes could reduce our carbon emissions?');
+    assertSame('data', $answer['source']);
+    assertSame('carbon', $answer['intent']);
+});
+
+test('three text models are tried: the configured ones, then the remaining defaults', function (): void {
+    $saved = array_map(static fn (string $k): string|false => getenv($k), ['GROQ_MODEL', 'GROQ_MODEL_FALLBACK', 'GROQ_MODEL_FALLBACK_2']);
+    try {
+        putenv('GROQ_MODEL');
+        putenv('GROQ_MODEL_FALLBACK');
+        putenv('GROQ_MODEL_FALLBACK_2');
+        assertSame(['openai/gpt-oss-120b', 'qwen/qwen3.8-27b', 'openai/gpt-oss-20b'], GroqClient::models());
+        putenv('GROQ_MODEL_FALLBACK=openai/gpt-oss-20b'); // an older .env
+        assertSame(['openai/gpt-oss-120b', 'openai/gpt-oss-20b', 'qwen/qwen3.8-27b'], GroqClient::models());
+    } finally {
+        foreach (['GROQ_MODEL', 'GROQ_MODEL_FALLBACK', 'GROQ_MODEL_FALLBACK_2'] as $i => $k) {
+            putenv($saved[$i] === false ? $k : "{$k}={$saved[$i]}");
+        }
+    }
+});
+
+test('the conversation sent to the model leaves out answers the model never gave', function (): void {
+    $turns = (new ReflectionMethod(\EnergyFlow\Services\Assistant\AssistantService::class, 'turns'))->invoke(null, [
+        ['role' => 'user', 'content' => 'Which machine uses the most?', 'source' => null],
+        ['role' => 'assistant', 'content' => 'IMM-01 uses the most.', 'source' => 'data'],
+        ['role' => 'user', 'content' => 'Why?', 'source' => null],
+        ['role' => 'assistant', 'content' => 'The language model is busy right now.', 'source' => 'fallback'],
+        ['role' => 'user', 'content' => 'And last month?', 'source' => null],
+        ['role' => 'assistant', 'content' => str_repeat('x', 900), 'source' => 'ai'],
+    ]);
+    assertSame(['Which machine uses the most?', 'IMM-01 uses the most.', 'And last month?'], array_slice(array_column($turns, 'content'), 0, 3));
+    assertSame(700, mb_strlen($turns[3]['content']), 'long answers are shortened');
+    assertSame(['user', 'assistant', 'user', 'assistant'], array_column($turns, 'role'));
 });
 
 test('finds machines by code, by name and by type in either language', function () use ($askDemo): void {
@@ -149,6 +216,21 @@ test('the snapshot loads what a question needs and keeps other machines out', fu
         assertSame('IMM-02', $a['machine']);
     }
     assertSame('IMM-02', $facts['context']['machine']['code']);
+
+    // This week: the last 7 days per machine, without three months of history.
+    $week = Snapshot::sectionsFor($askDemo, 'Why did our energy consumption increase this week?', []);
+    assertTrue(in_array('last_7_days', $week, true));
+    assertTrue(!in_array('monthly_history', $week, true));
+    $facts = Snapshot::build($askDemo, [], 'Why did our energy consumption increase this week?');
+    assertTrue($facts['last_7_days']['kwh'] > 0);
+    $changes = array_map(static fn (array $m): float => abs($m['change_kwh']), $facts['last_7_days']['machines_by_largest_change']);
+    $sorted = $changes;
+    rsort($sorted);
+    assertSame($sorted, $changes, 'largest change first');
+
+    // A general question carries who the company is, none of its measurements.
+    $general = Snapshot::build($askDemo, [], 'What is Scope 2?', false);
+    assertSame(['company', 'now_local', 'notes'], array_keys($general));
 });
 
 test('grounding: percentages are always checked; derived numbers only from numbers that belong together', function (): void {

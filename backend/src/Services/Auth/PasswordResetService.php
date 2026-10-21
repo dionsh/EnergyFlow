@@ -13,7 +13,8 @@ final class PasswordResetService
 {
     public static function request(string $email, string $ip): void
     {
-        if (!self::mailConfigured()) {
+        // In production a reset needs e-mail delivery; locally the link goes to the server log instead (see deliver()).
+        if (!self::mailConfigured() && Env::isProduction()) {
             throw new HttpException(503, 'email_not_configured', 'Password reset email delivery is not configured.');
         }
         RateLimiter::hit('password-reset-ip:' . $ip, 5, 3600);
@@ -67,13 +68,15 @@ final class PasswordResetService
 
     private static function deliver(string $email, string $locale, string $url): void
     {
-        $serviceId = Env::get('EMAILJS_SERVICE_ID');
-        $templateId = Env::get('EMAILJS_TEMPLATE_ID');
-        $publicKey = Env::get('EMAILJS_PUBLIC_KEY');
-        $privateKey = Env::get('EMAILJS_PRIVATE_KEY');
-        if ($serviceId === null || $templateId === null || $publicKey === null || $privateKey === null) {
-            throw new HttpException(503, 'email_not_configured', 'Password reset email delivery is not configured.');
+        if (!self::mailConfigured()) {
+            // Local development and tests: no e-mail account, so the link is printed by the PHP server.
+            error_log('[EnergyFlow] Local password reset link for ' . $email . ': ' . $url);
+            return;
         }
+        $serviceId = (string) Env::get('EMAILJS_SERVICE_ID');
+        $templateId = (string) Env::get('EMAILJS_TEMPLATE_ID');
+        $publicKey = (string) Env::get('EMAILJS_PUBLIC_KEY');
+        $privateKey = (string) Env::get('EMAILJS_PRIVATE_KEY');
 
         $albanian = $locale === 'sq';
         $subject = $albanian ? 'Rivendos fjalëkalimin e EnergyFlow' : 'Reset your EnergyFlow password';
@@ -130,9 +133,12 @@ final class PasswordResetService
         }
     }
 
+    /** Delivery goes through EmailJS (docs/forgot-password-email.md); all four values are needed. */
     private static function mailConfigured(): bool
     {
-        return Env::get('RESEND_API_KEY') !== null
-            && Env::get('RESEND_FROM_EMAIL') !== null;
+        return Env::get('EMAILJS_SERVICE_ID') !== null
+            && Env::get('EMAILJS_TEMPLATE_ID') !== null
+            && Env::get('EMAILJS_PUBLIC_KEY') !== null
+            && Env::get('EMAILJS_PRIVATE_KEY') !== null;
     }
 }

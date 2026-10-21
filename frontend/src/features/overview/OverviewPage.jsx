@@ -121,12 +121,12 @@ function BillCard({ month, projection, tariff }) {
                 {t(`overviewData.billLines.${line.key}`, { kw: formatNumber(month.peak_kw, 1) })}
                 {line.unit === 'kWh' && <span className="ml-1 text-ink-3">· {formatNumber(line.quantity, 0)} kWh × {formatNumber(line.rate * 100, 2)} c</span>}
               </dt>
-              <dd className="tabular font-medium text-ink">{formatEur(line.amount, { compact: false })}</dd>
+              <dd className="tabular whitespace-nowrap font-medium text-ink">{formatEur(line.amount, { compact: false })}</dd>
             </div>
           ))}
           <div className="flex items-baseline justify-between gap-4 py-2.5 text-sm">
             <dt className="font-semibold text-ink">{t('overviewData.subtotal')}</dt>
-            <dd className="tabular font-semibold text-ink">{formatEur(bill.subtotal, { compact: false })}</dd>
+            <dd className="tabular whitespace-nowrap font-semibold text-ink">{formatEur(bill.subtotal, { compact: false })}</dd>
           </div>
         </dl>
 
@@ -151,7 +151,7 @@ function RunningNow({ live }) {
                 <span className="truncate text-ink">{m.name}</span>
                 {m.after_hours && <TriangleAlert className="size-3.5 shrink-0 text-warning-text" aria-label={t('live.offSchedule')} />}
               </span>
-              <span className="tabular text-ink-2">{formatKw(m.power_kw ?? 0)}</span>
+              <span className="tabular shrink-0 whitespace-nowrap text-ink-2">{formatKw(m.power_kw ?? 0)}</span>
             </Link>
           </li>
         ))}

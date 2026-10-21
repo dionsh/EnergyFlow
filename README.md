@@ -61,7 +61,8 @@ The owner signs in as `owner@ylli-plast.demo` with `DEMO_OWNER_PASSWORD` from `b
 | Impact | Before/after proof per action: adjusted baseline, 90 % confidence interval (IPMVP-inspired) |
 | Carbon & ESG | Scope 2 from metered electricity, Scope 1 from scanned fuel receipts (DESNZ 2025 factors), VSME B3 datapoints, readiness checklist, methodology |
 | Reports | Monthly energy and sustainability report, frozen figures, AI-drafted text checked against them, A4 PDF |
-| Ask EnergyFlow | Assistant (Ctrl/⌘ K): data questions answered straight from MySQL; open questions by Groq over a data snapshot, every number checked; off-topic questions refused; Turn Off only after the user confirms |
+| Ask EnergyFlow | Assistant (Ctrl/⌘ K): data questions answered straight from MySQL; open questions by Groq, with the company's data where the question needs it (every number checked against it) and general energy, carbon and ESG knowledge otherwise (labelled as such); off-topic questions refused; Turn Off only after the user confirms |
+| Landing page | Public front page at `/` for visitors: what EnergyFlow does, feature status (available / prototype / planned), sourced Kosovo figures, an animated energy-flow diagram (static with reduced motion), sign-up, log-in and the read-only demo |
 | Demo Director | Virtual clock (+5 min to +7 days), story reset, and fault injection (a motor overload the spike detector must find) |
 | Hardware bridge | `tools/hw-bridge`: real smart relays (Shelly Gen2) speak the same signed device protocol as the EF-N3 nodes |
 
@@ -77,6 +78,6 @@ npm --prefix frontend run build
 
 - **Data-driven.** Every number on screen comes from the API and database. There are no hard-coded values in the frontend.
 - **Simulated and real devices are treated the same.** Both feed the same ingest pipeline.
-- **Honest AI.** ML models (fingerprint, anomaly, forecast) are labelled by method. The Groq LLM only explains our data and refuses off-topic questions.
+- **Honest AI.** ML models (fingerprint, anomaly, forecast) are labelled by method. The Groq LLM explains our data and general energy and sustainability topics, says which of the two an answer is, and refuses off-topic questions.
 - **Sourced facts.** Kosovo's grid factor, tariffs and ESG references are cited in [`docs/01-research.md`](docs/01-research.md).
 - **Languages:** Albanian and English. German and French are planned; see `frontend/src/i18n/languages.js`.

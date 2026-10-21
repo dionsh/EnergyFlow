@@ -36,6 +36,7 @@ final class Snapshot
         'live' => ['Live readings', 'Leximet live', '/live'],
         'today' => ['Today', 'Sot', '/'],
         'month_to_date' => ['This month so far', 'Ky muaj deri tani', '/'],
+        'last_7_days' => ['Last 7 days by machine', '7 ditët e fundit sipas makinerisë', '/machines'],
         'month_end_projection' => ['Month-end projection', 'Parashikimi për fund të muajit', '/'],
         'monthly_history' => ['Monthly history', 'Historiku mujor', '/reports'],
         'machines_this_month' => ['Energy by machine', 'Energjia sipas makinerisë', '/machines'],
@@ -65,6 +66,7 @@ final class Snapshot
             'compressor', 'kompresor', 'moulder', 'chiller', 'pump', 'pomp', 'light', 'drit', 'hvac', 'office', 'zyr', 'more', 'më shumë', 'higher', 'rrit'],
         'waste_this_month' => ['waste', 'humb', 'after hours', 'pas orarit', 'idle', 'pritje', 'drift', 'leak', 'rrjedh', 'loss'],
         'waste_last_7_days' => ['week', 'javë', 'jave', '7 days', '7 ditë'],
+        'last_7_days' => ['week', 'javë', 'jave', 'javor', '7 days', '7 ditë', '7 dite', 'past few days', 'recent', 'lately', 'së fundmi', 'se fundmi', 'kohët e fundit', 'kohet e fundit'],
         'open_alerts' => ['alert', 'alarm', 'drift', 'spike', 'overload', 'kulm', 'mbingarkes', 'problem', 'offline', 'failed', 'issue', 'wrong', 'gabim', 'paralajm', 'more power', 'më shumë fuqi'],
         'open_recommendations' => ['save', 'saving', 'reduce', 'recommend', 'should', 'change', 'improve', 'opportunit', 'fix', 'stop', 'kursim', 'kursej',
             'rekomand', 'ndrysho', 'përmirëso', 'mundësi', 'what if', 'ndal', 'riparo', 'service', 'servis'],
@@ -97,19 +99,31 @@ final class Snapshot
         if (isset($context['recommendation_id'])) {
             $wanted += ['open_recommendations' => true, 'verified_savings' => true];
         }
+        // A question about this week doesn't need three months of history (it is the largest section).
+        $months = implode('|', array_map(static fn (string $m): string => preg_quote(mb_strtolower($m), '/'), [...Say::MONTHS['en'], ...Say::MONTHS['sq']]));
+        if (isset($wanted['last_7_days']) && !preg_match('/month|muaj|bill|fatur|' . $months . '/u', $q)) {
+            unset($wanted['monthly_history']);
+        }
         if ($wanted === []) {
             $wanted = ['machines_this_month' => true, 'waste_this_month' => true, 'open_recommendations' => true, 'open_alerts' => true];
         }
         return array_keys(array_intersect_key(self::SECTIONS, $wanted)); // stable order
     }
 
-    public static function build(int $companyId, array $context = [], string $question = ''): array
+    /** @param bool $companyData false for a general question: only who the company is, none of its measurements */
+    public static function build(int $companyId, array $context = [], string $question = '', bool $companyData = true): array
     {
         $now = Clock::now($companyId);
         $time = LocalTime::forCompany($companyId);
         $tariff = TariffBook::forCompany($companyId);
         $local = static fn (?string $iso): ?string => $iso === null ? null : $time->format((int) strtotime($iso), 'Y-m-d H:i');
         $company = Database::one('SELECT name, city, employees, is_demo FROM companies WHERE id = ?', [$companyId]);
+        $who = ['name' => $company['name'], 'city' => $company['city'], 'employees' => $company['employees'] === null ? null : (int) $company['employees'],
+            'demo_with_simulated_machines' => (bool) $company['is_demo']];
+        if (!$companyData) {
+            return ['company' => $who, 'now_local' => $time->format($now, 'Y-m-d H:i') . ' (' . $time->format($now, 'l') . ')',
+                'notes' => 'A general question: the company\'s measurements were not loaded. If the user wants their own figures, suggest a question about them.'];
+        }
         $overview = OverviewService::summary($companyId);
         $has = (bool) ($overview['has_data'] ?? false);
         $mtd = Period::parse('mtd', $now, $time);
@@ -126,8 +140,7 @@ final class Snapshot
         $about = static fn (?string $code): bool => $focus === [] || in_array($code, $focus, true);
 
         $facts = [
-            'company' => ['name' => $company['name'], 'city' => $company['city'], 'employees' => $company['employees'] === null ? null : (int) $company['employees'],
-                'demo_with_simulated_machines' => (bool) $company['is_demo']],
+            'company' => $who,
             'now_local' => $time->format($now, 'Y-m-d H:i') . ' (' . $time->format($now, 'l') . ')',
             'month_to_date' => $has ? self::monthToDate($companyId, $overview, $mtd, $tariff, $incomer, $answers->periodLabel($mtd), $time, $now) : null,
             'notes' => 'energy_charges are energy (kWh) charges only; a bill also has fixed and demand charges and VAT. Sections not present were not loaded for this question.'
@@ -146,6 +159,7 @@ final class Snapshot
                 ] : null,
                 'monthly_history' => self::months($companyId, $now, $time, $tariff, $incomer, (float) ($overview['emission_factor']['value'] ?? 0.0)),
                 'machines_this_month' => self::machines($companyId, $mtd, $tariff, $incomer),
+                'last_7_days' => self::week($companyId, Period::parse('7d', $now, $time), $tariff, $incomer, $time),
                 'waste_this_month' => self::waste($companyId, $mtd, 5, true),
                 'waste_last_7_days' => self::waste($companyId, Period::parse('7d', $now, $time), 3, false),
                 'open_alerts' => array_values(array_filter(self::alerts($companyId, $local), static fn (array $a): bool => $about($a['machine'] ?? null))),
@@ -169,6 +183,15 @@ final class Snapshot
                 ],
                 default => null,
             };
+        }
+        // Totals so the model doesn't add up several numbers itself.
+        if (count($facts['open_recommendations'] ?? []) >= 2) {
+            $list = $facts['open_recommendations'];
+            $facts['open_recommendations_total_per_month'] = [
+                'eur' => round(array_sum(array_column($list, 'eur_per_month')), 2), 'kwh' => round(array_sum(array_column($list, 'kwh_per_month')), 0),
+                'co2_kg' => round(array_sum(array_column($list, 'co2_kg_per_month')), 0),
+                'note' => 'sum of all listed opportunities; savings on the same machine can overlap, so this is an upper bound',
+            ];
         }
         $page = self::context($companyId, $context, $local);
         if ($page !== null) {
@@ -232,6 +255,31 @@ final class Snapshot
         }
         usort($machines, static fn (array $a, array $b): int => $b['kwh_month_to_date'] <=> $a['kwh_month_to_date']);
         return $machines;
+    }
+
+    /** The last 7 days against the 7 days before, site and per machine, largest changes first. */
+    private static function week(int $companyId, Period $week, ?TariffBook $tariff, ?int $incomer, LocalTime $time): array
+    {
+        $by = EnergyQuery::byMachine($companyId, $week->from, $week->to, null, $tariff);
+        $prev = EnergyQuery::byMachine($companyId, $week->previousFrom, $week->previousTo, null, $tariff);
+        $site = EnergyQuery::site($by, $incomer);
+        $before = EnergyQuery::site($prev, $incomer);
+        $machines = [];
+        foreach (Database::all("SELECT id, code FROM machines WHERE company_id = ? AND kind = 'machine' AND archived_at IS NULL", [$companyId]) as $m) {
+            $kwh = round($by[(int) $m['id']]['kwh'] ?? 0.0, 1);
+            $was = round($prev[(int) $m['id']]['kwh'] ?? 0.0, 1);
+            $machines[] = ['code' => $m['code'], 'kwh' => $kwh, 'previous_7_days_kwh' => $was, 'change_kwh' => round($kwh - $was, 1),
+                'change_ratio' => $was > 0 ? round($kwh / $was - 1, 3) : null];
+        }
+        usort($machines, static fn (array $a, array $b): int => abs($b['change_kwh']) <=> abs($a['change_kwh']));
+        return [
+            'period' => $time->format($week->from, 'Y-m-d H:i') . ' – ' . $time->format($week->to, 'Y-m-d H:i'),
+            'compared_with' => $time->format($week->previousFrom, 'Y-m-d H:i') . ' – ' . $time->format($week->previousTo, 'Y-m-d H:i'),
+            'kwh' => round($site['kwh'], 1), 'previous_7_days_kwh' => round($before['kwh'], 1),
+            'change_ratio' => $before['kwh'] > 0 ? round($site['kwh'] / $before['kwh'] - 1, 3) : null,
+            'energy_charges_eur_excl_vat' => round(EnergyQuery::energyCost($site, $tariff), 2),
+            'machines_by_largest_change' => array_slice($machines, 0, 6),
+        ];
     }
 
     private static function waste(int $companyId, Period $period, int $machines, bool $byType): array

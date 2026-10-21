@@ -1,12 +1,21 @@
+import { Suspense } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
-import { useAuth } from '../../providers/AuthProvider'
+import { hadSession, useAuth } from '../../providers/AuthProvider'
 import { ErrorState, FullPageSpinner } from '../ui/States'
 
-/** Only for signed-in users; remembers where they were going. */
-export function RequireAuth() {
+/**
+ * Only for signed-in users; remembers where they were going. At "/" a visitor
+ * gets `home` (the landing page) instead of the sign-in redirect — right away,
+ * without waiting for the API (a sleeping Render instance takes about a minute),
+ * unless this browser was signed in last time.
+ */
+export function RequireAuth({ home }) {
   const { status, error, retry } = useAuth()
   const location = useLocation()
 
+  if (home && location.pathname === '/' && (status === 'anonymous' || (status !== 'authenticated' && !hadSession()))) {
+    return <Suspense fallback={<FullPageSpinner />}>{home}</Suspense>
+  }
   if (status === 'loading') return <FullPageSpinner />
   if (status === 'error') {
     return (

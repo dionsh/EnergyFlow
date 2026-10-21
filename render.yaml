@@ -52,11 +52,16 @@ services:
       # Optional: fixed password for the demo owner account (owner@ylli-plast.demo).
       - key: DEMO_OWNER_PASSWORD
         sync: false
+      # Required for Ask EnergyFlow's open questions, report narratives and Scan. Without it the
+      # assistant answers data questions only. Check /api/v1/health: "ai_configured": true.
       - key: GROQ_API_KEY
         sync: false
+      # Text models, tried in order when one is rate-limited (each has its own free-tier limit).
       - key: GROQ_MODEL
         value: openai/gpt-oss-120b
       - key: GROQ_MODEL_FALLBACK
+        value: qwen/qwen3.8-27b
+      - key: GROQ_MODEL_FALLBACK_2
         value: openai/gpt-oss-20b
       - key: GROQ_VISION_MODEL
         value: qwen/qwen3.8-27b

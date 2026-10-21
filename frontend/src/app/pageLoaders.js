@@ -2,6 +2,7 @@
 // app shell load first; a page's code — and heavy libraries such as the charts —
 // only when it is opened, or earlier while the browser is idle (prefetchPages).
 export const pageLoaders = {
+  landing: () => import('../features/landing/LandingPage'),
   overview: () => import('../features/overview/OverviewPage'),
   live: () => import('../features/live/LivePage'),
   machines: () => import('../features/machines/MachinesPage'),

@@ -95,7 +95,7 @@ export function CompanySettings() {
               <p className="mt-1 text-[13px] text-ink-2">{t('settings.company.logoHint')}</p>
               {canEdit && (
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <label className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-sm border border-line-strong bg-surface px-3 text-[13px] font-medium text-ink hover:bg-surface-2">
+                  <label className="relative inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-sm border border-line-strong bg-surface px-3 text-[13px] font-medium text-ink hover:bg-surface-2">
                     <ImagePlus className="size-4" aria-hidden="true" />
                     {t(logo ? 'settings.company.changeLogo' : 'settings.company.addLogo')}
                     <input

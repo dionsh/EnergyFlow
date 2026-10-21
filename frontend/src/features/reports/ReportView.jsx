@@ -33,21 +33,24 @@ function Section({ number, title, children, className }) {
 }
 
 function Table({ head, rows, align = [] }) {
+  // On a phone a wide table scrolls sideways inside the report; printed, it is always whole.
   return (
-    <table className="w-full border-collapse text-[12.5px]">
-      <thead>
-        <tr className="border-b border-line-strong text-left text-[11.5px] text-ink-3">
-          {head.map((h, i) => <th key={h} className={cn('py-1.5 pr-3 font-medium last:pr-0', align[i] === 'right' && 'text-right')}>{h}</th>)}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((row, r) => (
-          <tr key={r} className="border-b border-line last:border-0">
-            {row.map((cell, i) => <td key={i} className={cn('py-1.5 pr-3 align-top text-ink last:pr-0', align[i] === 'right' && 'whitespace-nowrap text-right tabular')}>{cell}</td>)}
+    <div className="-mx-1 overflow-x-auto px-1 print:mx-0 print:overflow-visible print:px-0">
+      <table className="w-full min-w-[30rem] border-collapse text-[12.5px] print:min-w-0">
+        <thead>
+          <tr className="border-b border-line-strong text-left text-[11.5px] text-ink-3">
+            {head.map((h, i) => <th key={h} className={cn('py-1.5 pr-3 font-medium last:pr-0', align[i] === 'right' && 'text-right')}>{h}</th>)}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {rows.map((row, r) => (
+            <tr key={r} className="border-b border-line last:border-0">
+              {row.map((cell, i) => <td key={i} className={cn('py-1.5 pr-3 align-top text-ink last:pr-0', align[i] === 'right' && 'whitespace-nowrap text-right tabular')}>{cell}</td>)}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   )
 }
 
@@ -83,7 +86,7 @@ function ReportDocument({ report, editing, draft, setDraft }) {
       value={draft[key] ?? ''}
       onChange={(e) => setDraft((d) => ({ ...d, [key]: e.target.value }))}
       rows={5}
-      className="w-full rounded-sm border border-line-strong bg-surface px-3 py-2 text-[13px] leading-relaxed text-ink"
+      className="w-full rounded-sm border border-line-strong bg-surface px-3 py-2 text-base leading-relaxed text-ink sm:text-[13px]"
     />
   ) : <p className="text-[13px] leading-relaxed text-ink">{n[key]}</p>
 

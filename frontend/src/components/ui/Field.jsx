@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next'
 import { CircleAlert, Eye, EyeOff } from 'lucide-react'
 import { cn } from '../../lib/cn'
 
+// 16 px text on phones: iOS zooms into any smaller field on focus; a taller field is also easier to tap.
 const inputBase =
-  'h-9 w-full rounded-sm border bg-surface px-3 text-sm text-ink placeholder:text-ink-3 ' +
+  'h-10 w-full rounded-sm border bg-surface px-3 text-base text-ink placeholder:text-ink-3 sm:h-9 sm:text-sm ' +
   'transition-colors focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-0 ' +
   'disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-ink-2'
 

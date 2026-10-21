@@ -50,7 +50,7 @@ export function DeviceDetailPage() {
 
       <Card className="overflow-hidden">
         <CardHeader title={t('devicesPage.channels')} />
-        <div className="overflow-x-auto">
+        <div className="relative overflow-x-auto">
           <table className="w-full min-w-[860px] border-collapse text-[13px]">
             <thead>
               <tr className="border-b border-line text-left text-xs text-ink-3">

@@ -13,11 +13,11 @@ use EnergyFlow\Services\Scan\ScanCheck;
 use EnergyFlow\Services\Scan\ScanReader;
 use EnergyFlow\Services\Tariff\TariffBook;
 
-// Enough history that last month is fully metered.
+// Enough history that last month is fully metered on any day of this month (31 + up to 31 days + a margin).
 Clock::freeze(time());
 $scanAnchor = DemoClock::sceneAnchor('weekday_evening');
 Clock::freeze($scanAnchor);
-$scanDemo = DemoSeeder::reset($scanAnchor, 45)['company_id'];
+$scanDemo = DemoSeeder::reset($scanAnchor, 64)['company_id'];
 $scanOwner = new Client('10.9.5.1');
 assertSame(200, $scanOwner->post('/auth/login', ['email' => DemoSeeder::OWNER_EMAIL, 'password' => 'test-owner-password'])['status']);
 $scanGuest = new Client('10.9.5.2');

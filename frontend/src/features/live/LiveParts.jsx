@@ -111,56 +111,98 @@ export function PowerFlow({ live }) {
 export function MachineTable({ machines }) {
   const { t } = useTranslation()
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[860px] border-collapse text-[13px]">
-        <thead>
-          <tr className="border-b border-line text-left text-xs font-medium text-ink-3">
-            <th className="px-4 py-2.5 font-medium">{t('live.table.machine')}</th>
-            <th className="px-3 py-2.5 font-medium">{t('live.table.state')}</th>
-            <th className="px-3 py-2.5 text-right font-medium">{t('live.table.power')} (kW)</th>
-            <th className="px-3 py-2.5 text-right font-medium">{t('live.table.pf')}</th>
-            <th className="px-3 py-2.5 text-right font-medium">{t('live.table.temp')} (°C)</th>
-            <th className="px-3 py-2.5 text-right font-medium">{t('live.table.today')} (kWh)</th>
-            <th className="px-3 py-2.5 font-medium">{t('live.table.schedule')}</th>
-            <th className="px-3 py-2.5 font-medium">{t('live.table.afterHours')}</th>
-            <th className="px-4 py-2.5 text-right font-medium"><span className="sr-only">{t('control.turnOff')}</span></th>
-          </tr>
-        </thead>
-        <tbody>
-          {machines.map((m) => {
-            return (
-              <tr key={m.id} className="border-b border-line last:border-0 hover:bg-surface-2">
-                <td className="px-4 py-2.5">
-                  <Link to={`/machines/${m.id}`} className="flex items-center gap-2.5">
-                    <MachineIcon type={m.type} className="size-4 shrink-0 text-ink-3" />
-                    <span className="min-w-0">
-                      <span className="block truncate font-medium text-ink">{m.name}</span>
-                      <span className="block font-mono text-[11px] text-ink-3">{m.code}</span>
-                    </span>
-                  </Link>
-                </td>
-                <td className="px-3 py-2.5"><StateBadge state={m.state} /></td>
-                <td className="px-3 py-2.5 text-right tabular text-ink">{m.power_kw === null ? '—' : formatNumber(m.power_kw, 2)}</td>
-                <td className="px-3 py-2.5 text-right tabular text-ink-2">{m.power_factor === null ? '—' : formatNumber(m.power_factor, 2)}</td>
-                <td className="px-3 py-2.5 text-right tabular text-ink-2">{m.temperature_c === null ? '—' : formatNumber(m.temperature_c, 1)}</td>
-                <td className="px-3 py-2.5 text-right tabular text-ink">{formatNumber(m.today_kwh, 1)}</td>
-                <td className="px-3 py-2.5 text-ink-2">{m.scheduled_now ? t('live.scheduled') : t('live.offSchedule')}</td>
-                <td className="px-3 py-2.5">
-                  {m.after_hours ? (
-                    <span className="inline-flex items-center gap-1.5 text-warning-text">
-                      <TriangleAlert className="size-3.5" aria-hidden="true" />
-                      {formatDuration(m.after_hours.duration_s)} · {formatEur(m.after_hours.eur)}
-                    </span>
-                  ) : (
-                    <span className="text-ink-3">—</span>
-                  )}
-                </td>
-                <td className="px-4 py-2 text-right"><TurnOffButton machine={m} variant="compact" /></td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
-    </div>
+    <>
+      {/* Phones and tablets: one card per machine, Turn Off within reach; the 860 px table only where it fits. */}
+      <ul className="divide-y divide-line xl:hidden">
+        {machines.map((m) => (
+          <li key={m.id} className="flex flex-col gap-2.5 px-4 py-3.5">
+            <div className="flex items-start gap-2.5">
+              <Link to={`/machines/${m.id}`} className="flex min-w-0 flex-1 items-start gap-2.5">
+                <MachineIcon type={m.type} className="mt-0.5 size-4 shrink-0 text-ink-3" />
+                <span className="min-w-0">
+                  <span className="block font-medium text-ink">{m.name}</span>
+                  <span className="block font-mono text-[11px] text-ink-3">{m.code}</span>
+                </span>
+              </Link>
+              <span className="flex shrink-0 items-center gap-2">
+                <StateBadge state={m.state} />
+                <TurnOffButton machine={m} variant="compact" />
+              </span>
+            </div>
+            <dl className="grid grid-cols-3 gap-2 text-[12.5px]">
+              <div className="min-w-0">
+                <dt className="truncate text-ink-3">{t('live.table.power')}</dt>
+                <dd className="tabular text-ink">{m.power_kw === null ? '—' : formatKw(m.power_kw)}</dd>
+              </div>
+              <div className="min-w-0">
+                <dt className="truncate text-ink-3">{t('live.table.today')}</dt>
+                <dd className="tabular text-ink">{formatKwh(m.today_kwh)}</dd>
+              </div>
+              <div className="min-w-0">
+                <dt className="truncate text-ink-3">{t('live.table.schedule')}</dt>
+                <dd className="text-ink-2">{m.scheduled_now ? t('live.scheduled') : t('live.offSchedule')}</dd>
+              </div>
+            </dl>
+            {m.after_hours && (
+              <p className="flex items-center gap-1.5 text-[12.5px] text-warning-text">
+                <TriangleAlert className="size-3.5 shrink-0" aria-hidden="true" />
+                {t('live.table.afterHours')}: {formatDuration(m.after_hours.duration_s)} · {formatEur(m.after_hours.eur)}
+              </p>
+            )}
+          </li>
+        ))}
+      </ul>
+      <div className="relative hidden overflow-x-auto xl:block">
+        <table className="w-full min-w-[860px] border-collapse text-[13px]">
+          <thead>
+            <tr className="border-b border-line text-left text-xs font-medium text-ink-3">
+              <th className="px-4 py-2.5 font-medium">{t('live.table.machine')}</th>
+              <th className="px-3 py-2.5 font-medium">{t('live.table.state')}</th>
+              <th className="px-3 py-2.5 text-right font-medium">{t('live.table.power')} (kW)</th>
+              <th className="px-3 py-2.5 text-right font-medium">{t('live.table.pf')}</th>
+              <th className="px-3 py-2.5 text-right font-medium">{t('live.table.temp')} (°C)</th>
+              <th className="px-3 py-2.5 text-right font-medium">{t('live.table.today')} (kWh)</th>
+              <th className="px-3 py-2.5 font-medium">{t('live.table.schedule')}</th>
+              <th className="px-3 py-2.5 font-medium">{t('live.table.afterHours')}</th>
+              <th className="px-4 py-2.5 text-right font-medium"><span className="sr-only">{t('control.turnOff')}</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            {machines.map((m) => {
+              return (
+                <tr key={m.id} className="border-b border-line last:border-0 hover:bg-surface-2">
+                  <td className="px-4 py-2.5">
+                    <Link to={`/machines/${m.id}`} className="flex items-center gap-2.5">
+                      <MachineIcon type={m.type} className="size-4 shrink-0 text-ink-3" />
+                      <span className="min-w-0">
+                        <span className="block truncate font-medium text-ink">{m.name}</span>
+                        <span className="block font-mono text-[11px] text-ink-3">{m.code}</span>
+                      </span>
+                    </Link>
+                  </td>
+                  <td className="px-3 py-2.5"><StateBadge state={m.state} /></td>
+                  <td className="px-3 py-2.5 text-right tabular text-ink">{m.power_kw === null ? '—' : formatNumber(m.power_kw, 2)}</td>
+                  <td className="px-3 py-2.5 text-right tabular text-ink-2">{m.power_factor === null ? '—' : formatNumber(m.power_factor, 2)}</td>
+                  <td className="px-3 py-2.5 text-right tabular text-ink-2">{m.temperature_c === null ? '—' : formatNumber(m.temperature_c, 1)}</td>
+                  <td className="px-3 py-2.5 text-right tabular text-ink">{formatNumber(m.today_kwh, 1)}</td>
+                  <td className="px-3 py-2.5 text-ink-2">{m.scheduled_now ? t('live.scheduled') : t('live.offSchedule')}</td>
+                  <td className="px-3 py-2.5">
+                    {m.after_hours ? (
+                      <span className="inline-flex items-center gap-1.5 text-warning-text">
+                        <TriangleAlert className="size-3.5" aria-hidden="true" />
+                        {formatDuration(m.after_hours.duration_s)} · {formatEur(m.after_hours.eur)}
+                      </span>
+                    ) : (
+                      <span className="text-ink-3">—</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-2 text-right"><TurnOffButton machine={m} variant="compact" /></td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+    </>
   )
 }

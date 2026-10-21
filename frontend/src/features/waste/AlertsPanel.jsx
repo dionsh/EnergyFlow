@@ -41,7 +41,7 @@ export function AlertsPanel({ onOpenEvent, onOpenAlert }) {
       ) : alerts.data.data.length === 0 ? (
         <EmptyState icon={BellRing} title={t('alertsTab.emptyTitle')} body={t('alertsTab.emptyBody')} />
       ) : (
-        <div className="overflow-x-auto">
+        <div className="relative overflow-x-auto">
           <table className="w-full min-w-[760px] border-collapse text-[13px]">
             <thead>
               <tr className="border-b border-line text-left text-xs text-ink-3">

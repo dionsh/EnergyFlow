@@ -148,7 +148,31 @@ export function ReportsPage() {
   } else {
     body = (
       <Card className="overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Phones: one card per report instead of a 720 px table. */}
+        <ul className="divide-y divide-line md:hidden">
+          {reports.data.data.map((r) => (
+            <li key={r.id}>
+              <Link to={`/reports/${r.id}`} className="flex flex-col gap-1.5 px-4 py-3.5 hover:bg-surface-2">
+                <span className="flex items-start gap-2.5">
+                  <FileText className="mt-0.5 size-4 shrink-0 text-ink-3" aria-hidden="true" />
+                  <span className="min-w-0 flex-1 font-medium text-ink">
+                    {formatDate(`${r.period_start}T12:00:00Z`)} – {formatDate(`${r.period_end}T12:00:00Z`)}
+                  </span>
+                  <Badge tone={r.status === 'final' ? 'good' : 'neutral'}>{t(`reportsPage.status.${r.status}`)}</Badge>
+                </span>
+                <span className="flex flex-wrap gap-x-3 gap-y-0.5 pl-6 text-[12.5px] tabular text-ink-2">
+                  <span>{formatKwh(r.headline.kwh)} · {formatEur(r.headline.eur)}</span>
+                  <span>{formatCo2(r.headline.co2_kg)}</span>
+                  <span className="uppercase">{r.language}</span>
+                </span>
+                <span className="pl-6 text-xs text-ink-3">
+                  {formatDate(r.created_at, 'dateTime')}{r.created_by && ` · ${r.created_by}`}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <div className="relative hidden overflow-x-auto md:block">
           <table className="w-full min-w-[720px] border-collapse text-[13px]">
             <thead>
               <tr className="border-b border-line text-left text-xs text-ink-3">

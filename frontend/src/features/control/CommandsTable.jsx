@@ -33,7 +33,7 @@ export function CommandStatus({ command }) {
 export function CommandsTable({ commands, showMachine = true }) {
   const { t } = useTranslation()
   return (
-    <div className="overflow-x-auto">
+    <div className="relative overflow-x-auto">
       <table className="w-full min-w-[720px] border-collapse text-[13px]">
         <thead>
           <tr className="border-b border-line text-left text-xs text-ink-3">

@@ -14,6 +14,7 @@ import { pageLoaders } from './app/pageLoaders'
 const page = (load, name) => lazy(() => load().then((module) => ({ default: module[name] })))
 
 // Pages load on demand (the shell shows a skeleton meanwhile, see AppShell).
+const LandingPage = page(pageLoaders.landing, 'LandingPage')
 const OverviewPage = page(pageLoaders.overview, 'OverviewPage')
 const LivePage = page(pageLoaders.live, 'LivePage')
 const MachinesPage = page(pageLoaders.machines, 'MachinesPage')
@@ -59,7 +60,8 @@ export default function App() {
                 </Route>
                 {/* Open while signed in too: a reset link works in any browser, and signs every session out. */}
                 <Route path="/reset-password" element={<ForgotPasswordPage />} />
-                <Route element={<RequireAuth />}>
+                {/* "/" is the public landing page for visitors and the dashboard once signed in. */}
+                <Route element={<RequireAuth home={<LandingPage />} />}>
                   <Route element={<AppShell />}>
                     <Route index element={<OverviewPage />} />
                     <Route path="live" element={<LivePage />} />

@@ -6,6 +6,16 @@ import { isSupported } from '../i18n/languages'
 
 const AuthContext = createContext(null)
 const ME = ['auth', 'me']
+const SESSION_HINT = 'ef.signedIn'
+
+/** Whether this browser was signed in when last seen: decides what "/" shows before /auth/me answers. Not a credential. */
+export function hadSession() {
+  try {
+    return localStorage.getItem(SESSION_HINT) === '1'
+  } catch {
+    return false
+  }
+}
 
 async function fetchMe() {
   try {
@@ -27,6 +37,18 @@ export function AuthProvider({ children }) {
       i18n.changeLanguage(userLocale)
     }
   }, [userLocale])
+
+  // Remember signed in / out for the next visit (see hadSession); unknown while loading or on error.
+  const signedIn = me.data === undefined ? null : Boolean(me.data)
+  useEffect(() => {
+    if (signedIn === null) return
+    try {
+      if (signedIn) localStorage.setItem(SESSION_HINT, '1')
+      else localStorage.removeItem(SESSION_HINT)
+    } catch {
+      // Storage unavailable (private mode): "/" then waits for the API, as before.
+    }
+  }, [signedIn])
 
   const setSession = useCallback((data) => queryClient.setQueryData(ME, data), [queryClient])
 

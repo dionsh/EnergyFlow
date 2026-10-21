@@ -1455,7 +1455,7 @@
   },
   "assistant": {
     "title": "Ask EnergyFlow",
-    "subtitle": "Answers from your meters",
+    "subtitle": "Your data and general energy expertise",
     "button": "Ask EnergyFlow",
     "shortcut": "Ctrl K",
     "placeholder": "Ask about energy, costs, waste or CO₂…",
@@ -1465,13 +1465,14 @@
     "noHistory": "No conversations yet.",
     "deleteChat": "Delete conversation",
     "backToChat": "Back to the conversation",
-    "thinking": "Checking your data…",
+    "thinking": "Thinking…",
     "welcomeTitle": "What would you like to know?",
-    "welcomeBody": "I answer from your company's meters: consumption, costs, waste, carbon and savings. I can also open pages and, after you confirm, switch a machine off.",
-    "scope": "Only your energy, costs, carbon and EnergyFlow. Numbers come from your data and are never estimated.",
+    "welcomeBody": "Ask about your consumption, costs, waste, carbon and savings, answered from your meters, or about energy efficiency, carbon accounting and ESG in general. I can also open pages and, after you confirm, switch a machine off.",
+    "scope": "Energy, sustainability and EnergyFlow only. Figures about your company come from your data and are never estimated; general answers are labelled as such.",
     "source": {
       "data": "From your data",
       "ai": "AI · checked against your data",
+      "aiGeneral": "AI · general knowledge",
       "aiUnverified": "AI · not fully verified",
       "refusal": "Out of scope",
       "fallback": "Limited answer"
@@ -1479,6 +1480,7 @@
     "sourceHint": {
       "data": "Answered directly from your measurements, without a language model.",
       "ai": "Written by a language model (Groq) from your data; every number was checked against it.",
+      "aiGeneral": "General guidance from a language model (Groq), not from your measurements. Typical figures are indicative: check them before acting.",
       "aiUnverified": "Some numbers in this answer could not be matched to your data. Check them on the linked pages before acting.",
       "refusal": "The assistant only covers your energy, costs, carbon and EnergyFlow.",
       "fallback": "The language model was unavailable, so only data questions can be answered right now."
@@ -1493,7 +1495,7 @@
       "sent": "Command sent to {{code}}",
       "reason": "Requested via Ask EnergyFlow"
     },
-    "error": "The assistant couldn't answer. Try again.",
+    "error": "The assistant couldn't answer.",
     "retry": "Retry",
     "chars": "{{count}} / 1000",
     "askAbout": "Ask EnergyFlow",
@@ -1502,7 +1504,7 @@
       "machine": "Explain the consumption of {{code}} this month",
       "opportunity": "Explain this opportunity and how its saving was calculated"
     },
-    "footer": "AI answers are checked against your data. Machines are only switched off after you confirm."
+    "footer": "Answers about your company are checked against your data. Machines are only switched off after you confirm."
   },
   "scan": {
     "subtitle": "Use your camera to check an electricity bill, read a meter or a nameplate, and capture fuel receipts.",
@@ -1932,6 +1934,196 @@
       "rule": "The utility's maximeter averages power over 15 minutes and keeps the month's highest value; engaged power is billed on it. EnergyFlow finds that quarter-hour, and the highest one the plant would have had without the machines marked as flexible loads. The difference counts from {{min}}.",
       "p95": "For comparison, 95 % of this month's quarter-hours stayed below {{kw}}.",
       "source": "Sources: ERO Decision V_2703_2025 (engaged power per kW, 3.87 € a month for 0.4 kV Category I); ERO tariff schedule, footnote 5 (the maximeter measures 15 minutes and keeps the month's highest value); KEDS Metering Code 2020 (maximum demand per 15-minute period)."
+    }
+  },
+  "landing": {
+    "nav": {
+      "home": "Home",
+      "about": "About",
+      "features": "Features",
+      "how": "How it works",
+      "contact": "Contact",
+      "login": "Log in",
+      "signup": "Sign up",
+      "menu": "Open menu",
+      "closeMenu": "Close menu",
+      "label": "Main"
+    },
+    "hero": {
+      "title": "Know what every machine costs. Stop paying for what it wastes.",
+      "body": "EnergyFlow measures electricity machine by machine, finds waste in kWh, € and CO₂e, recommends fixes quantified from your own data, switches idle machines off only after you confirm, and turns the same measurements into carbon and ESG reports.",
+      "primary": "Get started",
+      "secondary": "Explore features",
+      "demoHint": "No account needed: a read-only tour of a fictional plastics manufacturer with simulated machines."
+    },
+    "flow": {
+      "grid": "Grid",
+      "meter": "Main meter",
+      "compressor": "Compressor",
+      "moulder": "Moulder",
+      "chiller": "Chiller",
+      "lighting": "Lighting",
+      "detected": "After-hours running detected",
+      "verified": "Turned off · verified by the meter",
+      "steps": {
+        "measure": "Measure",
+        "detect": "Detect",
+        "act": "Act",
+        "prove": "Prove"
+      },
+      "legendEnergy": "Energy",
+      "legendWaste": "Waste",
+      "legendVerified": "Verified action",
+      "caption": "Illustration of the product loop. The demo company's machines are simulated.",
+      "aria": "Diagram: electricity flows from the grid through the main meter to four machines. EnergyFlow detects the compressor running after hours; it is switched off and the meter confirms it."
+    },
+    "facts": {
+      "label": "Why a kilowatt-hour matters more in Kosovo",
+      "items": [
+        {
+          "value": "0.901 kg CO₂e",
+          "label": "per kWh from Kosovo's grid in 2025, mostly lignite"
+        },
+        {
+          "value": "≈ 4.3×",
+          "label": "the CO₂ of an average EU kWh (209.9 g in 2025)"
+        },
+        {
+          "value": "cos φ 0.95",
+          "label": "below it, reactive energy is billed on top of kWh"
+        }
+      ],
+      "sources": "Sources: Ember Yearly Electricity Data via Our World in Data (emission factors); Kosovo draft NECP 2025–2030 (lignite); ERO Decision V_2703_2025, 0.4 kV Category I (reactive energy)."
+    },
+    "about": {
+      "eyebrow": "Why it matters",
+      "title": "For a small manufacturer, energy is a cost line nobody can see into.",
+      "body": "A typical SME gets one electricity bill a month: how much, never which machine, when or why. In Kosovo every wasted kilowatt-hour also carries several times the CO₂ of one in the EU, and customers, banks and EU buyers increasingly ask for those numbers.",
+      "challengesTitle": "What makes it hard",
+      "challenges": [
+        {
+          "title": "One meter, one bill",
+          "body": "The bill shows a monthly total, not which machine used the energy or at what time."
+        },
+        {
+          "title": "Waste hides after hours",
+          "body": "Compressors, chillers and lights keep running when nobody is producing."
+        },
+        {
+          "title": "Charges on top of kWh",
+          "body": "Reactive energy and engaged power are billed separately and easy to miss."
+        },
+        {
+          "title": "Requests for data",
+          "body": "EU buyers (CBAM) and lenders ask for energy and CO₂ figures; the VSME standard sets out what an SME can report."
+        }
+      ],
+      "helpsTitle": "How EnergyFlow helps",
+      "helps": "Measure each machine, find the waste with its evidence, act on it safely, prove the saving and report the result, all from the same measurements.",
+      "audienceTitle": "Who it is for",
+      "audience": [
+        "Owners and managers of SMEs with machinery: compressors, moulders, chillers, pumps.",
+        "Production and maintenance managers who need to know what is running, and why.",
+        "Energy and sustainability consultants who look after several SMEs."
+      ]
+    },
+    "features": {
+      "eyebrow": "Features",
+      "title": "From measurement to proof",
+      "body": "Each capability below is built and can be tried in the demo company. Labels mark what is still a prototype or planned.",
+      "status": {
+        "available": "Available",
+        "prototype": "Prototype",
+        "planned": "Planned"
+      },
+      "items": {
+        "live": {
+          "title": "Live monitoring per machine",
+          "body": "The power of every machine every few seconds, with consumption, cost and CO₂e per machine and the health of each device. Data comes from EnergyFlow meters or supported Shelly Gen2 smart relays."
+        },
+        "waste": {
+          "title": "Energy waste detection",
+          "body": "After-hours and idle running, compressed-air leak signatures, efficiency drift, power spikes and motor overloads, low power factor and peak coincidence, each quantified in kWh, € and CO₂e with the evidence behind it."
+        },
+        "opportunities": {
+          "title": "Recommendations and What-if",
+          "body": "Ranked opportunities, each quantified by replaying the machine's own data, and a What-if simulator to try a change before making it."
+        },
+        "control": {
+          "title": "Turn Off and automations",
+          "body": "Switch an idle machine off, or set a policy such as \"off 15 minutes after the shift\". Every command is verified by the meter. EnergyFlow never switches a machine on, and never a critical one."
+        },
+        "impact": {
+          "title": "Verified savings",
+          "body": "Before/after proof for every action: an adjusted baseline with a 90 % confidence interval, inspired by IPMVP (not a certified M&V)."
+        },
+        "carbon": {
+          "title": "Carbon tracking and ESG",
+          "body": "Scope 2 from metered electricity, Scope 1 from scanned fuel receipts, VSME B3 datapoints, a readiness checklist and the methodology behind every figure."
+        },
+        "reports": {
+          "title": "Reports",
+          "body": "Daily, weekly and monthly energy and sustainability reports with frozen figures, ready to download as PDF."
+        },
+        "insights": {
+          "title": "Business insights",
+          "body": "The EnergyFlow Score with what to fix next, a month-end forecast with its likely range, and a diagram of where the energy went."
+        },
+        "assistant": {
+          "title": "Ask EnergyFlow",
+          "body": "An AI assistant (a Groq language model) that answers questions about your own data and explains energy efficiency, carbon and ESG in general. Figures about your company are checked against your data."
+        },
+        "scan": {
+          "title": "Scan bills and receipts",
+          "body": "Photograph an electricity bill to check it against the tariff and your meters, or a fuel receipt to add Scope 1. You confirm every value; photos are not stored."
+        },
+        "node": {
+          "title": "EF-N3 metering node",
+          "body": "EnergyFlow's own clamp-on, three-phase node with a safe remote stop. A prototype design, not yet a certified product."
+        }
+      },
+      "plannedTitle": "Planned",
+      "planned": [
+        "German and French interface",
+        "Equipment-upgrade recommendations, such as variable-speed drives and LED lighting",
+        "Market-based Scope 2, once a residual-mix factor is published for Kosovo"
+      ]
+    },
+    "how": {
+      "eyebrow": "How it works",
+      "title": "Four steps, one set of measurements",
+      "steps": [
+        {
+          "title": "Connect",
+          "body": "Clip a meter onto each machine's supply or connect a supported smart relay, then set your working schedules and tariff. To look around first, open the demo company."
+        },
+        {
+          "title": "Monitor",
+          "body": "Follow live power and cost per machine. EnergyFlow flags waste and unusual patterns automatically, with the evidence."
+        },
+        {
+          "title": "Act",
+          "body": "Work through the ranked opportunities, try them in the What-if simulator and switch idle machines off: always after you confirm, always verified by the meter."
+        },
+        {
+          "title": "Prove and report",
+          "body": "Track verified savings and CO₂e, and download energy, carbon and ESG reports built from the same data."
+        }
+      ]
+    },
+    "contact": {
+      "eyebrow": "Contact",
+      "title": "Interested in a pilot?",
+      "body": "EnergyFlow is built with and for small and medium manufacturers in Kosovo. Create an account to try it with your own data, or explore the demo company first.",
+      "email": "Email us",
+      "signup": "Create an account"
+    },
+    "footer": {
+      "description": "Energy monitoring, waste detection and carbon reporting for Kosovo SMEs.",
+      "built": "Built for the GPEK Digital Green Innovation Competition 2026.",
+      "product": "Product",
+      "account": "Account",
+      "rights": "© {{year}} EnergyFlow"
     }
   }
 }

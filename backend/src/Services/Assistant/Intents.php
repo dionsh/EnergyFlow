@@ -46,6 +46,57 @@ final class Intents
         'emission', 'emetim', 'bill', 'fatur', 'tariff', 'tarif', 'waste', 'humb', 'cost', 'kosto', 'saving', 'kursim', 'compressor',
         'kompresor', 'esg', 'vsme', 'consum', 'konsum', 'efficien', 'efikas'];
 
+    /** Sustainability topics: in scope for the model even when no energy word appears. */
+    private const SUSTAINABILITY = ['sustainab', 'environment', 'climate', 'renewable', 'solar', 'footprint', 'greenhouse', 'ghg', 'scope 1', 'scope 2', 'scope 3',
+        'net zero', 'net-zero', 'decarbon', 'csrd', 'cbam', 'iso 50001', 'iso 14001', 'complian', 'heating', 'cooling', 'insulation', 'lighting', 'led ',
+        'qëndrueshm', 'qendrueshm', 'mjedis', 'klim', 'diell', 'ripërtërit', 'riperterit', 'gjurm', 'ngroh', 'ftoh', 'izolim', 'ndriçim', 'ndricim'];
+
+    /**
+     * Advice, strategy and "based on our data" questions: the deterministic answer
+     * would only list numbers, so the model answers them (with the data) when it
+     * is available, and the data answer is the fallback.
+     */
+    private const ADVISORY = ['how can', 'how could', 'how should', 'how to ', 'how do i', 'what can we do', 'what could', 'what changes', 'which changes',
+        'ways to', 'tips', 'advice', 'advise', 'suggest', 'strateg', 'improve', 'reduce', 'lower our', 'lower the', 'cut our', 'cut the', 'based on', 'plan to',
+        'si mund', 'si të', 'si te ', 'çfarë mund', 'cfare mund', 'çka mund', 'cka mund', 'këshill', 'keshill', 'sugjer', 'strategji', 'përmirës', 'permires',
+        ' ul ', ' ulim', 'zvogël', 'zvogel', 'reduktoj', 'bazuar në', 'bazuar ne', 'në bazë', 'ne baze'];
+
+    /** Phrasing of a general question ("How much energy does a compressor use?"), not one about this company. */
+    private const GENERAL = [' does a ', ' does an ', ' do a ', 'typical', 'average ', 'on average', 'in general', 'generally', 'usually', 'normally', 'most businesses',
+        'a small business', 'a business', 'companies', 'businesses', 'zakonisht', 'në përgjithësi', 'ne pergjithesi', 'mesatarisht', 'tipik', 'një biznes', 'nje biznes', 'bizneset', 'kompanitë', 'kompanite'];
+
+    /** About this company: pronouns and periods ("our", "we", "this month"), matched as whole words. */
+    private const OURS = [' our ', ' ours ', ' we ', ' us ', ' my ', ' mine ', ' i ', 'this month', 'this week', 'today', 'yesterday', ' tonë', ' tone ', ' jonë', ' jone ',
+        ' tanë', ' tane ', ' tona', ' ne ', ' na ', ' sot', ' dje', 'këtë muaj', 'kete muaj', 'këtë javë', 'kete jave'];
+
+    /** Energy or sustainability words: a question with these is never off-topic. */
+    public static function inScope(string $text): bool
+    {
+        $m = ' ' . mb_strtolower($text) . ' ';
+        return self::contains($m, self::ENERGY) || self::contains($m, self::SUSTAINABILITY);
+    }
+
+    /**
+     * A general question ("What is Scope 2?", "How much energy does a compressor
+     * typically use?"): answered from expertise, without loading the company's data.
+     * Never when it says "our", "we", "this month"…
+     */
+    public static function general(string $text): bool
+    {
+        $m = ' ' . mb_strtolower(trim(preg_replace('/\s+/u', ' ', $text) ?? $text)) . ' ';
+        if (self::ours($m)) {
+            return false;
+        }
+        return self::contains($m, self::GENERAL)
+            || (bool) preg_match('/^ (what is|what\'s|what are|what does|define|explain what|how does|how do(?! we | i )|çfarë është|cfare eshte|çka është|cka eshte|çfarë janë|cfare jane|çfarë do të thotë|cfare do te thote|si funksionon) /u', $m);
+    }
+
+    /** A request for advice or a plan rather than a figure. */
+    public static function advisory(string $text): bool
+    {
+        return self::contains(' ' . mb_strtolower(preg_replace('/\s+/u', ' ', $text) ?? $text) . ' ', self::ADVISORY);
+    }
+
     /**
      * @return array{name: string, period: ?string, type?: ?string}|null
      */
@@ -56,7 +107,8 @@ final class Intents
         $period = self::period($m, $now, $time);
         $intent = static fn (string $name, ?string $default = null): array => ['name' => $name, 'period' => $period ?? $default];
 
-        if ($has(self::OFF_TOPIC) && !$has(self::ENERGY)) {
+        // Off-topic words count only at the start of a word: "actor" is not in "factory".
+        if (self::startsWord($m, self::OFF_TOPIC) && !self::inScope($m)) {
             return $intent('off_topic');
         }
         $words = count(preg_split('/\s+/u', trim($m)) ?: []);
@@ -97,6 +149,10 @@ final class Intents
         }
         if (preg_match('/^ (what is|what\'s|what are|çfarë është|cfare eshte|çka është|cka eshte|çfarë janë|cfare jane) /u', $m)
             && !$has([' our ', ' we ', ' us ', ' my ', 'this ', 'today', 'month', 'week', 'year', ' now', 'forecast', 'bill', 'total', 'tonë', 'jonë', 'tanë', 'sot', 'muaj', 'javë', 'tani', 'fatur'])) {
+            return null;
+        }
+        // General questions ("How much energy does a compressor use?") are the model's, not a lookup of our numbers.
+        if ($has(self::GENERAL) && !self::ours($m)) {
             return null;
         }
 
@@ -176,6 +232,24 @@ final class Intents
             return 'mtd';
         }
         return null;
+    }
+
+    /** Whether the question is about this company ("how is ours calculated?"), punctuation aside. */
+    private static function ours(string $m): bool
+    {
+        return self::contains(' ' . (preg_replace('/[^\p{L}\p{N}]+/u', ' ', $m) ?? $m) . ' ', self::OURS);
+    }
+
+    /** Like contains(), but each needle must begin a word ("politic" matches "political", "actor" not "factory"). */
+    private static function startsWord(string $haystack, array $needles): bool
+    {
+        foreach ($needles as $needle) {
+            $needle = ltrim($needle);
+            if (preg_match('/(?<![\p{L}\p{N}])' . preg_quote($needle, '/') . '/u', $haystack)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static function contains(string $haystack, array $needles): bool

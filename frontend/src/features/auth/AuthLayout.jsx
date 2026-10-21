@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import { Check } from 'lucide-react'
 import { Logo } from '../../components/ui/Logo'
 import { LanguageSwitch, ThemeMenu } from '../../components/layout/TopBarControls'
@@ -10,7 +11,9 @@ export function AuthLayout({ title, subtitle, children, footer }) {
   return (
     <div className="grid min-h-svh bg-bg lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
       <aside className="hidden flex-col justify-between border-r border-line bg-surface p-10 lg:flex">
-        <Logo />
+        <Link to="/" className="self-start rounded-sm" aria-label={t('landing.nav.home')}>
+          <Logo />
+        </Link>
         <div className="max-w-md">
           <h2 className="text-[28px] font-semibold leading-tight tracking-[-0.015em] text-ink">{t('auth.brand.headline')}</h2>
           <ul className="mt-8 flex flex-col gap-4">
@@ -29,16 +32,16 @@ export function AuthLayout({ title, subtitle, children, footer }) {
       </aside>
 
       <main className="flex flex-col">
-        <div className="flex h-14 items-center justify-between px-6">
-          <span className="lg:hidden">
+        <div className="flex h-14 items-center justify-between gap-3 px-4 sm:px-6">
+          <Link to="/" className="rounded-sm lg:hidden" aria-label={t('landing.nav.home')}>
             <Logo />
-          </span>
+          </Link>
           <div className="ml-auto flex items-center gap-2">
             <LanguageSwitch />
             <ThemeMenu />
           </div>
         </div>
-        <div className="flex flex-1 items-center justify-center px-6 pb-16 pt-6">
+        <div className="flex flex-1 items-center justify-center px-4 pb-16 pt-6 sm:px-6">
           <div className="w-full max-w-sm">
             <h1 className="text-xl font-semibold tracking-[-0.01em] text-ink">{title}</h1>
             {subtitle && <p className="mt-1 text-sm text-ink-2">{subtitle}</p>}
