@@ -39,15 +39,14 @@ test('register creates company + owner, keeps UTF-8, assigns the Kosovo grid fac
     assertTrue(str_ends_with((string) $me['body']['data']['user']['created_at'], 'Z'), 'timestamps are ISO UTC');
 });
 
-test('the same e-mail cannot register twice (case-insensitive)', function (): void {
+test('existing accounts cannot create a duplicate company request', function (): void {
     registeredOwner('dupe@example.com');
-    $admin = registeredOwner('signup-admin@example.com');
-    Database::run('UPDATE users SET is_platform_admin = 1 WHERE email = ?', ['signup-admin@example.com']);
-    $result = $admin->post('/admin/companies', [
+    $result = (new Client())->post('/auth/register', [
         'full_name' => 'Someone', 'email' => 'DUPE@example.com', 'password' => 'another-long-password', 'company_name' => 'Other',
     ]);
-    assertSame(422, $result['status']);
-    assertSame('email_taken', $result['body']['error']['fields']['email']);
+    assertSame(201, $result['status']);
+    assertSame(true, $result['body']['data']['pending_approval']);
+    assertSame(0, (int) Database::value('SELECT COUNT(*) FROM company_requests WHERE email = ?', ['dupe@example.com']));
 });
 
 test('the database stores only a hash of the session token', function (): void {

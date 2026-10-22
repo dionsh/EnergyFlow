@@ -9,7 +9,7 @@ import { useAuth } from '../../providers/AuthProvider'
 
 export function WorkerSettings() {
   const { user } = useAuth()
-  if (user?.role !== 'owner') return null
+  if (user?.role !== 'owner' || user?.is_platform_admin) return null
   return <WorkerForm />
 }
 

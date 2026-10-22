@@ -36,24 +36,6 @@ final class AdminController
         return Response::ok(\EnergyFlow\Models\User::find($owner));
     }
 
-    public function createCompany(Request $request, array $params): Response
-    {
-        $input = Validator::validate($request->json(), [
-            'company_name' => ['required', 'string', 'min:2', 'max:160'],
-            'full_name' => ['required', 'string', 'min:2', 'max:120'],
-            'email' => ['required', 'email', 'max:190'],
-            'password' => ['required', 'string', 'min:12', 'max:200'],
-        ]);
-        if (\EnergyFlow\Models\User::emailExists($input['email'])) {
-            throw \EnergyFlow\Core\HttpException::validation(['email' => 'email_taken']);
-        }
-        $owner = \EnergyFlow\Core\Database::transaction(static function () use ($input): int {
-            $company = \EnergyFlow\Models\Company::create($input['company_name'], null, Locales::DEFAULT);
-            return \EnergyFlow\Models\User::create($company, $input['email'], \EnergyFlow\Services\Auth\AuthService::hash($input['password']), $input['full_name'], 'owner', Locales::DEFAULT);
-        });
-        return Response::ok(\EnergyFlow\Models\User::find($owner));
-    }
-
     public function overview(Request $request, array $params): Response
     {
         return Response::ok(PlatformOverview::build());

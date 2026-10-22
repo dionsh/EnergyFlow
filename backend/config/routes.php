@@ -147,7 +147,6 @@ $router->group('/api/v1', [], static function (Router $r): void {
                 $r->delete('/users/{id}', [AdminController::class, 'deleteUser']);
                 $r->post('/users/{id}/password-reset', [AdminController::class, 'sendPasswordReset']);
                 $r->get('/companies', [AdminController::class, 'companies']);
-                $r->post('/companies', [AdminController::class, 'createCompany']);
             });
         });
     });
