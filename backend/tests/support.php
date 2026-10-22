@@ -129,14 +129,9 @@ final class Client
 function registeredOwner(string $email, string $company = 'Test SME'): Client
 {
     $client = new Client('10.0.' . random_int(1, 250) . '.' . random_int(1, 250));
-    $result = $client->post('/auth/register', [
-        'full_name' => 'Owner ' . $company,
-        'email' => $email,
-        'password' => 'correct-horse-battery',
-        'company_name' => $company,
-        'city' => 'Prishtinë',
-        'locale' => 'sq',
-    ]);
-    assertSame(201, $result['status'], 'register ' . json_encode($result['body']));
+    $companyId = \EnergyFlow\Models\Company::create($company, 'Prishtinë', 'sq');
+    \EnergyFlow\Models\User::create($companyId, $email, \EnergyFlow\Services\Auth\AuthService::hash('correct-horse-battery'), 'Owner ' . $company, 'owner', 'sq');
+    $result = $client->post('/auth/login', ['email' => $email, 'password' => 'correct-horse-battery']);
+    assertSame(200, $result['status']);
     return $client;
 }

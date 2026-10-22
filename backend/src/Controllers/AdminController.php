@@ -15,6 +15,45 @@ use EnergyFlow\Utils\Locales;
 /** The platform admin panel (/admin). Every route sits behind RequirePlatformAdmin. */
 final class AdminController
 {
+    public function requests(Request $request, array $params): Response
+    {
+        return Response::ok(\EnergyFlow\Core\Database::all('SELECT id, company_name, full_name, email, created_at FROM company_requests ORDER BY created_at'));
+    }
+
+    public function approve(Request $request, array $params): Response
+    {
+        $owner = \EnergyFlow\Core\Database::transaction(static function () use ($request, $params): int {
+            $db = \EnergyFlow\Core\Database::class;
+            $row = $db::one('SELECT * FROM company_requests WHERE id = ? FOR UPDATE', [(int) $params['id']]);
+            if ($row === null) throw \EnergyFlow\Core\HttpException::notFound('request_not_found', 'Request not found.');
+            if (\EnergyFlow\Models\User::emailExists($row['email'])) throw \EnergyFlow\Core\HttpException::validation(['email' => 'email_taken']);
+            $company = \EnergyFlow\Models\Company::create($row['company_name'], $row['city'], $row['locale']);
+            $id = \EnergyFlow\Models\User::create($company, $row['email'], $row['password_hash'], $row['full_name'], 'owner', $row['locale']);
+            $db::run('DELETE FROM company_requests WHERE id = ?', [(int) $params['id']]);
+            \EnergyFlow\Services\Admin\AdminLog::record(self::admin($request), 'company.approve', 'user', $id);
+            return $id;
+        });
+        return Response::ok(\EnergyFlow\Models\User::find($owner));
+    }
+
+    public function createCompany(Request $request, array $params): Response
+    {
+        $input = Validator::validate($request->json(), [
+            'company_name' => ['required', 'string', 'min:2', 'max:160'],
+            'full_name' => ['required', 'string', 'min:2', 'max:120'],
+            'email' => ['required', 'email', 'max:190'],
+            'password' => ['required', 'string', 'min:12', 'max:200'],
+        ]);
+        if (\EnergyFlow\Models\User::emailExists($input['email'])) {
+            throw \EnergyFlow\Core\HttpException::validation(['email' => 'email_taken']);
+        }
+        $owner = \EnergyFlow\Core\Database::transaction(static function () use ($input): int {
+            $company = \EnergyFlow\Models\Company::create($input['company_name'], null, Locales::DEFAULT);
+            return \EnergyFlow\Models\User::create($company, $input['email'], \EnergyFlow\Services\Auth\AuthService::hash($input['password']), $input['full_name'], 'owner', Locales::DEFAULT);
+        });
+        return Response::ok(\EnergyFlow\Models\User::find($owner));
+    }
+
     public function overview(Request $request, array $params): Response
     {
         return Response::ok(PlatformOverview::build());

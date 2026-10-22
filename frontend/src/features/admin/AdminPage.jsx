@@ -9,6 +9,7 @@ import { EmptyState } from '../../components/ui/States'
 import { AdminOverview } from './AdminOverview'
 import { AdminUsers } from './AdminUsers'
 import { AdminCompanies } from './AdminCompanies'
+import { CompanyRequests } from './CompanyRequests'
 
 const TABS = ['overview', 'users', 'companies']
 
@@ -37,6 +38,7 @@ export function AdminPage() {
   return (
     <>
       <PageHeader title={t('admin.title')} subtitle={t('admin.subtitle')} />
+      <CompanyRequests />
       <Tabs items={TABS.map((key) => ({ key, label: t(`admin.tabs.${key}`) }))} value={tab} onChange={(key) => setParams({ tab: key })} />
       {tab === 'overview' && <AdminOverview onOpenUsers={openUsers} />}
       {tab === 'users' && <AdminUsers key={params.get('company') ?? 'all'} companyId={params.get('company')} onClearCompany={() => setParams({ tab: 'users' })} />}

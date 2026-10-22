@@ -1,4 +1,24 @@
 {
+  "approval": {
+    "workers": "Company workers",
+    "hint": "Add and edit workers. Workers sign in with the credentials you provide.",
+    "email": "Email",
+    "password": "Password",
+    "add": "Add user",
+    "adding": "Adding…",
+    "taken": "This email already has an account.",
+    "loadError": "Could not load workers.",
+    "company": "Company",
+    "worker": "Worker",
+    "sent": "Request submitted",
+    "wait": "Your company is waiting for EnergyFlow approval. After approval, sign in with your email and password.",
+    "requests": "Company requests",
+    "empty": "No companies waiting for approval.",
+    "approve": "Approve",
+    "edit": "Edit user",
+    "save": "Save changes",
+    "name": "Full name"
+  },
   "app": {
     "name": "EnergyFlow",
     "tagline": "Energy intelligence for Kosovo SMEs"
@@ -214,6 +234,10 @@
     "viewer": "Viewer"
   },
   "auth": {
+    "invitation": {
+      "title": "Accounts are created by invitation",
+      "subtitle": "Contact EnergyFlow to set up your company owner account. Workers receive their account from their company owner."
+    },
     "brand": {
       "headline": "See where your energy goes — and where it's wasted.",
       "points": [
@@ -874,6 +898,7 @@
     "peak_coincidence_detail": "{{peak}} on {{peakAt}} · {{eur}} a month in engaged power · {{flexible}}"
   },
   "notifications": {
+    "company_request": "{{company}} is waiting for your approval",
     "markAllRead": "Mark all as read",
     "alert_after_hours": "{{machine}} is running after hours",
     "alert_after_hours_escalated": "{{machine}} after hours: now {{eur}}",
@@ -1341,6 +1366,10 @@
     "scanFuel": "Scan a fuel receipt"
   },
   "reportsPage": {
+    "deleteReport": {
+      "title": "Delete report",
+      "confirm": "Delete this report? This cannot be undone. Choose Cancel to keep it."
+    },
     "subtitle": "Daily, weekly and monthly energy and sustainability reports, generated from measured data.",
     "new": "New report",
     "newTitle": "New {{type}} report",

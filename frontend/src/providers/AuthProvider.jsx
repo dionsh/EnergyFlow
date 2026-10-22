@@ -60,8 +60,8 @@ export function AuthProvider({ children }) {
   const loginDemo = useCallback(async () => setSession((await api.post('/auth/demo')).data), [setSession])
 
   const register = useCallback(
-    async (details) => setSession((await api.post('/auth/register', { ...details, locale: i18n.language })).data),
-    [setSession],
+    async (details) => (await api.post('/auth/register', { ...details, locale: i18n.language })).data,
+    [],
   )
 
   const logout = useCallback(async () => {

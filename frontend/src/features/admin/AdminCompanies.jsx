@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { CreateCompany } from './CreateCompany'
 import { useTranslation } from 'react-i18next'
 import { Building2, Search, Users } from 'lucide-react'
 import { formatAgo, formatDate, formatNumber } from '../../lib/format'
@@ -21,6 +22,7 @@ export function AdminCompanies({ onOpenUsers }) {
 
   return (
     <>
+      <CreateCompany onCreated={() => companies.refetch()} />
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <div className="relative w-full sm:w-80">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink-3" aria-hidden="true" />

@@ -97,6 +97,16 @@ final class ProveController
         return Response::ok(ReportBuilder::find($request->companyId(), (int) $params['id']));
     }
 
+    public function deleteReport(Request $request, array $params): Response
+    {
+        $companyId = $request->companyId();
+        $id = (int) $params['id'];
+        ReportBuilder::find($companyId, $id);
+        \EnergyFlow\Core\Database::run('DELETE FROM reports WHERE company_id = ? AND id = ?', [$companyId, $id]);
+        AuditLog::record($companyId, (int) $request->user()['id'], 'report.delete', 'report', $id);
+        return Response::ok(['deleted' => true]);
+    }
+
     public function narrative(Request $request, array $params): Response
     {
         $input = Validator::validate($request->json(), [

@@ -1,4 +1,24 @@
 {
+  "approval": {
+    "workers": "Punonjësit e kompanisë",
+    "hint": "Shtoni dhe ndryshoni punonjësit. Punonjësit kyçen me të dhënat që ua jepni.",
+    "email": "Emaili",
+    "password": "Fjalëkalimi",
+    "add": "Shto përdorues",
+    "adding": "Duke shtuar…",
+    "taken": "Ky email tashmë ka një llogari.",
+    "loadError": "Punonjësit nuk u ngarkuan.",
+    "company": "Kompani",
+    "worker": "Punonjës",
+    "sent": "Kërkesa u dërgua",
+    "wait": "Kompania juaj po pret aprovimin nga EnergyFlow. Pas aprovimit, kyçuni me emailin dhe fjalëkalimin tuaj.",
+    "requests": "Kërkesat e kompanive",
+    "empty": "Nuk ka kompani që presin aprovim.",
+    "approve": "Aprovo",
+    "edit": "Ndrysho përdoruesin",
+    "save": "Ruaj ndryshimet",
+    "name": "Emri i plotë"
+  },
   "app": {
     "name": "EnergyFlow",
     "tagline": "Inteligjencë energjetike për NVM-të në Kosovë"
@@ -214,6 +234,10 @@
     "viewer": "Shikues"
   },
   "auth": {
+    "invitation": {
+      "title": "Llogaritë krijohen me ftesë",
+      "subtitle": "Kontaktoni EnergyFlow për të krijuar llogarinë tuaj si pronar i kompanisë. Punonjësit e marrin llogarinë nga pronari i kompanisë së tyre."
+    },
     "brand": {
       "headline": "Shih ku shkon energjia jote — dhe ku humbet.",
       "points": [
@@ -874,6 +898,7 @@
     "peak_coincidence_detail": "{{peak}} më {{peakAt}} · {{eur}} në muaj për fuqinë e angazhuar · {{flexible}}"
   },
   "notifications": {
+    "company_request": "{{company}} po pret aprovimin tuaj",
     "markAllRead": "Shëno të gjitha si të lexuara",
     "alert_after_hours": "{{machine}} po punon pas orarit",
     "alert_after_hours_escalated": "{{machine}} pas orarit: tani {{eur}}",
@@ -1341,6 +1366,10 @@
     "scanFuel": "Skano një kupon karburanti"
   },
   "reportsPage": {
+    "deleteReport": {
+      "title": "Fshi raportin",
+      "confirm": "Dëshironi ta fshini këtë raport? Ky veprim nuk mund të zhbëhet. Zgjidhni Anulo për ta mbajtur."
+    },
     "subtitle": "Raporte ditore, javore dhe mujore të energjisë dhe qëndrueshmërisë, të ndërtuara nga të dhëna të matura.",
     "new": "Raport i ri",
     "newTitle": "Raport i ri {{type}}",

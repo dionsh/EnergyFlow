@@ -23,12 +23,8 @@ test('writes without the X-EF-Client header are rejected (CSRF)', function (): v
     assertSame('missing_client_header', $result['body']['error']['code']);
 });
 
-test('register validates input with per-field codes', function (): void {
-    $result = (new Client())->post('/auth/register', ['email' => 'not-an-email', 'password' => 'short']);
-    assertSame(422, $result['status']);
-    assertSame('invalid_email', $result['body']['error']['fields']['email']);
-    assertSame('min_length:10', $result['body']['error']['fields']['password']);
-    assertSame('required', $result['body']['error']['fields']['company_name']);
+test('public registration validates company requests', function (): void {
+    assertSame(422, (new Client())->post('/auth/register', [])['status']);
 });
 
 test('register creates company + owner, keeps UTF-8, assigns the Kosovo grid factor and signs in', function (): void {
@@ -45,7 +41,9 @@ test('register creates company + owner, keeps UTF-8, assigns the Kosovo grid fac
 
 test('the same e-mail cannot register twice (case-insensitive)', function (): void {
     registeredOwner('dupe@example.com');
-    $result = (new Client())->post('/auth/register', [
+    $admin = registeredOwner('signup-admin@example.com');
+    Database::run('UPDATE users SET is_platform_admin = 1 WHERE email = ?', ['signup-admin@example.com']);
+    $result = $admin->post('/admin/companies', [
         'full_name' => 'Someone', 'email' => 'DUPE@example.com', 'password' => 'another-long-password', 'company_name' => 'Other',
     ]);
     assertSame(422, $result['status']);

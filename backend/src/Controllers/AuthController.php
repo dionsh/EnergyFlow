@@ -30,11 +30,18 @@ final class AuthController
             'locale' => ['nullable', Locales::rule()],
         ]);
 
-        $result = AuthService::register($input, $request);
-        return SessionService::attachCookie(
-            Response::created(['user' => $result['user'], 'company' => $result['company']]),
-            $result['token'],
-        );
+        RateLimiter::hit('company-request:' . $request->ip, 5, 3600);
+        if (!User::emailExists($input['email'])) {
+            $inserted = Database::run('INSERT IGNORE INTO company_requests (company_name, full_name, email, password_hash, city, locale) VALUES (?, ?, ?, ?, ?, ?)', [
+                $input['company_name'], $input['full_name'], mb_strtolower($input['email']), AuthService::hash($input['password']), $input['city'] ?? null, $input['locale'] ?? Locales::DEFAULT,
+            ]);
+            if ($inserted > 0) {
+                Database::run("INSERT INTO notifications (company_id, user_id, category, title_key, params, link, created_at)
+                    SELECT company_id, id, 'insight', 'company.request', ?, '/admin', UTC_TIMESTAMP()
+                    FROM users WHERE is_platform_admin = 1 AND disabled_at IS NULL", [json_encode(['company' => $input['company_name']], JSON_UNESCAPED_UNICODE)]);
+            }
+        }
+        return Response::created(['pending_approval' => true]);
     }
 
     public function login(Request $request, array $params): Response

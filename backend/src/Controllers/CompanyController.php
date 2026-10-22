@@ -12,6 +12,43 @@ use EnergyFlow\Utils\Locales;
 
 final class CompanyController
 {
+    public function editWorker(Request $request, array $params): Response
+    {
+        $id = (int) $params['id'];
+        $worker = \EnergyFlow\Models\User::find($id);
+        if ($worker === null || $worker['company_id'] !== $request->companyId() || !in_array($worker['role'], ['viewer', 'manager'], true)) {
+            throw \EnergyFlow\Core\HttpException::notFound('worker_not_found', 'Worker not found.');
+        }
+        $input = Validator::validate($request->json(), ['full_name' => ['required', 'string', 'min:2', 'max:120']]);
+        \EnergyFlow\Models\User::updateProfile($id, $input);
+        return Response::ok(\EnergyFlow\Models\User::find($id));
+    }
+    public function workers(Request $request, array $params): Response
+    {
+        return Response::ok(\EnergyFlow\Core\Database::all(
+            'SELECT id, full_name, email, role FROM users WHERE company_id = ? AND disabled_at IS NULL ORDER BY full_name',
+            [$request->companyId()],
+        ));
+    }
+
+    public function addWorker(Request $request, array $params): Response
+    {
+        $input = Validator::validate($request->json(), [
+            'full_name' => ['required', 'string', 'min:2', 'max:120'],
+            'email' => ['required', 'email', 'max:190'],
+            'password' => ['required', 'string', 'min:10', 'max:200'],
+        ]);
+        if (\EnergyFlow\Models\User::emailExists($input['email'])) {
+            throw \EnergyFlow\Core\HttpException::validation(['email' => 'email_taken']);
+        }
+        $id = \EnergyFlow\Models\User::create(
+            $request->companyId(), $input['email'],
+            \EnergyFlow\Services\Auth\AuthService::hash($input['password']),
+            $input['full_name'], 'manager', $request->user()['locale'],
+        );
+        return Response::ok(\EnergyFlow\Models\User::find($id));
+    }
+
     public function show(Request $request, array $params): Response
     {
         return Response::ok(Company::find($request->companyId()));

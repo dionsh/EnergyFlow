@@ -1,21 +1,20 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { CircleAlert } from 'lucide-react'
 import { Button } from '../../components/ui/Button'
 import { Field, PasswordField } from '../../components/ui/Field'
 import { Callout } from '../../components/ui/States'
-import { useAuth } from '../../providers/AuthProvider'
+import { api } from '../../lib/api'
 import { useApiErrors } from '../../hooks/useApiErrors'
 import { AuthLayout } from './AuthLayout'
 
 const EMPTY = { full_name: '', company_name: '', city: '', email: '', password: '' }
 
 export function RegisterPage() {
-  const { t } = useTranslation()
-  const { register } = useAuth()
+  const { t, i18n } = useTranslation()
+  const [sent, setSent] = useState(false)
   const { errorMessage, fieldErrors } = useApiErrors()
-  const navigate = useNavigate()
   const [form, setForm] = useState(EMPTY)
   const [error, setError] = useState(null)
   const [submitting, setSubmitting] = useState(false)
@@ -28,14 +27,16 @@ export function RegisterPage() {
     setSubmitting(true)
     setError(null)
     try {
-      await register(form)
-      navigate('/', { replace: true })
+      await api.post('/auth/register', { ...form, locale: i18n.language })
+      setSent(true)
     } catch (caught) {
       setError(caught)
     } finally {
       setSubmitting(false)
     }
   }
+
+  if (sent) return <AuthLayout title={t('approval.sent')} subtitle={t('approval.wait')}><Link to="/login" className="font-medium text-brand hover:underline">{t('auth.register.login')}</Link></AuthLayout>
 
   return (
     <AuthLayout

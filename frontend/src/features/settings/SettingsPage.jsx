@@ -4,6 +4,7 @@ import { cn } from '../../lib/cn'
 import { PageHeader } from '../../components/layout/PageHeader'
 import { CompanySettings } from './CompanySettings'
 import { AccountSettings } from './AccountSettings'
+import { WorkerSettings } from './WorkerSettings'
 
 const TABS = ['company', 'account']
 
@@ -32,6 +33,7 @@ export function SettingsPage() {
         ))}
       </div>
       {tab === 'company' ? <CompanySettings /> : <AccountSettings />}
+      {tab === 'company' && <WorkerSettings />}
     </>
   )
 }

@@ -60,6 +60,9 @@ $router->group('/api/v1', [], static function (Router $r): void {
             $r->patch('/auth/me', [AuthController::class, 'updateMe']);
 
             $r->get('/company', [CompanyController::class, 'show']);
+            $r->get('/company/workers', [CompanyController::class, 'workers'], [new RequireRole('owner')]);
+            $r->post('/company/workers', [CompanyController::class, 'addWorker'], [new RequireRole('owner')]);
+            $r->patch('/company/workers/{id}', [CompanyController::class, 'editWorker'], [new RequireRole('owner')]);
             $r->patch('/company', [CompanyController::class, 'update'], [new RequireRole('admin')]);
             $r->get('/onboarding', [OnboardingController::class, 'show']);
 
@@ -91,6 +94,7 @@ $router->group('/api/v1', [], static function (Router $r): void {
             $r->get('/reports', [ProveController::class, 'reports']);
             $r->post('/reports', [ProveController::class, 'createReport'], [new RequireRole('manager')]);
             $r->get('/reports/{id}', [ProveController::class, 'report']);
+            $r->delete('/reports/{id}', [ProveController::class, 'deleteReport'], [new RequireRole('manager')]);
             $r->patch('/reports/{id}/narrative', [ProveController::class, 'narrative'], [new RequireRole('manager')]);
             $r->post('/reports/{id}/finalize', [ProveController::class, 'finalize'], [new RequireRole('admin')]);
             $r->get('/policies', [PolicyController::class, 'index']);
@@ -136,11 +140,14 @@ $router->group('/api/v1', [], static function (Router $r): void {
             // Platform admin panel: EnergyFlow staff only (bin/platform-admin.php grants it).
             $r->group('/admin', [RequirePlatformAdmin::class], static function (Router $r): void {
                 $r->get('/overview', [AdminController::class, 'overview']);
+                $r->get('/requests', [AdminController::class, 'requests']);
+                $r->post('/requests/{id}/approve', [AdminController::class, 'approve']);
                 $r->get('/users', [AdminController::class, 'users']);
                 $r->patch('/users/{id}', [AdminController::class, 'updateUser']);
                 $r->delete('/users/{id}', [AdminController::class, 'deleteUser']);
                 $r->post('/users/{id}/password-reset', [AdminController::class, 'sendPasswordReset']);
                 $r->get('/companies', [AdminController::class, 'companies']);
+                $r->post('/companies', [AdminController::class, 'createCompany']);
             });
         });
     });
