@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { PageHeader } from '../../components/layout/PageHeader'
 import { Card, CardBody } from '../../components/ui/Card'
 import { useAuth } from '../../providers/AuthProvider'
+import { roleTranslationKey } from '../../lib/roles'
 import { AccountSettings } from '../settings/AccountSettings'
 import { CompanySettings } from '../settings/CompanySettings'
 
@@ -38,7 +39,7 @@ export function ProfilePage() {
               <p className="mt-1 truncate text-sm text-ink-2">{company?.name}</p>
               <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-[13px] text-ink-2">
                 <span className="inline-flex items-center gap-1.5"><Mail className="size-4 text-ink-3" aria-hidden="true" />{user.email}</span>
-                <span className="inline-flex items-center gap-1.5"><ShieldCheck className="size-4 text-ink-3" aria-hidden="true" />{t(`roles.${user.role}`)}</span>
+                <span className="inline-flex items-center gap-1.5"><ShieldCheck className="size-4 text-ink-3" aria-hidden="true" />{t(roleTranslationKey(user.role))}</span>
                 {company?.city && <span className="inline-flex items-center gap-1.5"><Building2 className="size-4 text-ink-3" aria-hidden="true" />{company.city}</span>}
               </div>
             </div>

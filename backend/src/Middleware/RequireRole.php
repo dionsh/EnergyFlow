@@ -7,10 +7,10 @@ namespace EnergyFlow\Middleware;
 use EnergyFlow\Core\HttpException;
 use EnergyFlow\Core\Request;
 
-/** Roles are ordered: viewer < manager < admin < owner. */
+/** Roles are ordered: viewer < worker < admin < owner. */
 final class RequireRole implements Middleware
 {
-    private const RANK = ['viewer' => 1, 'manager' => 2, 'admin' => 3, 'owner' => 4];
+    private const RANK = ['viewer' => 1, 'worker' => 2, 'admin' => 3, 'owner' => 4];
 
     public function __construct(private readonly string $minimum)
     {

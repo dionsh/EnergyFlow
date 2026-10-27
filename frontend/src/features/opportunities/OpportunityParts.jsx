@@ -136,7 +136,7 @@ export function OpportunityActions({ rec, onSimulate, size = 'sm' }) {
   const { user } = useAuth()
   const invalidate = useInvalidate()
   const [dialog, setDialog] = useState(null)
-  const canAct = hasRole(user, 'manager')
+  const canAct = hasRole(user, 'worker')
   const done = useMutation({ mutationFn: () => api.post(`/recommendations/${rec.id}/implemented`), onSuccess: invalidate })
   return (
     <>

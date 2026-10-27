@@ -138,7 +138,7 @@ export function ReportsPage() {
   const { user } = useAuth()
   const reports = useReports()
   const [creating, setCreating] = useState(false)
-  const canCreate = hasRole(user, 'manager')
+  const canCreate = hasRole(user, 'worker')
   const action = canCreate && <Button icon={FilePlus2} onClick={() => setCreating(true)}>{t('reportsPage.new')}</Button>
 
   let body
@@ -170,7 +170,7 @@ export function ReportsPage() {
                   {formatDate(r.created_at, 'dateTime')}{r.created_by && ` · ${r.created_by}`}
                 </span>
               </Link>
-              {hasRole(user, 'manager') && <div className="px-4 pb-3"><DeleteReportButton report={r} /></div>}
+              {hasRole(user, 'worker') && <div className="px-4 pb-3"><DeleteReportButton report={r} /></div>}
             </li>
           ))}
         </ul>
@@ -184,7 +184,7 @@ export function ReportsPage() {
                 <th className="px-3 py-2.5 text-right font-medium">{t('reportsPage.table.co2')}</th>
                 <th className="px-3 py-2.5 font-medium">{t('reportsPage.table.status')}</th>
                 <th className="px-5 py-2.5 font-medium">{t('reportsPage.table.created')}</th>
-                {hasRole(user, 'manager') && <th className="px-3 py-2.5 font-medium"><span className="sr-only">{t('common.delete')}</span></th>}
+                {hasRole(user, 'worker') && <th className="px-3 py-2.5 font-medium"><span className="sr-only">{t('common.delete')}</span></th>}
               </tr>
             </thead>
             <tbody>
@@ -207,7 +207,7 @@ export function ReportsPage() {
                     {formatDate(r.created_at, 'dateTime')}
                     {r.created_by && <span className="block text-xs text-ink-3">{r.created_by}</span>}
                   </td>
-                  {hasRole(user, 'manager') && <td className="px-3 py-3"><DeleteReportButton report={r} /></td>}
+                  {hasRole(user, 'worker') && <td className="px-3 py-3"><DeleteReportButton report={r} /></td>}
                 </tr>
               ))}
             </tbody>

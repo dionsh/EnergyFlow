@@ -27,7 +27,7 @@ export function AlertsPanel({ onOpenEvent, onOpenAlert }) {
     mutationFn: (id) => api.post(`/alerts/${id}/acknowledge`),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['alerts'] }),
   })
-  const canAct = hasRole(user, 'manager')
+  const canAct = hasRole(user, 'worker')
 
   return (
     <Card className="overflow-hidden">

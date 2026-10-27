@@ -229,8 +229,8 @@
   },
   "roles": {
     "owner": "Pronar",
-    "admin": "Administrator",
-    "manager": "Menaxher",
+    "admin": "Admin i kompanisë",
+    "worker": "Punëtor",
     "viewer": "Shikues"
   },
   "auth": {

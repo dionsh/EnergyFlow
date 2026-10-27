@@ -420,7 +420,7 @@ PROMPT;
             foreach (LiveService::snapshot($companyId)['machines'] as $m) {
                 if ($m['after_hours'] !== null && count($out) < 2) {
                     $out[] = sprintf($say->t('Why is %s still running?', 'Pse po punon ende %s?'), $m['code']);
-                    if ($m['control']['can_turn_off'] && RequireRole::atLeast((string) $user['role'], 'manager')) {
+                    if ($m['control']['can_turn_off'] && RequireRole::atLeast((string) $user['role'], 'worker')) {
                         $out[] = $say->t('Turn off ', 'Fik ') . $m['code'];
                     }
                 }

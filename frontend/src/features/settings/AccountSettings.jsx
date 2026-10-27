@@ -6,6 +6,7 @@ import { api } from '../../lib/api'
 import { LANGUAGES } from '../../i18n/languages'
 import { useAuth } from '../../providers/AuthProvider'
 import { useApiErrors } from '../../hooks/useApiErrors'
+import { roleTranslationKey } from '../../lib/roles'
 import { Button } from '../../components/ui/Button'
 import { Card, CardBody, CardHeader } from '../../components/ui/Card'
 import { Field, PasswordField, Select } from '../../components/ui/Field'
@@ -54,7 +55,7 @@ function ProfileForm() {
           <Field label={t('settings.account.fullName')} name="full_name" autoComplete="name" value={form.full_name} onChange={update} error={fields.full_name} />
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label={t('settings.account.email')} value={user.email} disabled readOnly />
-            <Field label={t('settings.account.role')} value={t(`roles.${user.role}`)} disabled readOnly />
+            <Field label={t('settings.account.role')} value={t(roleTranslationKey(user.role))} disabled readOnly />
           </div>
           <Field label={t('settings.account.language')} error={fields.locale}>
             {({ id, invalid }) => (

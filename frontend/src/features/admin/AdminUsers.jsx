@@ -17,8 +17,9 @@ import { Field, Input, Select } from '../../components/ui/Field'
 import { Modal } from '../../components/ui/Overlay'
 import { Callout, EmptyState, ErrorState, Skeleton } from '../../components/ui/States'
 import { useAdminUsers } from '../data'
+import { roleTranslationKey } from '../../lib/roles'
 
-const ROLES = ['owner', 'admin', 'manager', 'viewer']
+const ROLES = ['owner', 'admin', 'worker', 'viewer']
 
 function useInvalidateAdmin() {
   const queryClient = useQueryClient()
@@ -98,7 +99,7 @@ function EditUserModal({ user, onClose }) {
         <div className="grid gap-4 sm:grid-cols-3">
           <Field label={t('admin.edit.role', { company: user.company.name })} error={fields.role}>
             {({ id, invalid }) => (
-              <Select id={id} invalid={invalid} name="role" value={form.role} onChange={update}>
+              <Select id={id} invalid={invalid} name="role" value={form.role} onChange={update} className="min-w-[220px]">
                 {ROLES.map((role) => <option key={role} value={role}>{t(`roles.${role}`)}</option>)}
               </Select>
             )}
@@ -210,7 +211,7 @@ export function AdminUsers({ companyId, onClearCompany }) {
             className="pl-9"
           />
         </div>
-        <div className="w-40">
+        <div className="w-60">
           <Select aria-label={t('admin.users.role')} value={role} onChange={filter(setRole)}>
             <option value="">{t('admin.users.allRoles')}</option>
             {ROLES.map((r) => <option key={r} value={r}>{t(`roles.${r}`)}</option>)}
@@ -273,7 +274,7 @@ export function AdminUsers({ companyId, onClearCompany }) {
                             {u.company.demo && <Badge>{t('admin.users.demo')}</Badge>}
                           </span>
                         </td>
-                        <td className="px-3 py-2.5 text-ink-2">{t(`roles.${u.role}`)}</td>
+                        <td className="px-3 py-2.5 text-ink-2">{t(roleTranslationKey(u.role))}</td>
                         <td className="whitespace-nowrap px-3 py-2.5 text-ink-2">
                           {lastSeen ? formatAgo((now - Date.parse(lastSeen)) / 1000) : t('admin.users.never')}
                           {u.active_sessions > 0 && <span className="block text-xs text-ink-3">{t('admin.users.sessions', { count: u.active_sessions })}</span>}

@@ -61,7 +61,7 @@ function Body({ query, empty, render }) {
 export function ScanHistory() {
   const { t } = useTranslation()
   const { user } = useAuth()
-  const canEdit = hasRole(user, 'manager')
+  const canEdit = hasRole(user, 'worker')
   const [tab, setTab] = useState('bills')
   const bills = useBills()
   const fuel = useFuelRecords()
