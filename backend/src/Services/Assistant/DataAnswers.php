@@ -29,6 +29,14 @@ use EnergyFlow\Services\Tariff\TariffBook;
  */
 final class DataAnswers
 {
+    /** Each page's name as the navigation shows it, by route key: [English, Albanian]. */
+    public const PAGE_NAMES = [
+        'overview' => ['Overview', 'Përmbledhje'], 'live' => ['Live', 'Live'], 'machines' => ['Machines', 'Makineritë'],
+        'devices' => ['Devices', 'Pajisjet'], 'scan' => ['Scan', 'Skano'], 'waste' => ['Waste & Alerts', 'Humbjet & alarmet'], 'opportunities' => ['Opportunities', 'Mundësitë'],
+        'automations' => ['Automations', 'Automatizimet'], 'impact' => ['Impact', 'Ndikimi'], 'carbon' => ['Carbon & ESG', 'Karboni & ESG'],
+        'reports' => ['Reports', 'Raportet'], 'settings' => ['Settings', 'Cilësimet'],
+    ];
+
     private readonly LocalTime $time;
     private readonly int $now;
 
@@ -709,7 +717,7 @@ final class DataAnswers
         return ['label' => $what . ' · ' . ($from === $last ? $from : "{$from} – {$last}"), 'to' => $to];
     }
 
-    private function wasteType(string $type): string
+    public function wasteType(string $type): string
     {
         return match ($type) {
             'after_hours' => $this->say->t('After hours', 'Pas orarit'),
@@ -719,7 +727,7 @@ final class DataAnswers
         };
     }
 
-    private function alertText(string $key, array $p, ?string $code, ?string $serial): string
+    public function alertText(string $key, array $p, ?string $code, ?string $serial): string
     {
         $machine = $code ?? ($p['code'] ?? '');
         $money = isset($p['kwh'], $p['eur']) ? ' (' . $this->say->kwh((float) $p['kwh']) . ', ' . $this->say->eur((float) $p['eur']) . ')' : '';
@@ -757,27 +765,30 @@ final class DataAnswers
         };
     }
 
-    private function interventionLabel(array $iv): string
+    public function interventionLabel(array $iv): string
     {
         if ($iv['kind'] === 'policy') {
-            $grace = $iv['policy_params']['grace_min'] ?? null;
-            return $grace === null
-                ? $this->say->t('automatic switch-off after the schedule', 'fikje automatike pas orarit')
-                : sprintf($this->say->t('auto-off %d min after the schedule', 'fikje automatike %d min pas orarit'), (int) $grace);
+            return $this->policyLabel((string) $iv['label'], $iv['policy_params'] ?? []);
         }
         return $iv['recommendation'] !== null ? $this->recTitle($iv['recommendation'] + ['machine' => $iv['machine']]) : (string) $iv['label'];
+    }
+
+    /** An automation rule in words ("auto-off 15 min after the schedule"). */
+    public function policyLabel(string $type, array $params): string
+    {
+        if ($type !== 'auto_off_after_schedule') {
+            return $type;
+        }
+        $grace = $params['grace_min'] ?? null;
+        return $grace === null
+            ? $this->say->t('automatic switch-off after the schedule', 'fikje automatike pas orarit')
+            : sprintf($this->say->t('auto-off %d min after the schedule', 'fikje automatike %d min pas orarit'), (int) $grace);
     }
 
     /** The page's name as the navigation shows it. */
     private function pageName(string $route): string
     {
-        $names = [
-            'overview' => ['Overview', 'Përmbledhje'], 'live' => ['Live', 'Live'], 'machines' => ['Machines', 'Makineritë'],
-            'devices' => ['Devices', 'Pajisjet'], 'scan' => ['Scan', 'Skano'], 'waste' => ['Waste & Alerts', 'Humbjet & alarmet'], 'opportunities' => ['Opportunities', 'Mundësitë'],
-            'automations' => ['Automations', 'Automatizimet'], 'impact' => ['Impact', 'Ndikimi'], 'carbon' => ['Carbon & ESG', 'Karboni & ESG'],
-            'reports' => ['Reports', 'Raportet'], 'settings' => ['Settings', 'Cilësimet'],
-        ];
-        [$en, $sq] = $names[self::pageKey($route)] ?? [$route, $route];
+        [$en, $sq] = self::PAGE_NAMES[self::pageKey($route)] ?? [$route, $route];
         return $this->say->t($en, $sq);
     }
 

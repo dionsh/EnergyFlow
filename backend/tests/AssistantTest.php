@@ -231,6 +231,23 @@ test('the snapshot loads what a question needs and keeps other machines out', fu
     // A general question carries who the company is, none of its measurements.
     $general = Snapshot::build($askDemo, [], 'What is Scope 2?', false);
     assertSame(['company', 'now_local', 'notes'], array_keys($general));
+
+    // In Albanian, titles and labels come in Albanian: the model has no English titles or internal keys to copy.
+    $question = 'Pse kompresori punon pas orarit dhe si ta rregulloj?';
+    $en = Snapshot::build($askDemo, [], $question, true, 'en');
+    $sq = Snapshot::build($askDemo, [], $question, true, 'sq');
+    assertTrue(($sq['open_recommendations'] ?? []) !== [], 'the question loads the opportunities');
+    foreach ($sq['open_recommendations'] as $i => $r) {
+        assertTrue($r['title'] !== $en['open_recommendations'][$i]['title'], "translated: {$r['title']}");
+    }
+    $labels = [...array_column($sq['automations'] ?? [], 'rule'), ...array_column($sq['waste_this_month']['by_type'] ?? [], 'type'), ...array_column($sq['open_alerts'] ?? [], 'what')];
+    assertTrue($labels !== [], 'the question loads automations, waste and alerts');
+    foreach ($labels as $label) {
+        assertTrue(!str_contains($label, '_'), "no internal key: {$label}");
+    }
+    // A section key the model still copies into its answer becomes the section's name; ordinary words stay.
+    assertSame('Sipas të dhënave të **Ndikimi**, live dhe sot.', Snapshot::sectionNames('Sipas të dhënave të **verified_savings**, live dhe sot.', 'sq'));
+    assertSame('Waste · last 7 days rose; the live view agrees.', Snapshot::sectionNames('waste_last_7_days rose; the live view agrees.', 'en'));
 });
 
 test('grounding: percentages are always checked; derived numbers only from numbers that belong together', function (): void {

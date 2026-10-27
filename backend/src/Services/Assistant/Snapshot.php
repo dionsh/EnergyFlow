@@ -77,6 +77,20 @@ final class Snapshot
         'saved_bills' => ['bill', 'fatur', 'invoice', 'supplier', 'furnizues', 'kesco', 'fake', 'falsifik', 'correct', 'saktë', 'sakte'],
     ];
 
+    /**
+     * A section key the model copied into its answer ("verified_savings") becomes the
+     * section's name in the app. Keys without an underscore ("live") are ordinary words.
+     */
+    public static function sectionNames(string $answer, string $language): string
+    {
+        $keys = array_filter(array_keys(self::SECTIONS), static fn (string $key): bool => str_contains($key, '_'));
+        return (string) preg_replace_callback(
+            '/\b(' . implode('|', $keys) . ')\b/',
+            static fn (array $m): string => self::SECTIONS[$m[1]][$language === 'sq' ? 1 : 0],
+            $answer,
+        );
+    }
+
     /** The sections a question needs: by topic words, by the machines it names, and by page context. */
     public static function sectionsFor(int $companyId, string $question, array $context): array
     {
@@ -110,8 +124,12 @@ final class Snapshot
         return array_keys(array_intersect_key(self::SECTIONS, $wanted)); // stable order
     }
 
-    /** @param bool $companyData false for a general question: only who the company is, none of its measurements */
-    public static function build(int $companyId, array $context = [], string $question = '', bool $companyData = true): array
+    /**
+     * @param bool $companyData false for a general question: only who the company is, none of its measurements
+     * @param string $language the answer's: titles and labels are written in it, so the model has no English
+     *                         titles or internal keys (auto_off_after_schedule) to copy into an Albanian answer
+     */
+    public static function build(int $companyId, array $context = [], string $question = '', bool $companyData = true, string $language = 'en'): array
     {
         $now = Clock::now($companyId);
         $time = LocalTime::forCompany($companyId);
@@ -128,7 +146,7 @@ final class Snapshot
         $has = (bool) ($overview['has_data'] ?? false);
         $mtd = Period::parse('mtd', $now, $time);
         $incomer = OverviewService::incomerId($companyId);
-        $answers = new DataAnswers($companyId, new Say('en'), ['role' => 'viewer']);
+        $answers = new DataAnswers($companyId, new Say($language), ['role' => 'viewer']);
 
         // A question about particular machines (named, or the machine page) only gets
         // those machines' alerts and opportunities, so the model can't mix them up.
@@ -160,19 +178,20 @@ final class Snapshot
                 'monthly_history' => self::months($companyId, $now, $time, $tariff, $incomer, (float) ($overview['emission_factor']['value'] ?? 0.0)),
                 'machines_this_month' => self::machines($companyId, $mtd, $tariff, $incomer),
                 'last_7_days' => self::week($companyId, Period::parse('7d', $now, $time), $tariff, $incomer, $time),
-                'waste_this_month' => self::waste($companyId, $mtd, 5, true),
-                'waste_last_7_days' => self::waste($companyId, Period::parse('7d', $now, $time), 3, false),
-                'open_alerts' => array_values(array_filter(self::alerts($companyId, $local), static fn (array $a): bool => $about($a['machine'] ?? null))),
+                'waste_this_month' => self::waste($answers, $companyId, $mtd, 5, true),
+                'waste_last_7_days' => self::waste($answers, $companyId, Period::parse('7d', $now, $time), 3, false),
+                'open_alerts' => array_values(array_filter(self::alerts($answers, $companyId, $local), static fn (array $a): bool => $about($a['machine'] ?? null))),
                 'open_recommendations' => array_map(static fn (array $r): array => [
                     'title' => $answers->recTitle($r), 'machine' => $r['machine']['code'] ?? null,
                     'eur_per_month' => round($r['per_month']['eur'], 2), 'kwh_per_month' => round($r['per_month']['kwh'], 0), 'co2_kg_per_month' => round($r['per_month']['co2_kg'], 0),
                     'saves' => $r['impact_tag'] === 'eur' ? 'money only (no CO2 change)' : 'money and CO2', 'effort' => $r['effort'], 'confidence' => $r['confidence'],
                 ], array_slice(array_values(array_filter(Recommendations::list($companyId, 'open'), static fn (array $r): bool => $about($r['machine']['code'] ?? null))), 0, 5)),
-                'verified_savings' => self::impact($companyId, $local),
+                'verified_savings' => self::impact($answers, $companyId, $local),
                 'carbon_this_month' => self::carbon($companyId, $mtd),
-                'automations' => array_map(static fn (array $p): array => [
-                    'machine' => $p['code'], 'type' => $p['type'], 'params' => json_decode((string) $p['params'], true), 'mode' => $p['mode'], 'active' => (bool) $p['is_active'],
-                ], Database::all('SELECT p.type, p.params, p.mode, p.is_active, m.code FROM automation_policies p JOIN machines m ON m.id = p.machine_id WHERE p.company_id = ?', [$companyId])),
+                'automations' => array_map(static function (array $p) use ($answers): array {
+                    $params = json_decode((string) $p['params'], true) ?: [];
+                    return ['machine' => $p['code'], 'rule' => $answers->policyLabel($p['type'], $params), 'params' => $params, 'mode' => $p['mode'], 'active' => (bool) $p['is_active']];
+                }, Database::all('SELECT p.type, p.params, p.mode, p.is_active, m.code FROM automation_policies p JOIN machines m ON m.id = p.machine_id WHERE p.company_id = ?', [$companyId])),
                 'saved_bills' => array_map(static fn (array $b): array => [
                     'month' => $b['month'], 'supplier' => $b['supplier'], 'billed_kwh' => $b['kwh'], 'measured_kwh' => $b['metered_kwh'], 'total_eur' => $b['total_eur'],
                     'check_verdict' => $b['verdict'], 'failed_checks' => array_values(array_column(array_filter($b['checks'], static fn (array $c): bool => $c['status'] === 'fail'), 'key')),
@@ -193,7 +212,7 @@ final class Snapshot
                 'note' => 'sum of all listed opportunities; savings on the same machine can overlap, so this is an upper bound',
             ];
         }
-        $page = self::context($companyId, $context, $local);
+        $page = self::context($answers, $companyId, $context, $local);
         if ($page !== null) {
             $facts['context'] = $page;
         }
@@ -282,7 +301,7 @@ final class Snapshot
         ];
     }
 
-    private static function waste(int $companyId, Period $period, int $machines, bool $byType): array
+    private static function waste(DataAnswers $answers, int $companyId, Period $period, int $machines, bool $byType): array
     {
         $w = WasteReport::summary($companyId, $period);
         $out = [
@@ -291,18 +310,18 @@ final class Snapshot
             'by_machine' => array_map(static fn (array $r): array => ['code' => $r['machine']['code'], 'kwh' => $r['kwh'], 'eur' => $r['eur'], 'events' => $r['events']], array_slice($w['by_machine'], 0, $machines)),
         ];
         if ($byType) {
-            $out['by_type'] = array_map(static fn (array $r): array => ['type' => $r['type'], 'kwh' => $r['kwh'], 'eur' => $r['eur'], 'events' => $r['events']], $w['by_type']);
+            $out['by_type'] = array_map(static fn (array $r): array => ['type' => $answers->wasteType($r['type']), 'kwh' => $r['kwh'], 'eur' => $r['eur'], 'events' => $r['events']], $w['by_type']);
         }
         return $out;
     }
 
-    private static function impact(int $companyId, callable $local): array
+    private static function impact(DataAnswers $answers, int $companyId, callable $local): array
     {
         $impact = ImpactService::summary($companyId);
         return [
             'total' => $impact['verified'],
             'interventions' => array_map(static fn (array $i): array => [
-                'machine' => $i['machine']['code'], 'action' => $i['kind'] === 'policy' ? 'auto-off ' . ($i['policy_params']['grace_min'] ?? '?') . ' min after schedule' : $i['label'],
+                'machine' => $i['machine']['code'], 'action' => $answers->interventionLabel($i),
                 'since' => $local($i['since']), 'reporting_days' => $i['reporting']['days'],
                 'savings_kwh' => $i['savings']['kwh'], 'ci90_kwh' => $i['savings']['ci90_kwh'], 'eur' => $i['savings']['eur'], 'co2_kg' => $i['savings']['co2_kg'],
                 'status' => $i['verified'] ? 'verified' : ($i['collecting'] ? 'collecting data' : 'not yet significant'),
@@ -354,7 +373,7 @@ final class Snapshot
     }
 
     /** What the user is looking at ("Explain this"): the machine, waste event or opportunity of the page. */
-    private static function context(int $companyId, array $context, callable $local): ?array
+    private static function context(DataAnswers $answers, int $companyId, array $context, callable $local): ?array
     {
         $out = [];
         if (isset($context['page'])) {
@@ -365,7 +384,7 @@ final class Snapshot
                 $e = WasteReport::show($companyId, (int) $context['waste_event_id']);
                 $evidence = array_filter($e['evidence'], static fn (mixed $v): bool => is_scalar($v));
                 $out['waste_event'] = [
-                    'type' => $e['type'], 'machine' => $e['machine']['code'] . ' ' . $e['machine']['name'], 'severity' => $e['severity'],
+                    'type' => $answers->wasteType($e['type']), 'machine' => $e['machine']['code'] . ' ' . $e['machine']['name'], 'severity' => $e['severity'],
                     'started' => $local($e['started_at']), 'ended' => $local($e['ended_at']), 'ongoing' => $e['ongoing'], 'minutes' => intdiv($e['duration_s'], 60),
                     'kwh' => $e['kwh'], 'eur' => $e['eur'], 'co2_kg' => $e['co2_kg'], 'signals' => $e['signals'], 'deviation_pct' => $e['deviation_pct'],
                     'status' => $e['action_status'], 'evidence' => $evidence,
@@ -374,7 +393,7 @@ final class Snapshot
             if (isset($context['recommendation_id'])) {
                 $r = Recommendations::show($companyId, (int) $context['recommendation_id']);
                 $out['opportunity'] = [
-                    'title' => (new DataAnswers($companyId, new Say('en'), ['role' => 'viewer']))->recTitle($r), 'machine' => $r['machine']['code'] ?? null,
+                    'title' => $answers->recTitle($r), 'machine' => $r['machine']['code'] ?? null,
                     'status' => $r['status'], 'eur_per_month' => $r['per_month']['eur'], 'kwh_per_month' => $r['per_month']['kwh'], 'co2_kg_per_month' => $r['per_month']['co2_kg'],
                     'effort' => $r['effort'], 'confidence' => $r['confidence'], 'saves' => $r['impact_tag'] === 'eur' ? 'money only' : 'money and CO2',
                     'what_if' => is_array($r['what_if']) ? array_filter($r['what_if'], static fn (mixed $v): bool => is_scalar($v) || (is_array($v) && count($v) <= 6)) : null,
@@ -390,7 +409,7 @@ final class Snapshot
                     $out['machine'] = [
                         'code' => $m['code'], 'name' => $m['name'], 'type' => $m['type_code'], 'rated_kw' => $m['rated_power_kw'] === null ? null : (float) $m['rated_power_kw'],
                         'criticality' => $m['criticality'], 'control' => $m['control_mode'], 'schedule' => $m['schedule'],
-                        'waste_events_this_month' => array_map(static fn (array $w): array => ['type' => $w['type'], 'started' => $local($w['started_at']), 'kwh' => $w['kwh'], 'eur' => $w['eur']],
+                        'waste_events_this_month' => array_map(static fn (array $w): array => ['type' => $answers->wasteType($w['type']), 'started' => $local($w['started_at']), 'kwh' => $w['kwh'], 'eur' => $w['eur']],
                             array_slice(WasteReport::list($companyId, Period::parse('mtd', Clock::now($companyId), LocalTime::forCompany($companyId)), ['machine_id' => (int) $m['id']]), 0, 8)),
                     ];
                 }
@@ -401,17 +420,18 @@ final class Snapshot
         return $out === [] ? null : $out;
     }
 
-    private static function alerts(int $companyId, callable $local): array
+    private static function alerts(DataAnswers $answers, int $companyId, callable $local): array
     {
         $rows = Database::all(
             "SELECT a.severity, a.type, a.params, a.opened_at, m.code FROM alerts a LEFT JOIN machines m ON m.id = a.machine_id
               WHERE a.company_id = ? AND a.status <> 'resolved' ORDER BY FIELD(a.severity, 'critical', 'warning', 'info'), a.opened_at DESC LIMIT 8",
             [$companyId],
         );
-        return array_map(static function (array $a) use ($local): array {
+        return array_map(static function (array $a) use ($answers, $local): array {
             $p = json_decode((string) $a['params'], true) ?: [];
             return array_filter([
-                'severity' => $a['severity'], 'type' => strtolower($a['type']), 'machine' => $a['code'] ?? ($p['serial'] ?? null),
+                'severity' => $a['severity'], 'what' => $answers->alertText(strtolower($a['type']), $p, $a['code'], $p['serial'] ?? null),
+                'machine' => $a['code'] ?? ($p['serial'] ?? null),
                 'opened' => $local(Time::iso($a['opened_at'])), 'kwh' => $p['kwh'] ?? null, 'eur' => $p['eur'] ?? null,
                 'deviation_pct' => $p['deviation_pct'] ?? null, 'leak_signature' => ($p['leak'] ?? false) ?: null,
             ], static fn (mixed $v): bool => $v !== null);
