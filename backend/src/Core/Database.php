@@ -14,6 +14,15 @@ use Throwable;
  */
 final class Database
 {
+    /**
+     * One SQL mode everywhere, whatever the server default: Aiven's default is a strict
+     * SQL-standard (ANSI) mode, where double quotes become identifiers and || concatenates,
+     * and XAMPP ships a non-strict one that silently truncates bad writes. This is MySQL 8's
+     * default minus ONLY_FULL_GROUP_BY, which MariaDB enforces without MySQL's
+     * functional-dependency detection.
+     */
+    private const SQL_MODE = 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
     private static ?PDO $pdo = null;
 
     public static function pdo(): PDO
@@ -112,7 +121,7 @@ final class Database
         ] + self::sslOptions();
 
         $pdo = new PDO($dsn, Env::get('DB_USER', 'root'), Env::get('DB_PASS', ''), $options);
-        $pdo->exec("SET time_zone = '+00:00'");
+        $pdo->exec("SET time_zone = '+00:00', sql_mode = '" . self::SQL_MODE . "'");
         return $pdo;
     }
 

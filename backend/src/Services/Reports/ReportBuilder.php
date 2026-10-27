@@ -162,7 +162,7 @@ final class ReportBuilder
 
         $waste = WasteReport::summary($companyId, $period);
         $commands = Database::one(
-            "SELECT SUM(status = 'verified' AND source = 'user') AS manual, SUM(status = 'verified' AND source = 'policy') AS automatic, SUM(status = 'failed') AS failed
+            "SELECT SUM(status = 'verified' AND source = 'user') AS by_user, SUM(status = 'verified' AND source = 'policy') AS by_policy, SUM(status = 'failed') AS failed
                FROM device_commands WHERE company_id = ? AND requested_at >= FROM_UNIXTIME(?) AND requested_at < FROM_UNIXTIME(?)",
             [$companyId, $period->from, $period->to],
         );
@@ -205,7 +205,7 @@ final class ReportBuilder
                 'largest' => $waste['largest'],
             ],
             'actions' => [
-                'turn_offs_manual' => (int) ($commands['manual'] ?? 0), 'turn_offs_automatic' => (int) ($commands['automatic'] ?? 0), 'failed' => (int) ($commands['failed'] ?? 0),
+                'turn_offs_manual' => (int) ($commands['by_user'] ?? 0), 'turn_offs_automatic' => (int) ($commands['by_policy'] ?? 0), 'failed' => (int) ($commands['failed'] ?? 0),
                 'active_policies' => (int) Database::value('SELECT COUNT(*) FROM automation_policies WHERE company_id = ? AND is_active = 1', [$companyId]),
             ],
             'impact' => [
