@@ -105,15 +105,15 @@ Over the internet this takes a few minutes (about 15 s against a local database)
 
 ## 6. Platform admin panel
 
-The panel at `/admin` lists every company and user, and lets EnergyFlow staff edit or delete accounts. Nobody has access until you grant it, and only from the command line:
+The panel at `/admin` is where EnergyFlow staff approve new companies (every sign-up waits there) and list, edit or delete accounts. Nobody has access until you give it, and only from the command line, so on a fresh database nobody can approve a sign-up until you do this step.
 
-1. Sign up in the deployed app with your own e-mail (a normal company account).
-2. In a PowerShell window with the Aiven variables from step 5, run in `backend/`:
+1. In the PowerShell window from step 5, run this in `backend/` once per staff member. It asks for the password (visible as you type):
    ```
-   php bin/platform-admin.php grant you@example.com
+   php bin/platform-admin.php create you@example.com "Your Name"
    ```
-   `php bin/platform-admin.php list` shows who has access; `revoke` takes it away.
-3. Reload the app. **Admin** appears at the bottom of the sidebar.
+   Staff accounts share a company called EnergyFlow. If the e-mail already has an account, it is only made an admin and keeps its password, so running the command twice is harmless. Use passwords of at least 10 characters, the length the app requires of everyone else: these accounts can see every company and edit or delete any user.
+2. `php bin/platform-admin.php list` shows who has access; `grant <email>` gives it to an existing account, `revoke <email>` takes it away.
+3. Sign in on the Vercel URL. **Admin** appears at the bottom of the sidebar.
 
 Demo accounts can never be platform admins, and demo users cannot be edited or deleted from the panel (the Demo Director rebuilds them).
 
