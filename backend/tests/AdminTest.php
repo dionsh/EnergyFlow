@@ -21,7 +21,7 @@ $platform = registeredOwner('staff@energyflow.test', 'EnergyFlow HQ');
 Database::run('UPDATE users SET is_platform_admin = 1 WHERE email = ?', ['staff@energyflow.test']);
 $teamOwner = registeredOwner('owner@kepi.test', 'Kepi Metal');
 $teamCompany = (int) Database::value('SELECT company_id FROM users WHERE email = ?', ['owner@kepi.test']);
-User::create($teamCompany, 'manager@kepi.test', AuthService::hash('correct-horse-battery'), 'Besa Manager', 'manager', 'sq');
+User::create($teamCompany, 'manager@kepi.test', AuthService::hash('correct-horse-battery'), 'Besa Worker', 'worker', 'sq');
 User::create($teamCompany, 'viewer@kepi.test', AuthService::hash('correct-horse-battery'), 'Drin Viewer', 'viewer', 'sq');
 registeredOwner('solo@buka.test', 'Furra Buka');
 $userId = static fn (string $email): int => (int) Database::value('SELECT id FROM users WHERE email = ?', [$email]);
@@ -63,10 +63,10 @@ test('edit: name, e-mail, role and language; disabling signs the user out until 
     $viewer = new Client('10.8.2.1');
     assertSame(200, $viewer->post('/auth/login', ['email' => 'viewer@kepi.test', 'password' => 'correct-horse-battery'])['status']);
 
-    $edited = $platform->patch("/admin/users/{$id}", ['full_name' => 'Arta Krasniqi', 'email' => 'Arta@Kepi.test', 'role' => 'manager', 'locale' => 'en']);
+    $edited = $platform->patch("/admin/users/{$id}", ['full_name' => 'Arta Krasniqi', 'email' => 'Arta@Kepi.test', 'role' => 'worker', 'locale' => 'en']);
     assertSame(200, $edited['status'], json_encode($edited['body']));
     $u = $edited['body']['data'];
-    assertSame(['Arta Krasniqi', 'arta@kepi.test', 'manager', 'en'], [$u['full_name'], $u['email'], $u['role'], $u['locale']]);
+    assertSame(['Arta Krasniqi', 'arta@kepi.test', 'worker', 'en'], [$u['full_name'], $u['email'], $u['role'], $u['locale']]);
     assertSame('email_taken', $platform->patch("/admin/users/{$id}", ['email' => 'owner@kepi.test'])['body']['error']['fields']['email']);
     assertSame(422, $platform->patch("/admin/users/{$id}", ['role' => 'superuser'])['status']);
     assertSame(200, $viewer->get('/auth/me')['status'], 'an edit does not sign them out');
@@ -81,7 +81,7 @@ test('edit: name, e-mail, role and language; disabling signs the user out until 
 
     $log = Database::one("SELECT * FROM admin_actions WHERE action = 'user.update' AND target_id = ? ORDER BY id LIMIT 1", [$id]);
     assertSame('staff@energyflow.test', $log['admin_email']);
-    assertSame(['from' => 'viewer', 'to' => 'manager'], json_decode((string) $log['data'], true)['changes']['role']);
+    assertSame(['from' => 'viewer', 'to' => 'worker'], json_decode((string) $log['data'], true)['changes']['role']);
 });
 
 test('a company always keeps an active owner, admins cannot lock themselves out, demo accounts are read-only', function () use ($platform, $userId): void {
@@ -100,8 +100,8 @@ test('a company always keeps an active owner, admins cannot lock themselves out,
     assertSame(404, $platform->patch('/admin/users/999999', ['full_name' => 'Nobody'])['status']);
 
     // Promote someone else first; then the old owner can step down.
-    $manager = $userId('manager@kepi.test');
-    assertSame('owner', $platform->patch("/admin/users/{$manager}", ['role' => 'owner'])['body']['data']['role']);
+    $worker = $userId('manager@kepi.test');
+    assertSame('owner', $platform->patch("/admin/users/{$worker}", ['role' => 'owner'])['body']['data']['role']);
     assertSame('admin', $platform->patch("/admin/users/{$owner}", ['role' => 'admin'])['body']['data']['role']);
 });
 

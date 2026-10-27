@@ -301,7 +301,7 @@ export function ReportView() {
     return query.error.status === 404 ? <Card><EmptyState title={t('notFound.title')} /></Card> : <ErrorState error={query.error} onRetry={query.refetch} />
   }
   const report = query.data.data
-  const draftable = report.status === 'draft' && hasRole(user, 'manager')
+  const draftable = report.status === 'draft' && hasRole(user, 'worker')
 
   // The browser's print engine makes the PDF: vector text, the same fonts, A4 pages.
   // The document title becomes the suggested file name.

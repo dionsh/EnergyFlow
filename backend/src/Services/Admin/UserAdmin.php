@@ -23,7 +23,7 @@ use EnergyFlow\Utils\Time;
 final class UserAdmin
 {
     public const PAGE_SIZE = 50;
-    private const ROLES = ['owner', 'admin', 'manager', 'viewer'];
+    private const ROLES = ['owner', 'admin', 'worker', 'viewer'];
 
     private const SELECT = "SELECT u.id, u.full_name, u.email, u.role, u.locale, u.is_platform_admin, u.last_login_at, u.created_at, u.disabled_at,
                c.id AS company_id, c.name AS company_name, c.is_demo,

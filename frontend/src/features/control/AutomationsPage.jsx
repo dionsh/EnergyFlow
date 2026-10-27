@@ -43,7 +43,7 @@ function PoliciesCard() {
     mutationFn: ({ id, active }) => api.patch(`/policies/${id}`, { active }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['policies'] }),
   })
-  const canAct = hasRole(user, 'manager')
+  const canAct = hasRole(user, 'worker')
 
   return (
     <Card className="overflow-hidden">

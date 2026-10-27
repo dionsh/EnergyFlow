@@ -16,9 +16,12 @@ test('company requests require platform approval and workers cannot manage users
     assertSame(200, $admin->post("/admin/requests/{$id}/approve")['status']);
     assertSame(404, $admin->post("/admin/requests/{$id}/approve")['status']);
     assertSame(200, $guest->post('/auth/login', ['email' => $input['email'], 'password' => $input['password']])['status']);
+    assertSame('admin', $guest->get('/auth/me')['body']['data']['user']['role']);
+    assertSame(false, $guest->get('/auth/me')['body']['data']['user']['is_platform_admin']);
+    assertSame(200, $guest->patch('/company', ['employees' => 12])['status']);
     $created = $guest->post('/company/workers', ['full_name' => 'Worker Name', 'email' => 'approval-worker@example.test', 'password' => '1234567890', 'role' => 'owner', 'is_platform_admin' => true]);
     assertSame(200, $created['status']);
-    assertSame('manager', $created['body']['data']['role']);
+    assertSame('worker', $created['body']['data']['role']);
     assertSame(false, $created['body']['data']['is_platform_admin']);
     $workerId = $created['body']['data']['id'];
     assertSame(200, $guest->patch("/company/workers/{$workerId}", ['full_name' => 'Updated Worker'])['status']);
@@ -28,4 +31,5 @@ test('company requests require platform approval and workers cannot manage users
     assertSame(403, $worker->get('/company/workers')['status']);
     assertSame(403, $worker->post('/company/workers', [])['status']);
     assertSame(403, $worker->patch("/company/workers/{$workerId}", ['full_name' => 'Self'])['status']);
+    assertSame(403, $worker->patch('/company', ['employees' => 99])['status']);
 });

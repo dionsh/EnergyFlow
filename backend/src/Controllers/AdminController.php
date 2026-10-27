@@ -28,7 +28,7 @@ final class AdminController
             if ($row === null) throw \EnergyFlow\Core\HttpException::notFound('request_not_found', 'Request not found.');
             if (\EnergyFlow\Models\User::emailExists($row['email'])) throw \EnergyFlow\Core\HttpException::validation(['email' => 'email_taken']);
             $company = \EnergyFlow\Models\Company::create($row['company_name'], $row['city'], $row['locale']);
-            $id = \EnergyFlow\Models\User::create($company, $row['email'], $row['password_hash'], $row['full_name'], 'owner', $row['locale']);
+            $id = \EnergyFlow\Models\User::create($company, $row['email'], $row['password_hash'], $row['full_name'], 'admin', $row['locale']);
             $db::run('DELETE FROM company_requests WHERE id = ?', [(int) $params['id']]);
             \EnergyFlow\Services\Admin\AdminLog::record(self::admin($request), 'company.approve', 'user', $id);
             return $id;
@@ -58,7 +58,7 @@ final class AdminController
         $input = Validator::validate($request->json(), [
             'full_name' => ['string', 'min:2', 'max:120'],
             'email' => ['email', 'max:190'],
-            'role' => ['in:owner,admin,manager,viewer'],
+            'role' => ['in:owner,admin,worker,viewer'],
             'locale' => [Locales::rule()],
             'disabled' => ['bool'],
         ]);

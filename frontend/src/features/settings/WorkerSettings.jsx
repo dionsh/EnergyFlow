@@ -7,9 +7,16 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '../../lib/api'
 import { useAuth } from '../../providers/AuthProvider'
 
+const ROLE_LABELS = {
+  owner: 'roles.owner',
+  admin: 'roles.admin',
+  worker: 'roles.worker',
+  viewer: 'roles.viewer',
+}
+
 export function WorkerSettings() {
   const { user } = useAuth()
-  if (user?.role !== 'owner' || user?.is_platform_admin) return null
+  if (!['owner', 'admin'].includes(user?.role) || user?.is_platform_admin) return null
   return <WorkerForm />
 }
 
@@ -43,7 +50,7 @@ function WorkerForm() {
       <Button loading={busy} type="submit">{t('approval.add')}</Button>
     </form>
     {isError && <p role="alert">{t('approval.loadError')}</p>}
-    <ul className="mt-4">{data.map(worker => <li key={worker.id} className="flex flex-wrap items-center justify-between gap-3 border-b border-line py-2"><span>{worker.full_name} · {worker.email} · {t(worker.role === 'owner' ? 'approval.company' : 'approval.worker')}</span>{['viewer', 'manager'].includes(worker.role) && <EditWorker worker={worker} label={t('approval.edit')} />}</li>)}</ul>
+    <ul className="mt-4">{data.map(worker => <li key={worker.id} className="flex flex-wrap items-center justify-between gap-3 border-b border-line py-2"><span>{worker.full_name} · {worker.email} · {ROLE_LABELS[worker.role] ? t(ROLE_LABELS[worker.role]) : t('roles.worker')}</span>{['viewer', 'worker'].includes(worker.role) && <EditWorker worker={worker} label={t('approval.edit')} />}</li>)}</ul>
   </section>
 }
 

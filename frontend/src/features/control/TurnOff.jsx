@@ -150,7 +150,7 @@ export function TurnOffButton({ machine, variant = 'prominent', className }) {
   if (!control) return null
 
   const pendingId = machine.command && PENDING.includes(machine.command.status) ? machine.command.id : null
-  const canAct = hasRole(user, 'manager')
+  const canAct = hasRole(user, 'worker')
   const reason = canAct ? control.reason : 'read_only'
   const compact = variant === 'compact'
 

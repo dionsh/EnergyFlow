@@ -123,7 +123,7 @@ export function WasteDrawer({ eventId, onClose, actions }) {
   const query = useWasteEvent(eventId)
   const [dismissing, setDismissing] = useState(false)
   const event = query.data?.data
-  const canAct = hasRole(user, 'manager')
+  const canAct = hasRole(user, 'worker')
 
   let body
   if (query.isPending) body = <Skeleton className="h-80" />

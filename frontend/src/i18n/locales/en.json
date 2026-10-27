@@ -229,8 +229,8 @@
   },
   "roles": {
     "owner": "Owner",
-    "admin": "Admin",
-    "manager": "Manager",
+    "admin": "Company Admin",
+    "worker": "Worker",
     "viewer": "Viewer"
   },
   "auth": {
@@ -1615,7 +1615,7 @@
     "notRecognised": "This doesn't look like a {{kind}}. Retake the photo, or type the values below.",
     "machine": "Machine",
     "chooseMachine": "Choose the machine this plate belongs to",
-    "viewerNote": "Only managers and admins can save scans.",
+      "viewerNote": "Only workers and admins can save scans.",
     "billDisclaimer": "EnergyFlow checks whether a bill is consistent: its own numbers, the official tariff and your meters. A photo can't prove a document genuine or forged; for that, contact the supplier.",
     "camera": {
       "starting": "Starting the camera…",

@@ -16,7 +16,7 @@ final class CompanyController
     {
         $id = (int) $params['id'];
         $worker = \EnergyFlow\Models\User::find($id);
-        if ($worker === null || $worker['company_id'] !== $request->companyId() || !in_array($worker['role'], ['viewer', 'manager'], true)) {
+        if ($worker === null || $worker['company_id'] !== $request->companyId() || !in_array($worker['role'], ['viewer', 'worker'], true)) {
             throw \EnergyFlow\Core\HttpException::notFound('worker_not_found', 'Worker not found.');
         }
         $input = Validator::validate($request->json(), ['full_name' => ['required', 'string', 'min:2', 'max:120']]);
@@ -44,7 +44,7 @@ final class CompanyController
         $id = \EnergyFlow\Models\User::create(
             $request->companyId(), $input['email'],
             \EnergyFlow\Services\Auth\AuthService::hash($input['password']),
-            $input['full_name'], 'manager', $request->user()['locale'],
+            $input['full_name'], 'worker', $request->user()['locale'],
         );
         return Response::ok(\EnergyFlow\Models\User::find($id));
     }

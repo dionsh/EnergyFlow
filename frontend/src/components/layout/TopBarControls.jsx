@@ -10,6 +10,7 @@ import { useNotifications } from '../../features/data'
 import { notificationText } from '../../features/waste/alertText'
 import { LANGUAGES } from '../../i18n/languages'
 import { useAuth } from '../../providers/AuthProvider'
+import { roleTranslationKey } from '../../lib/roles'
 import { useTheme } from '../../providers/ThemeProvider'
 import { useDismiss } from '../../hooks/useDismiss'
 import { useAssistant } from '../../features/assistant/AssistantProvider'
@@ -258,7 +259,7 @@ export function UserMenu() {
         <div className="border-b border-line px-2.5 pb-2.5 pt-1.5">
           <p className="truncate text-sm font-medium text-ink">{user.full_name}</p>
           <p className="truncate text-[13px] text-ink-3">{user.email}</p>
-          <p className="mt-1 text-xs text-ink-2">{t(`roles.${user.role}`)}</p>
+          <p className="mt-1 text-xs text-ink-2">{t(roleTranslationKey(user.role))}</p>
         </div>
         <div className="pt-1">
           <MenuItem icon={UserRound} onClick={() => { close(); navigate('/profile') }}>

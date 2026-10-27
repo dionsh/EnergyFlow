@@ -15,7 +15,7 @@ use EnergyFlow\Services\Scan\ScanService;
 
 /**
  * Camera scan: read a photo into fields, check them, save them. Everyone can
- * read and check (the demo guest too); saving needs a manager.
+ * read and check (the demo guest too); saving needs a worker.
  */
 final class ScanController
 {

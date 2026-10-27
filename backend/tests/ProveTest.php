@@ -80,7 +80,14 @@ test('report: frozen snapshot, template narrative without AI, edit, finalise, th
     }
     assertSame(422, $proveOwner->post('/reports', ['type' => 'yearly', 'period' => $month, 'language' => 'en'])['status']);
 
-    $created = $proveOwner->post('/reports', ['type' => 'monthly', 'period' => $month, 'language' => 'sq']);
+    $workerCreated = $proveOwner->post('/company/workers', [
+        'full_name' => 'Report Worker', 'email' => 'report-worker@example.test', 'password' => 'worker-password-123',
+    ]);
+    assertSame('worker', $workerCreated['body']['data']['role']);
+    $worker = new Client();
+    assertSame(200, $worker->post('/auth/login', ['email' => 'report-worker@example.test', 'password' => 'worker-password-123'])['status']);
+
+    $created = $worker->post('/reports', ['type' => 'monthly', 'period' => $month, 'language' => 'sq']);
     assertSame(201, $created['status'], json_encode($created['body']));
     $report = $created['body']['data'];
     $s = $report['snapshot'];
@@ -94,11 +101,12 @@ test('report: frozen snapshot, template narrative without AI, edit, finalise, th
     $check = Grounding::check(implode(' ', $report['narrative']), $s);
     assertSame(true, $check['grounded'], 'the template passes the same check as the AI: ' . implode(', ', $check['unmatched']));
 
-    $edited = $proveOwner->patch("/reports/{$report['id']}/narrative", ['summary' => 'Edited summary.']);
+    $edited = $worker->patch("/reports/{$report['id']}/narrative", ['summary' => 'Edited summary.']);
     assertSame('edited', $edited['body']['data']['narrative_source']);
     assertSame('Edited summary.', $edited['body']['data']['narrative']['summary']);
     assertSame($report['narrative']['outlook'], $edited['body']['data']['narrative']['outlook'], 'other sections untouched');
 
+    assertSame(403, $worker->post("/reports/{$report['id']}/finalize")['status']);
     $final = $proveOwner->post("/reports/{$report['id']}/finalize");
     assertSame(200, $final['status'], json_encode($final['body']));
     assertSame('final', $final['body']['data']['status']);

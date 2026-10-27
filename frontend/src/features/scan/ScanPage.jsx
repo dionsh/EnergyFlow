@@ -66,7 +66,7 @@ function Scanner({ kind, initialMachine }) {
   const [result, setResult] = useState(null)
   const [stale, setStale] = useState(false)
   const [saved, setSaved] = useState(null)
-  const canSave = hasRole(user, 'manager') && kindDef.save !== null
+  const canSave = hasRole(user, 'worker') && kindDef.save !== null
 
   const payload = (fields) => ({ kind, fields, machine_id: machineId ? Number(machineId) : null, source })
   const check = useMutation({

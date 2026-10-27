@@ -196,10 +196,10 @@ final class DataAnswers
             };
             return ['text' => $why, 'sources' => $source, 'actions' => $page];
         }
-        if (!RequireRole::atLeast((string) $this->user['role'], 'manager')) {
+        if (!RequireRole::atLeast((string) $this->user['role'], 'worker')) {
             return [
                 'text' => $this->say->t(
-                    "{$label} is on now (" . $this->say->kw($m['power_kw']) . '), but only managers and admins can switch machines off.',
+                    "{$label} is on now (" . $this->say->kw($m['power_kw']) . '), but only workers and admins can switch machines off.',
                     "{$label} është ndezur tani (" . $this->say->kw($m['power_kw']) . '), por vetëm menaxherët dhe administratorët mund t\'i fikin makineritë.',
                 ),
                 'sources' => $source,
