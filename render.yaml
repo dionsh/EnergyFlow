@@ -1,5 +1,6 @@
 # Render Blueprint for the EnergyFlow API (free web service, Docker).
-# Docker paths are relative to the repo ROOT, not rootDir.
+# Docker paths are relative to rootDir (backend/): Render joins them, so ./backend would
+# mean backend/backend, whatever the field descriptions in its dashboard say.
 services:
   - type: web
     name: energyflow-api
@@ -7,8 +8,8 @@ services:
     plan: free
     region: frankfurt
     rootDir: backend
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     healthCheckPath: /api/v1/health
     autoDeploy: true
     envVars:
