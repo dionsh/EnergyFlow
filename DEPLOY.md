@@ -48,7 +48,7 @@ You don't need to create tables. The API runs its migrations automatically every
 
    `CRON_SECRET` and `APP_KEY` are generated automatically. `DB_NAME=defaultdb` and `DB_USER=avnadmin` are already set.
 3. Deploy. The first Docker build takes a few minutes. Then open
-   `https://energyflow-api.onrender.com/api/v1/health`. You should see `"database":"ok"`, a migration version (currently `0018_company_logo`) and **`"ai_configured":true`**.
+   `https://energyflow-api.onrender.com/api/v1/health`. You should see `"database":"ok"`, a migration version (the newest file in `backend/database/migrations`) and **`"ai_configured":true`**.
    - `false` means `GROQ_API_KEY` is missing: add it under the service's **Environment** tab (a Blueprint never fills a `sync: false` value by itself), save, and let Render redeploy.
    - A failed deploy or `"database":"unreachable"`: open the service's **Logs** and look for `[migrate] FAILED`. It is almost always the host, the port, the password, or an incomplete `DB_SSL_CA_CONTENT`.
    - A plain-text `Not Found` from Render (header `x-render-routing: no-server`) means no service answers at that URL: use the URL Render shows on the service page.
