@@ -9,6 +9,7 @@ import tailwindcss from '@tailwindcss/vite'
 // library (clsx) must not be pulled into the charts chunk, or every page would load it.
 const VENDOR_GROUPS = [
   { name: 'vendor-react', priority: 30, test: /[\\/]node_modules[\\/](react|react-dom|scheduler|react-router|react-router-dom|cookie|set-cookie-parser)[\\/]/ },
+  { name: 'vendor-three', priority: 25, test: /[\\/]node_modules[\\/]three[\\/]/ },
   { name: 'vendor-ui', priority: 30, test: /[\\/]node_modules[\\/](clsx|lucide-react)[\\/]/ },
   { name: 'vendor-data', priority: 20, test: /[\\/]node_modules[\\/]@tanstack[\\/]/ },
   { name: 'vendor-i18n', priority: 20, test: /[\\/]node_modules[\\/](i18next|react-i18next|html-parse-stringify|void-elements)[\\/]/ },
