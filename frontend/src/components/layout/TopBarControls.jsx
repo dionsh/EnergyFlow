@@ -102,7 +102,6 @@ export function ThemeMenu({ side }) {
       <IconButton
         label={t('topbar.theme')}
         icon={resolved === 'dark' ? Moon : Sun}
-        className="border border-brand/30 bg-brand-subtle text-brand hover:border-brand/60 hover:bg-brand-subtle hover:text-brand"
         aria-expanded={open}
         aria-haspopup="menu"
         onClick={() => setOpen((v) => !v)}

@@ -17,9 +17,6 @@ import { Logo } from '../../components/ui/Logo'
 import { Callout } from '../../components/ui/States'
 import { LanguageSwitch, ThemeMenu } from '../../components/layout/TopBarControls'
 import { EnergyFlowAnimation } from './EnergyFlowAnimation'
-import { EnergyFlowWorld } from './EnergyFlowWorld'
-import { EnergyStream } from './EnergyStream'
-import './LandingPage.css'
 
 /** Optional public contact address, set at build time (frontend/.env.example). Nothing is shown without it. */
 const CONTACT_EMAIL = (import.meta.env.VITE_CONTACT_EMAIL ?? '').trim()
@@ -45,10 +42,6 @@ const STATUS = {
   available: { tone: 'good', icon: CircleCheck },
   prototype: { tone: 'warning', icon: FlaskConical },
   planned: { tone: 'neutral', icon: CalendarClock },
-}
-
-function landingButtonClasses(options = {}) {
-  return buttonClasses({ ...options, className: cn('landing-action', options.className) })
 }
 
 function Container({ className, children }) {
@@ -104,7 +97,7 @@ function Header() {
   }
 
   return (
-    <header ref={ref} className="ef-site-header sticky top-0 z-30 border-b border-line bg-surface/95 backdrop-blur-sm">
+    <header ref={ref} className="sticky top-0 z-30 border-b border-line bg-surface/95 backdrop-blur-sm">
       <Container className="flex h-14 items-center gap-2">
         <a href="#top" className="shrink-0 rounded-sm" onClick={goTo('top')}>
           <Logo />
@@ -122,9 +115,9 @@ function Header() {
             <ThemeMenu />
           </div>
           <span className="hidden md:contents">
-            <Link to="/login" className={landingButtonClasses({ variant: 'ghost' })}>{t('landing.nav.login')}</Link>
+            <Link to="/login" className={buttonClasses({ variant: 'ghost' })}>{t('landing.nav.login')}</Link>
           </span>
-          <Link to="/register" className={landingButtonClasses({ className: 'px-3 sm:px-3.5' })}>{t('landing.nav.signup')}</Link>
+          <Link to="/register" className={buttonClasses({ className: 'px-3 sm:px-3.5' })}>{t('landing.nav.signup')}</Link>
           <IconButton
             label={open ? t('landing.nav.closeMenu') : t('landing.nav.menu')}
             icon={open ? X : Menu}
@@ -150,8 +143,8 @@ function Header() {
               <ThemeMenu />
             </div>
             <div className="mt-2 grid grid-cols-2 gap-2 md:hidden">
-              <Link to="/login" className={landingButtonClasses({ variant: 'secondary', size: 'lg' })}>{t('landing.nav.login')}</Link>
-              <Link to="/register" className={landingButtonClasses({ size: 'lg' })}>{t('landing.nav.signup')}</Link>
+              <Link to="/login" className={buttonClasses({ variant: 'secondary', size: 'lg' })}>{t('landing.nav.login')}</Link>
+              <Link to="/register" className={buttonClasses({ size: 'lg' })}>{t('landing.nav.signup')}</Link>
             </div>
           </Container>
         </div>
@@ -173,39 +166,33 @@ function DemoError({ error }) {
 function Hero({ demo }) {
   const { t } = useTranslation()
   return (
-    <section aria-labelledby="hero-title" className="ef-hero">
-      <EnergyFlowWorld />
-      <div className="ef-hero-atmosphere" aria-hidden="true" />
-      <Container className="ef-hero-grid grid items-center gap-10 py-10 sm:py-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-14 lg:py-20">
-        <div className="ef-hero-copy min-w-0">
-          <p className="ef-hero-eyebrow"><span className="ef-live-dot" />{t('app.tagline')}</p>
-          <h1 id="hero-title" className="ef-hero-title mt-4 text-[30px] font-semibold leading-[1.12] tracking-[-0.02em] text-ink sm:text-[40px] lg:text-[46px]">
+    <section aria-labelledby="hero-title" className="border-b border-line">
+      <Container className="grid items-center gap-10 py-10 sm:py-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-14 lg:py-20">
+        <div className="min-w-0">
+          <Badge tone="brand">{t('app.tagline')}</Badge>
+          <h1 id="hero-title" className="mt-4 text-[30px] font-semibold leading-[1.12] tracking-[-0.02em] text-ink sm:text-[40px] lg:text-[46px]">
             {t('landing.hero.title')}
           </h1>
-          <p className="ef-hero-lede mt-5 max-w-xl text-[15px] leading-relaxed text-ink-2 sm:text-[17px]">{t('landing.hero.body')}</p>
-          <div className="ef-hero-actions mt-7 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
-            <Link to="/register" className={landingButtonClasses({ size: 'lg', className: 'h-11 px-5 text-[15px]' })}>
+          <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-ink-2 sm:text-[17px]">{t('landing.hero.body')}</p>
+          <div className="mt-7 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
+            <Link to="/register" className={buttonClasses({ size: 'lg', className: 'h-11 px-5 text-[15px]' })}>
               {t('landing.hero.primary')}
               <ArrowRight className="size-4" aria-hidden="true" />
             </Link>
-            <a href="#features" className={landingButtonClasses({ variant: 'secondary', size: 'lg', className: 'h-11 px-5 text-[15px]' })}>
+            <a href="#features" className={buttonClasses({ variant: 'secondary', size: 'lg', className: 'h-11 px-5 text-[15px]' })}>
               {t('landing.hero.secondary')}
             </a>
           </div>
-          <div className="ef-demo-link mt-6 border-t border-line pt-5">
-            <Button variant="ghost" icon={Factory} loading={demo.busy} onClick={demo.start} className="landing-action -ml-3.5 text-brand hover:text-brand">
+          <div className="mt-6 border-t border-line pt-5">
+            <Button variant="ghost" icon={Factory} loading={demo.busy} onClick={demo.start} className="-ml-3.5 text-brand hover:text-brand">
               {t('demo.explore')}
             </Button>
             <p className="mt-1 max-w-md text-[13px] text-ink-3">{t('landing.hero.demoHint')}</p>
             <DemoError error={demo.error} />
           </div>
         </div>
+        <EnergyFlowAnimation className="min-w-0" />
       </Container>
-      <nav className="ef-hero-chapters" aria-label={t('landing.nav.label')}>
-        {['about', 'features', 'how', 'contact'].map((section, index) => (
-          <a key={section} href={`#${section}`}><span>{String(index + 1).padStart(2, '0')}</span><b>{t(`landing.nav.${section}`)}</b><i /></a>
-        ))}
-      </nav>
     </section>
   )
 }
@@ -214,11 +201,10 @@ function Facts() {
   const { t } = useTranslation()
   const items = t('landing.facts.items', { returnObjects: true })
   return (
-    <section aria-labelledby="facts-title" className="ef-facts border-b border-line bg-surface">
-      <EnergyStream />
-      <Container className="ef-facts-content py-8 sm:py-10">
+    <section aria-labelledby="facts-title" className="border-b border-line bg-surface">
+      <Container className="py-8 sm:py-10">
         <h2 id="facts-title" className="text-sm font-semibold text-ink">{t('landing.facts.label')}</h2>
-        <dl data-scroll-reveal className="mt-4 grid gap-5 sm:grid-cols-3 sm:gap-6">
+        <dl className="mt-4 grid gap-5 sm:grid-cols-3 sm:gap-6">
           {Array.isArray(items) && items.map((item) => (
             <div key={item.value} className="border-l-2 border-brand pl-4">
               <dt className="text-[22px] font-semibold tracking-[-0.01em] text-ink sm:text-2xl">{item.value}</dt>
@@ -227,7 +213,6 @@ function Facts() {
           ))}
         </dl>
         <p className="mt-5 text-xs text-ink-3">{t('landing.facts.sources')}</p>
-        <div className="ef-facts-flow"><EnergyFlowAnimation /></div>
       </Container>
     </section>
   )
@@ -238,9 +223,9 @@ function About() {
   const challenges = t('landing.about.challenges', { returnObjects: true })
   const audience = t('landing.about.audience', { returnObjects: true })
   return (
-    <section id="about" aria-labelledby="about-title" className="ef-section ef-about border-b border-line">
+    <section id="about" aria-labelledby="about-title" className="border-b border-line">
       <Container className="grid gap-10 py-14 sm:py-20 lg:grid-cols-2 lg:gap-16">
-        <div data-scroll-reveal className="min-w-0">
+        <div className="min-w-0">
           <SectionHeading id="about-title" eyebrow={t('landing.about.eyebrow')} title={t('landing.about.title')} body={t('landing.about.body')} />
           <div className="mt-8 rounded-md border border-brand/30 bg-brand-subtle px-5 py-4">
             <h3 className="text-sm font-semibold text-ink">{t('landing.about.helpsTitle')}</h3>
@@ -258,11 +243,11 @@ function About() {
             ))}
           </ul>
         </div>
-        <div data-scroll-reveal className="min-w-0">
+        <div className="min-w-0">
           <h3 className="text-sm font-semibold text-ink">{t('landing.about.challengesTitle')}</h3>
           <ol className="mt-4 grid gap-3 sm:grid-cols-2">
             {Array.isArray(challenges) && challenges.map((c, i) => (
-              <li key={c.title} data-tilt-card className="rounded-md border border-line bg-surface p-4">
+              <li key={c.title} className="rounded-md border border-line bg-surface p-4">
                 <span className="font-mono text-xs text-ink-3">{String(i + 1).padStart(2, '0')}</span>
                 <p className="mt-1.5 text-[15px] font-semibold text-ink">{c.title}</p>
                 <p className="mt-1 text-sm leading-relaxed text-ink-2">{c.body}</p>
@@ -275,33 +260,33 @@ function About() {
   )
 }
 
-function StatusBadge({ status, className }) {
+function StatusBadge({ status }) {
   const { t } = useTranslation()
   const style = STATUS[status]
-  return <Badge className={className} tone={style.tone} icon={style.icon}>{t(`landing.features.status.${status}`)}</Badge>
+  return <Badge tone={style.tone} icon={style.icon}>{t(`landing.features.status.${status}`)}</Badge>
 }
 
 function Features() {
   const { t } = useTranslation()
   const planned = t('landing.features.planned', { returnObjects: true })
   return (
-    <section id="features" aria-labelledby="features-title" className="ef-section ef-features border-b border-line bg-surface">
+    <section id="features" aria-labelledby="features-title" className="border-b border-line bg-surface">
       <Container className="py-14 sm:py-20">
         <SectionHeading id="features-title" eyebrow={t('landing.features.eyebrow')} title={t('landing.features.title')} body={t('landing.features.body')} />
-        <ul data-scroll-reveal-group className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map(({ key, icon: Icon, status }) => (
-            <li key={key} data-scroll-reveal data-tilt-card className="flex flex-col rounded-md border border-line bg-bg p-5">
+            <li key={key} className="flex flex-col rounded-md border border-line bg-bg p-5">
               <div className="flex items-start justify-between gap-3">
-                <span className="ef-feature-icon flex size-9 items-center justify-center rounded-md bg-brand-subtle text-brand">
+                <span className="flex size-9 items-center justify-center rounded-md bg-brand-subtle text-brand">
                   <Icon className="size-[18px]" aria-hidden="true" />
                 </span>
-                <StatusBadge status={status} className="ef-feature-status" />
+                <StatusBadge status={status} />
               </div>
-              <h3 className="ef-feature-title mt-4 text-[15px] font-semibold text-ink">{t(`landing.features.items.${key}.title`)}</h3>
-              <p className="ef-feature-copy mt-1.5 text-sm leading-relaxed text-ink-2">{t(`landing.features.items.${key}.body`)}</p>
+              <h3 className="mt-4 text-[15px] font-semibold text-ink">{t(`landing.features.items.${key}.title`)}</h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-ink-2">{t(`landing.features.items.${key}.body`)}</p>
             </li>
           ))}
-          <li data-scroll-reveal data-tilt-card className="flex flex-col rounded-md border border-dashed border-line-strong p-5">
+          <li className="flex flex-col rounded-md border border-dashed border-line-strong p-5">
             <div className="flex items-start justify-between gap-3">
               <span className="flex size-9 items-center justify-center rounded-md bg-surface-2 text-ink-2">
                 <CalendarClock className="size-[18px]" aria-hidden="true" />
@@ -323,12 +308,12 @@ function HowItWorks() {
   const { t } = useTranslation()
   const steps = t('landing.how.steps', { returnObjects: true })
   return (
-    <section id="how" aria-labelledby="how-title" className="ef-section ef-how border-b border-line">
+    <section id="how" aria-labelledby="how-title" className="border-b border-line">
       <Container className="py-14 sm:py-20">
         <SectionHeading id="how-title" eyebrow={t('landing.how.eyebrow')} title={t('landing.how.title')} />
-        <ol data-scroll-reveal-group className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <ol className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {Array.isArray(steps) && steps.map((step, i) => (
-            <li key={step.title} data-scroll-reveal data-tilt-card className="relative rounded-md border border-line bg-surface p-5">
+            <li key={step.title} className="relative rounded-md border border-line bg-surface p-5">
               <span className="flex size-8 items-center justify-center rounded-full border border-brand/40 bg-brand-subtle font-mono text-sm font-medium text-brand">{i + 1}</span>
               <h3 className="mt-4 text-[15px] font-semibold text-ink">{step.title}</h3>
               <p className="mt-1.5 text-sm leading-relaxed text-ink-2">{step.body}</p>
@@ -343,9 +328,9 @@ function HowItWorks() {
 function Contact({ demo }) {
   const { t } = useTranslation()
   return (
-    <section id="contact" aria-labelledby="contact-title" className="ef-section ef-contact">
+    <section id="contact" aria-labelledby="contact-title">
       <Container className="py-14 sm:py-20">
-        <div data-scroll-reveal className="grid gap-8 rounded-lg border border-line bg-surface p-6 sm:p-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-center">
+        <div className="grid gap-8 rounded-lg border border-line bg-surface p-6 sm:p-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-center">
           <div className="min-w-0">
             <SectionHeading id="contact-title" eyebrow={t('landing.contact.eyebrow')} title={t('landing.contact.title')} body={t('landing.contact.body')} />
             {CONTACT_EMAIL && (
@@ -357,15 +342,15 @@ function Contact({ demo }) {
           </div>
           <div className="flex min-w-0 flex-col gap-2.5">
             {CONTACT_EMAIL && (
-              <a href={`mailto:${CONTACT_EMAIL}`} className={landingButtonClasses({ size: 'lg', className: 'h-11' })}>
+              <a href={`mailto:${CONTACT_EMAIL}`} className={buttonClasses({ size: 'lg', className: 'h-11' })}>
                 <Mail className="size-4" aria-hidden="true" />
                 {t('landing.contact.email')}
               </a>
             )}
-            <Link to="/register" className={landingButtonClasses({ variant: CONTACT_EMAIL ? 'secondary' : 'primary', size: 'lg', className: 'h-11' })}>
+            <Link to="/register" className={buttonClasses({ variant: CONTACT_EMAIL ? 'secondary' : 'primary', size: 'lg', className: 'h-11' })}>
               {t('landing.contact.signup')}
             </Link>
-            <Button variant="secondary" size="lg" icon={Factory} loading={demo.busy} onClick={demo.start} className="landing-action h-11">
+            <Button variant="secondary" size="lg" icon={Factory} loading={demo.busy} onClick={demo.start} className="h-11">
               {t('demo.explore')}
             </Button>
             <DemoError error={demo.error} />
@@ -418,69 +403,6 @@ export function LandingPage() {
   const demo = useDemo()
 
   useEffect(signalPageReady, [])
-
-  useEffect(() => {
-    const root = document.querySelector('.ef-landing')
-    if (!root) return
-
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const tiltCards = Array.from(root.querySelectorAll('[data-tilt-card]'))
-    const onPointerMove = (event) => {
-      const card = event.currentTarget
-      if (event.pointerType === 'touch') return
-      const bounds = card.getBoundingClientRect()
-      const x = Math.max(0, Math.min(1, (event.clientX - bounds.left) / bounds.width))
-      const y = Math.max(0, Math.min(1, (event.clientY - bounds.top) / bounds.height))
-      card.style.setProperty('--ef-tilt-x', `${(x - 0.5) * 7}deg`)
-      card.style.setProperty('--ef-tilt-y', `${(0.5 - y) * 7}deg`)
-      card.style.setProperty('--ef-glow-x', `${x * 100}%`)
-      card.style.setProperty('--ef-glow-y', `${y * 100}%`)
-    }
-    const clearPointer = (event) => {
-      event.currentTarget.style.removeProperty('--ef-tilt-x')
-      event.currentTarget.style.removeProperty('--ef-tilt-y')
-      event.currentTarget.style.removeProperty('--ef-glow-x')
-      event.currentTarget.style.removeProperty('--ef-glow-y')
-    }
-    if (!reducedMotion && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-      tiltCards.forEach((card) => {
-        card.addEventListener('pointermove', onPointerMove)
-        card.addEventListener('pointerleave', clearPointer)
-      })
-    }
-
-    if (reducedMotion || !('IntersectionObserver' in window)) {
-      return () => {
-        tiltCards.forEach((card) => {
-          card.removeEventListener('pointermove', onPointerMove)
-          card.removeEventListener('pointerleave', clearPointer)
-        })
-      }
-    }
-
-    const elements = root.querySelectorAll('[data-scroll-reveal]')
-    root.querySelectorAll('[data-scroll-reveal-group]').forEach((group) => group.classList.add('ef-scroll-reveal-group'))
-    if (!elements.length) return
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        entry.target.classList.toggle('is-visible', entry.isIntersecting)
-      })
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' })
-
-    elements.forEach((element) => {
-      element.classList.add('ef-scroll-reveal')
-      observer.observe(element)
-    })
-
-    return () => {
-      observer.disconnect()
-      tiltCards.forEach((card) => {
-        card.removeEventListener('pointermove', onPointerMove)
-        card.removeEventListener('pointerleave', clearPointer)
-      })
-    }
-  }, [])
 
   return (
     <div id="top" className="ef-landing min-h-svh bg-bg">
