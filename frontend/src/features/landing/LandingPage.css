@@ -87,24 +87,6 @@
 .ef-facts-flow .ef-flow { background: rgb(8 21 15 / 78%); backdrop-filter: blur(7px); }
 .ef-hero-grid { position: relative; z-index: 3; display: block; width: 100%; max-width: 1440px; min-height: calc(100svh - 56px); padding-top: clamp(122px, 17vh, 184px); padding-bottom: 178px; }
 .ef-hero-copy { max-width: 600px; padding: 0; }
-.ef-world-wordmark {
-  position: absolute;
-  z-index: 2;
-  right: 3%;
-  bottom: 15%;
-  left: 3%;
-  color: #e5f1e7;
-  font-size: clamp(82px, 17vw, 250px);
-  font-weight: 600;
-  letter-spacing: -.095em;
-  line-height: .78;
-  text-align: center;
-  text-shadow: 0 1px 0 #a7bdaa, 0 3px 0 #43564a, 0 7px 0 #1e3024, 0 16px 32px rgb(0 0 0 / 72%);
-  transform: perspective(760px) rotateX(19deg) translateY(28px);
-  transform-origin: center bottom;
-  white-space: nowrap;
-  pointer-events: none;
-}
 .ef-hero-eyebrow,
 .ef-visual-kicker {
   display: inline-flex;
@@ -246,7 +228,6 @@
   .ef-hero-copy { padding: 0; }
   .ef-hero-title { max-width: 12ch; font-size: clamp(38px, 10vw, 56px); }
   .ef-hero-lede { font-size: 15px; }
-  .ef-world-wordmark { right: -22%; bottom: 18%; left: -22%; font-size: clamp(66px, 19vw, 112px); transform: perspective(520px) rotateX(22deg) translateY(12px); }
   .ef-hero::before { background: linear-gradient(90deg, rgb(4 12 8 / 91%) 0%, rgb(4 12 8 / 58%) 62%, rgb(4 12 8 / 8%) 100%); }
   .ef-hero-chapters { width: calc(100% - 32px); grid-template-columns: repeat(2, minmax(0, 1fr)); bottom: 17px; }
   .ef-hero-chapters a { min-height: 48px; gap: 9px; }
@@ -301,7 +282,6 @@ html:not([data-theme="dark"]) .ef-hero-atmosphere { border-color: rgb(15 123 90 
 html:not([data-theme="dark"]) .ef-world3d { opacity: .32; filter: brightness(1.65) saturate(.68) contrast(.9); }
 html:not([data-theme="dark"]) .ef-energy-stream { opacity: .3; }
 html:not([data-theme="dark"]) .ef-facts-flow .ef-flow { background: rgb(255 255 255 / 82%); }
-html:not([data-theme="dark"]) .ef-world-wordmark { color: #dce9de; text-shadow: 0 1px 0 #a7bdaa, 0 3px 0 #839989, 0 7px 0 #526b58, 0 16px 32px rgb(39 66 47 / 25%); }
 html:not([data-theme="dark"]) .ef-hero-eyebrow,
 html:not([data-theme="dark"]) .ef-visual-kicker { color: #526a58; }
 html:not([data-theme="dark"]) .ef-hero-title { color: #17241b; }

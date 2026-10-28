@@ -23,8 +23,129 @@
         document.documentElement.dataset.theme = 'light'
       }
     </script>
+    <style>
+      /* Energy-flow intro, painted before the app loads. Hidden unless the script below #ef-intro shows it. */
+      .ef-intro { display: none; }
+      .ef-intro-on, .ef-intro-on body { overflow: hidden; }
+      .ef-intro-on .ef-intro {
+        --mark: 72px;
+        position: fixed; inset: 0; z-index: 1000; display: block; overflow: hidden;
+        background: #07100d; color: #61d69a; cursor: pointer; -webkit-tap-highlight-color: transparent;
+        transition: transform .65s cubic-bezier(.76, 0, .24, 1), opacity .25s ease-in;
+        animation: ef-intro-failsafe .01s 8s forwards; /* gone even if the script stops */
+      }
+      html:not([data-theme="dark"]) .ef-intro { background: #f3f7f4; color: #0f7b5a; }
+      .ef-intro > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .ef-intro use { fill: none; stroke: currentColor; }
+      .ef-intro-tracks use { stroke-opacity: .17; stroke-width: 1.2; stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: ef-intro-draw .8s cubic-bezier(.3, 0, .2, 1) .1s forwards; }
+      .ef-intro-pulses { filter: drop-shadow(0 0 4px currentColor); }
+      .ef-intro-pulses use { stroke-width: 2.4; stroke-linecap: round; stroke-dasharray: 70 1100; stroke-dashoffset: 70; animation: ef-intro-flow .8s cubic-bezier(.5, 0, .25, 1) forwards; }
+      .ef-intro-brand {
+        position: absolute; top: 50%; left: 50%; display: flex; flex-direction: column; align-items: center;
+        transform: translate(-50%, calc(var(--mark) / -2)); transition: opacity .3s ease-in;
+      }
+      .ef-intro-mark { width: var(--mark); height: var(--mark); opacity: 0; transform: scale(.55); animation: ef-intro-in .5s cubic-bezier(.2, .9, .3, 1.25) 1s forwards; }
+      .ef-intro-mark path { fill: none; stroke: #07100d; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 100; stroke-dashoffset: 100; animation: ef-intro-draw .55s ease-out 1.15s forwards; }
+      html:not([data-theme="dark"]) .ef-intro-mark path { stroke: #ffffff; }
+      .ef-intro-ring { position: absolute; top: 0; left: 50%; width: var(--mark); height: var(--mark); margin-left: calc(var(--mark) / -2); border: 1.5px solid currentColor; border-radius: 22%; opacity: 0; animation: ef-intro-ring .9s ease-out 1.08s; }
+      .ef-intro-word { margin-top: 20px; color: #ecf4ee; font: 600 28px/1 "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; letter-spacing: -.01em; opacity: 0; transform: translateY(8px); animation: ef-intro-in .55s cubic-bezier(.2, .8, .2, 1) 1.35s forwards; }
+      html:not([data-theme="dark"]) .ef-intro-word { color: #14201b; }
+      .ef-intro.is-waiting .ef-intro-ring { animation: ef-intro-ring 1.4s ease-out infinite; }
+      .ef-intro.is-leaving { transform: translateY(-100%); }
+      .ef-intro.is-leaving .ef-intro-brand, .ef-intro.is-skipped { opacity: 0; }
+      @keyframes ef-intro-draw { to { stroke-dashoffset: 0; } }
+      @keyframes ef-intro-flow { to { stroke-dashoffset: -1000; } }
+      @keyframes ef-intro-in { to { opacity: 1; transform: none; } }
+      @keyframes ef-intro-ring { from { opacity: .55; transform: scale(1); } to { opacity: 0; transform: scale(2.4); } }
+      @keyframes ef-intro-failsafe { to { visibility: hidden; opacity: 0; pointer-events: none; } }
+      @media (max-width: 640px) {
+        .ef-intro-on .ef-intro { --mark: 60px; }
+        .ef-intro-word { margin-top: 16px; font-size: 23px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .ef-intro-on .ef-intro { display: none; }
+      }
+    </style>
   </head>
   <body>
+    <div id="ef-intro" class="ef-intro" aria-hidden="true">
+      <svg class="ef-intro-tracks" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <path id="ef-s1" pathLength="1000" d="M-40 150C420 150 480 450 800 450" />
+          <path id="ef-s2" pathLength="1000" d="M-40 450H800" />
+          <path id="ef-s3" pathLength="1000" d="M-40 760C400 760 500 450 800 450" />
+          <path id="ef-s4" pathLength="1000" d="M120-40C180 300 560 450 800 450" />
+          <path id="ef-s5" pathLength="1000" d="M1640 150C1180 150 1120 450 800 450" />
+          <path id="ef-s6" pathLength="1000" d="M1640 450H800" />
+          <path id="ef-s7" pathLength="1000" d="M1640 760C1200 760 1100 450 800 450" />
+          <path id="ef-s8" pathLength="1000" d="M1340 940C1280 640 1040 450 800 450" />
+          <path id="ef-s9" pathLength="1000" d="M800-40V450" />
+          <path id="ef-s10" pathLength="1000" d="M800 940V450" />
+        </defs>
+        <use href="#ef-s1" /><use href="#ef-s2" /><use href="#ef-s3" /><use href="#ef-s4" /><use href="#ef-s5" />
+        <use href="#ef-s6" /><use href="#ef-s7" /><use href="#ef-s8" /><use href="#ef-s9" /><use href="#ef-s10" />
+      </svg>
+      <svg class="ef-intro-pulses" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+        <use href="#ef-s1" style="animation-delay: .22s" /><use href="#ef-s2" style="animation-delay: .34s" />
+        <use href="#ef-s3" style="animation-delay: .28s" /><use href="#ef-s4" style="animation-delay: .4s" />
+        <use href="#ef-s5" style="animation-delay: .26s" /><use href="#ef-s6" style="animation-delay: .32s" />
+        <use href="#ef-s7" style="animation-delay: .2s" /><use href="#ef-s8" style="animation-delay: .38s" />
+        <use href="#ef-s9" style="animation-delay: .44s" /><use href="#ef-s10" style="animation-delay: .3s" />
+      </svg>
+      <div class="ef-intro-brand">
+        <span class="ef-intro-ring"></span>
+        <svg class="ef-intro-mark" viewBox="0 0 32 32">
+          <rect width="32" height="32" rx="7" fill="currentColor" />
+          <path pathLength="100" d="M6 20.5c3.5 0 3.5-9 7-9s3.5 9 7 9 3.5-9 6-9" />
+        </svg>
+        <span class="ef-intro-word">EnergyFlow</span>
+      </div>
+    </div>
+    <script>
+      // The energy-flow intro: once per browser session, on the public landing page only. Skipped for
+      // signed-in visitors (they get the dashboard) and with reduced motion; a click or key skips it.
+      // It lifts when the page is on screen (src/lib/intro.js), so it also covers loading, but never
+      // later than 7 s.
+      ;(function () {
+        var intro = document.getElementById('ef-intro')
+        var html = document.documentElement
+        var show = false
+        try {
+          show = location.pathname === '/' && !sessionStorage.getItem('ef.intro') && localStorage.getItem('ef.signedIn') !== '1'
+            && !matchMedia('(prefers-reduced-motion: reduce)').matches
+          if (show) sessionStorage.setItem('ef.intro', '1')
+        } catch (e) {}
+        if (!show) return intro.remove()
+
+        html.classList.add('ef-intro-on')
+        var ready = false
+        var played = false
+        var done = false
+        function onKey() { finish(true) }
+        function finish(skipped) {
+          if (done) return
+          done = true
+          removeEventListener('keydown', onKey)
+          intro.classList.add(skipped ? 'is-skipped' : 'is-leaving')
+          setTimeout(function () {
+            intro.remove()
+            html.classList.remove('ef-intro-on')
+          }, skipped ? 260 : 660)
+        }
+        addEventListener('energyflow:ready', function () {
+          ready = true
+          if (played) finish()
+        })
+        setTimeout(function () {
+          played = true
+          if (ready) finish()
+          else intro.classList.add('is-waiting')
+        }, 2000)
+        setTimeout(finish, 7000)
+        intro.addEventListener('click', function () { finish(true) })
+        addEventListener('keydown', onKey)
+      })()
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

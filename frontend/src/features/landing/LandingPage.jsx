@@ -6,6 +6,7 @@ import {
   MessageSquareText, Power, ScanSearch, Target, X,
 } from 'lucide-react'
 import { cn } from '../../lib/cn'
+import { signalPageReady } from '../../lib/intro'
 import { useAuth } from '../../providers/AuthProvider'
 import { useApiErrors } from '../../hooks/useApiErrors'
 import { useDismiss } from '../../hooks/useDismiss'
@@ -175,7 +176,6 @@ function Hero({ demo }) {
     <section aria-labelledby="hero-title" className="ef-hero">
       <EnergyFlowWorld />
       <div className="ef-hero-atmosphere" aria-hidden="true" />
-      <div className="ef-world-wordmark" aria-hidden="true">EnergyFlow</div>
       <Container className="ef-hero-grid grid items-center gap-10 py-10 sm:py-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-14 lg:py-20">
         <div className="ef-hero-copy min-w-0">
           <p className="ef-hero-eyebrow"><span className="ef-live-dot" />{t('app.tagline')}</p>
@@ -416,6 +416,8 @@ function Footer() {
 /** The public front page at "/" for visitors (RouteGuards); signed-in users get the dashboard there instead. */
 export function LandingPage() {
   const demo = useDemo()
+
+  useEffect(signalPageReady, [])
 
   useEffect(() => {
     const root = document.querySelector('.ef-landing')

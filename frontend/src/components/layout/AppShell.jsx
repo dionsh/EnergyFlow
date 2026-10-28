@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Menu, X } from 'lucide-react'
 import { cn } from '../../lib/cn'
+import { signalPageReady } from '../../lib/intro'
 import { useAuth } from '../../providers/AuthProvider'
 import { IconButton } from '../ui/Button'
 import { PageSkeleton } from '../ui/States'
@@ -80,6 +81,7 @@ function Shell() {
 }
 
 export function AppShell() {
+  useEffect(signalPageReady, [])
   return (
     <AssistantProvider>
       <Shell />
