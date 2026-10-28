@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useMutation } from '@tanstack/react-query'
-import { CircleAlert, CircleCheck } from 'lucide-react'
+import { CircleAlert, CircleCheck, Info } from 'lucide-react'
 import { api } from '../../lib/api'
 import { LANGUAGES } from '../../i18n/languages'
 import { useAuth } from '../../providers/AuthProvider'
@@ -21,7 +21,7 @@ function SavedNote({ children }) {
   )
 }
 
-function ProfileForm() {
+function ProfileForm({ locked }) {
   const { t, i18n } = useTranslation()
   const { user, setSession } = useAuth()
   const { errorMessage, fieldErrors } = useApiErrors()
@@ -52,14 +52,14 @@ function ProfileForm() {
             save.mutate(form)
           }}
         >
-          <Field label={t('settings.account.fullName')} name="full_name" autoComplete="name" value={form.full_name} onChange={update} error={fields.full_name} />
+          <Field label={t('settings.account.fullName')} name="full_name" autoComplete="name" value={form.full_name} onChange={update} error={fields.full_name} disabled={locked} />
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label={t('settings.account.email')} value={user.email} disabled readOnly />
             <Field label={t('settings.account.role')} value={t(roleTranslationKey(user.role))} disabled readOnly />
           </div>
           <Field label={t('settings.account.language')} error={fields.locale}>
             {({ id, invalid }) => (
-              <Select id={id} invalid={invalid} name="locale" value={form.locale} onChange={update}>
+              <Select id={id} invalid={invalid} name="locale" value={form.locale} onChange={update} disabled={locked}>
                 {LANGUAGES.map((language) => (
                   <option key={language.code} value={language.code}>
                     {language.label}
@@ -73,19 +73,21 @@ function ProfileForm() {
               {errorMessage(save.error)}
             </Callout>
           )}
-          <div className="flex items-center gap-3 border-t border-line pt-4">
-            <Button type="submit" loading={save.isPending}>
-              {save.isPending ? t('common.saving') : t('common.save')}
-            </Button>
-            {save.isSuccess && <SavedNote>{t('common.saved')}</SavedNote>}
-          </div>
+          {!locked && (
+            <div className="flex items-center gap-3 border-t border-line pt-4">
+              <Button type="submit" loading={save.isPending}>
+                {save.isPending ? t('common.saving') : t('common.save')}
+              </Button>
+              {save.isSuccess && <SavedNote>{t('common.saved')}</SavedNote>}
+            </div>
+          )}
         </form>
       </CardBody>
     </Card>
   )
 }
 
-function PasswordForm() {
+function PasswordForm({ locked }) {
   const { t } = useTranslation()
   const { setSession } = useAuth()
   const { errorMessage, fieldErrors } = useApiErrors()
@@ -116,7 +118,7 @@ function PasswordForm() {
             save.mutate(form)
           }}
         >
-          <PasswordField label={t('settings.account.currentPassword')} name="current_password" autoComplete="current-password" value={form.current_password} onChange={update} error={fields.current_password} />
+          <PasswordField label={t('settings.account.currentPassword')} name="current_password" autoComplete="current-password" value={form.current_password} onChange={update} error={fields.current_password} disabled={locked} />
           <PasswordField
             label={t('settings.account.newPassword')}
             name="new_password"
@@ -125,18 +127,21 @@ function PasswordForm() {
             value={form.new_password}
             onChange={update}
             error={fields.new_password}
+            disabled={locked}
           />
           {save.isError && save.error.code !== 'validation_failed' && (
             <Callout tone="critical" icon={CircleAlert}>
               {errorMessage(save.error)}
             </Callout>
           )}
-          <div className="flex flex-wrap items-center gap-3 border-t border-line pt-4">
-            <Button type="submit" variant="secondary" loading={save.isPending}>
-              {t('settings.account.changePassword')}
-            </Button>
-            {save.isSuccess && <SavedNote>{t('settings.account.passwordChanged')}</SavedNote>}
-          </div>
+          {!locked && (
+            <div className="flex flex-wrap items-center gap-3 border-t border-line pt-4">
+              <Button type="submit" variant="secondary" loading={save.isPending}>
+                {t('settings.account.changePassword')}
+              </Button>
+              {save.isSuccess && <SavedNote>{t('settings.account.passwordChanged')}</SavedNote>}
+            </div>
+          )}
         </form>
       </CardBody>
     </Card>
@@ -144,10 +149,17 @@ function PasswordForm() {
 }
 
 export function AccountSettings() {
+  const { t } = useTranslation()
+  const { company } = useAuth()
+  // The demo accounts are shared by every visitor and rebuilt by the Demo Director (the API refuses changes too).
+  const locked = Boolean(company?.is_demo)
   return (
-    <div className="grid max-w-5xl gap-6 lg:grid-cols-2">
-      <ProfileForm />
-      <PasswordForm />
+    <div className="flex max-w-5xl flex-col gap-6">
+      {locked && <Callout icon={Info}>{t('errors.demo_account')}</Callout>}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <ProfileForm locked={locked} />
+        <PasswordForm locked={locked} />
+      </div>
     </div>
   )
 }

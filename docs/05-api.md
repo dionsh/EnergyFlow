@@ -31,9 +31,10 @@ Roles: **V** viewer, **M** manager, **A** admin, **O** owner. Each role includes
 | POST | `/auth/password/reset` | public | Use the one-time token and a new password; revokes existing sessions |
 | POST | `/auth/logout` | V | Revoke session |
 | GET | `/auth/me` | V | User, role, company summary, locale, `is_demo` |
-| PATCH | `/auth/me` | V | Name, locale, password change |
+| PATCH | `/auth/me` | V | Name, locale, password change. Refused (409 `demo_account`) for the shared demo accounts |
 | POST | `/invitations` · GET · DELETE `/invitations/{id}` | A | Invite employees |
 | POST | `/invitations/accept` | public | Accept with token → set password |
+| GET | `/public/bill-check?category&kwh&kvarh&kw` | public | Landing-page bill check: one month's engaged-power and reactive-energy charges at a published template tariff (`tariff_plans.company_id` NULL), excl. VAT, through `TariffBook::bill()`. Rate-limited, no company data |
 
 ## Company setup
 
@@ -47,8 +48,8 @@ Roles: **V** viewer, **M** manager, **A** admin, **O** owner. Each role includes
 | CRUD | `/calendar-days` | A | Closures and company holidays (national holidays come from the seed) |
 | CRUD | `/production-overrides` | M | "Extra shift tonight", so overtime isn't flagged as waste |
 | GET / PUT | `/production-output?from&to` | M | Daily output, for intensity per unit |
-| CRUD | `/tariffs` (+ windows, rates) | A | Tariff plans, each requiring `source_note` |
-| GET | `/tariffs/{id}/bill-preview?month=2026-09` | V | Bill calculation lines for a month |
+| GET | `/company/tariff` | V | The company's tariff (`current`, or null) and the published KESCO groups (`templates`: ERO template plans with `company_id` NULL) |
+| PATCH | `/company/tariff` | A | `{ template_id }`: the company gets its own copy of that template (earlier copies stay, inactive). Refused for the demo company. Custom contract plans are not built yet |
 | CRUD | `/utility-bills` | M | Enter KESCO bills (reconciliation, pre-install baseline) |
 | GET / POST | `/emission-factors` | V / A | List defaults + custom; add a custom factor (source required) |
 | PATCH | `/company/emission-factor` | A | Select the active grid factor (audited) |

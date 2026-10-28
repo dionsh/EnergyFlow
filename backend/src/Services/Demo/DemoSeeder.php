@@ -14,6 +14,7 @@ use EnergyFlow\Services\Jobs\AnalyticsPipeline;
 use EnergyFlow\Services\Simulation\SimContext;
 use EnergyFlow\Services\Simulation\Simulator;
 use EnergyFlow\Services\Tariff\TariffBook;
+use EnergyFlow\Services\Tariff\TariffPlans;
 use EnergyFlow\Services\Telemetry\IngestService;
 use EnergyFlow\Services\Telemetry\RollupService;
 use EnergyFlow\Services\Telemetry\DeviceSecrets;
@@ -140,7 +141,7 @@ final class DemoSeeder
 
         // Tariff: the company's own copy of the official KESCO Category I template.
         $template = Database::one("SELECT * FROM tariff_plans WHERE company_id IS NULL AND category = 'commercial_cat_1' ORDER BY id LIMIT 1");
-        $planId = self::copyTariff((int) $template['id'], $companyId);
+        $planId = TariffPlans::copy((int) $template['id'], $companyId);
         Database::run('UPDATE companies SET tariff_plan_id = ? WHERE id = ?', [$planId, $companyId]);
 
         // Machines: [code, name, type, phases, rated kW, schedule, department, criticality, control,
@@ -248,30 +249,6 @@ final class DemoSeeder
         );
 
         return ['company_id' => $companyId, 'machines' => count($machineIds), 'devices' => count($devices), 'owner_password' => $generated];
-    }
-
-    private static function copyTariff(int $templateId, int $companyId): int
-    {
-        Database::run(
-            'INSERT INTO tariff_plans (company_id, name, supplier, mode, voltage_level, category, fixed_monthly_eur, demand_charge_eur_kw_month,
-                                       reactive_charge_eur_kvarh, reactive_pf_threshold, vat_rate, valid_from, valid_to, source_note, is_active)
-             SELECT ?, name, supplier, mode, voltage_level, category, fixed_monthly_eur, demand_charge_eur_kw_month,
-                    reactive_charge_eur_kvarh, reactive_pf_threshold, vat_rate, valid_from, valid_to, source_note, 1
-               FROM tariff_plans WHERE id = ?',
-            [$companyId, $templateId],
-        );
-        $planId = (int) Database::pdo()->lastInsertId();
-        Database::run(
-            'INSERT INTO tariff_windows (tariff_plan_id, season_start_mmdd, season_end_mmdd, period, start_time, end_time)
-             SELECT ?, season_start_mmdd, season_end_mmdd, period, start_time, end_time FROM tariff_windows WHERE tariff_plan_id = ?',
-            [$planId, $templateId],
-        );
-        Database::run(
-            'INSERT INTO tariff_rates (tariff_plan_id, period, block_from_kwh, block_to_kwh, rate_eur_kwh)
-             SELECT ?, period, block_from_kwh, block_to_kwh, rate_eur_kwh FROM tariff_rates WHERE tariff_plan_id = ?',
-            [$planId, $templateId],
-        );
-        return $planId;
     }
 
     /** Device secret for the bridge/firmware of a demo or real device (shown once at provisioning). */

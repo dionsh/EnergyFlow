@@ -2,26 +2,26 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
-  Activity, ArrowRight, BadgeCheck, CalendarClock, Camera, ChartLine, Check, CircleAlert, CircleCheck, Cpu, Factory, FileText, FlaskConical, Leaf, Mail, Menu,
+  Activity, ArrowRight, BadgeCheck, CalendarClock, Camera, ChartLine, Check, ChevronDown, CircleCheck, Cpu, Factory, FileText, FlaskConical, Leaf, Mail, Menu,
   MessageSquareText, Power, ScanSearch, Target, X,
 } from 'lucide-react'
-import { cn } from '../../lib/cn'
 import { signalPageReady } from '../../lib/intro'
 import { useAuth } from '../../providers/AuthProvider'
-import { useApiErrors } from '../../hooks/useApiErrors'
 import { useDismiss } from '../../hooks/useDismiss'
 import { Button, IconButton } from '../../components/ui/Button'
 import { buttonClasses } from '../../components/ui/buttonStyles'
 import { Badge } from '../../components/ui/Badge'
 import { Logo } from '../../components/ui/Logo'
-import { Callout } from '../../components/ui/States'
 import { LanguageSwitch, ThemeMenu } from '../../components/layout/TopBarControls'
+import { BillCheck } from './BillCheck'
 import { EnergyFlowAnimation } from './EnergyFlowAnimation'
+import { Container, DemoError, SectionHeading } from './LandingParts'
+import { Showcase } from './Showcase'
 
 /** Optional public contact address, set at build time (frontend/.env.example). Nothing is shown without it. */
 const CONTACT_EMAIL = (import.meta.env.VITE_CONTACT_EMAIL ?? '').trim()
 
-const SECTIONS = ['about', 'features', 'how', 'contact']
+const SECTIONS = ['about', 'features', 'how', 'bill', 'faq', 'contact']
 
 /** What the product does today, checked against the code; `status` is shown on every card. */
 const FEATURES = [
@@ -42,20 +42,6 @@ const STATUS = {
   available: { tone: 'good', icon: CircleCheck },
   prototype: { tone: 'warning', icon: FlaskConical },
   planned: { tone: 'neutral', icon: CalendarClock },
-}
-
-function Container({ className, children }) {
-  return <div className={cn('mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-8', className)}>{children}</div>
-}
-
-function SectionHeading({ id, eyebrow, title, body, className }) {
-  return (
-    <div className={cn('max-w-2xl', className)}>
-      <p className="text-[13px] font-semibold uppercase tracking-[0.06em] text-brand">{eyebrow}</p>
-      <h2 id={id} className="mt-2 text-[24px] font-semibold leading-tight tracking-[-0.015em] text-ink sm:text-[30px]">{title}</h2>
-      {body && <p className="mt-3 text-[15px] leading-relaxed text-ink-2 sm:text-base">{body}</p>}
-    </div>
-  )
 }
 
 /** The read-only demo company, one click away (the same sign-in as on the login page). */
@@ -102,9 +88,9 @@ function Header() {
         <a href="#top" className="shrink-0 rounded-sm" onClick={goTo('top')}>
           <Logo />
         </a>
-        <nav aria-label={t('landing.nav.label')} className="ml-6 hidden items-center gap-0.5 lg:flex">
+        <nav aria-label={t('landing.nav.label')} className="ml-6 hidden items-center gap-0.5 xl:flex">
           {links.map(([id, key]) => (
-            <a key={id} href={`#${id}`} className="rounded-sm px-3 py-2 text-sm text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink">
+            <a key={id} href={`#${id}`} className="whitespace-nowrap rounded-sm px-3 py-2 text-sm text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink">
               {t(`landing.nav.${key}`)}
             </a>
           ))}
@@ -121,7 +107,7 @@ function Header() {
           <IconButton
             label={open ? t('landing.nav.closeMenu') : t('landing.nav.menu')}
             icon={open ? X : Menu}
-            className="-mr-1.5 lg:hidden"
+            className="-mr-1.5 xl:hidden"
             aria-expanded={open}
             aria-controls="landing-menu"
             onClick={() => setOpen((v) => !v)}
@@ -129,7 +115,7 @@ function Header() {
         </div>
       </Container>
       {open && (
-        <div id="landing-menu" className="animate-fade border-t border-line bg-surface lg:hidden">
+        <div id="landing-menu" className="animate-fade border-t border-line bg-surface xl:hidden">
           <Container className="flex flex-col gap-1 py-3">
             <nav aria-label={t('landing.nav.label')} className="flex flex-col">
               {links.map(([id, key]) => (
@@ -150,16 +136,6 @@ function Header() {
         </div>
       )}
     </header>
-  )
-}
-
-function DemoError({ error }) {
-  const { errorMessage } = useApiErrors()
-  if (!error) return null
-  return (
-    <Callout tone="critical" icon={CircleAlert} className="mt-4">
-      {errorMessage(error)}
-    </Callout>
   )
 }
 
@@ -325,6 +301,30 @@ function HowItWorks() {
   )
 }
 
+/** Plain <details>: opens and closes without JavaScript, keyboard and screen-reader friendly. */
+function Faq() {
+  const { t } = useTranslation()
+  const items = t('landing.faq.items', { returnObjects: true })
+  return (
+    <section id="faq" aria-labelledby="faq-title" className="border-b border-line">
+      <Container className="grid gap-10 py-14 sm:py-20 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-16">
+        <SectionHeading id="faq-title" eyebrow={t('landing.faq.eyebrow')} title={t('landing.faq.title')} body={t('landing.faq.body')} />
+        <div className="min-w-0 divide-y divide-line border-y border-line">
+          {Array.isArray(items) && items.map((item) => (
+            <details key={item.q} className="group">
+              <summary className="flex cursor-pointer list-none items-start justify-between gap-4 rounded-sm py-4 text-[15px] font-semibold text-ink hover:text-brand [&::-webkit-details-marker]:hidden">
+                {item.q}
+                <ChevronDown className="mt-0.5 size-[18px] shrink-0 text-ink-3 transition-transform group-open:rotate-180" aria-hidden="true" />
+              </summary>
+              <p className="pb-5 pr-8 text-sm leading-relaxed text-ink-2">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </Container>
+    </section>
+  )
+}
+
 function Contact({ demo }) {
   const { t } = useTranslation()
   return (
@@ -411,8 +411,11 @@ export function LandingPage() {
         <Hero demo={demo} />
         <Facts />
         <About />
+        <Showcase />
         <Features />
         <HowItWorks />
+        <BillCheck demo={demo} />
+        <Faq />
         <Contact demo={demo} />
       </main>
       <Footer />

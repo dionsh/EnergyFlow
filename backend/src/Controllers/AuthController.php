@@ -15,6 +15,7 @@ use EnergyFlow\Models\User;
 use EnergyFlow\Services\Auth\AuthService;
 use EnergyFlow\Services\Auth\PasswordResetService;
 use EnergyFlow\Services\Auth\SessionService;
+use EnergyFlow\Services\Demo\DemoGuard;
 use EnergyFlow\Utils\Locales;
 
 final class AuthController
@@ -114,6 +115,7 @@ final class AuthController
     public function updateMe(Request $request, array $params): Response
     {
         $user = $request->user();
+        DemoGuard::refuse((int) $user['company_id']); // the shared demo guest keeps its name, language and password
         $input = Validator::validate($request->json(), [
             'full_name' => ['string', 'min:2', 'max:120'],
             'locale' => [Locales::rule()],

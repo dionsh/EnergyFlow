@@ -9,6 +9,7 @@ import { GuestOnly, RequireAuth } from './components/layout/RouteGuards'
 import { LoginPage } from './features/auth/LoginPage'
 import { RegisterPage } from './features/auth/RegisterPage'
 import { ForgotPasswordPage } from './features/auth/ForgotPasswordPage'
+import { DemoStart } from './features/landing/DemoStart'
 import { pageLoaders } from './app/pageLoaders'
 
 const page = (load, name) => lazy(() => load().then((module) => ({ default: module[name] })))
@@ -60,6 +61,8 @@ export default function App() {
                 </Route>
                 {/* Open while signed in too: a reset link works in any browser, and signs every session out. */}
                 <Route path="/reset-password" element={<ForgotPasswordPage />} />
+                {/* The Demo Day QR code: straight into the read-only demo company. */}
+                <Route path="/demo" element={<DemoStart />} />
                 {/* "/" is the public landing page for visitors and the dashboard once signed in. */}
                 <Route element={<RequireAuth home={<LandingPage />} />}>
                   <Route element={<AppShell />}>

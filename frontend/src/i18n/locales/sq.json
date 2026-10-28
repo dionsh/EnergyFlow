@@ -429,6 +429,29 @@
       "company": "Kompania",
       "account": "Llogaria"
     },
+    "tariff": {
+      "title": "Tarifa e energjisë",
+      "hint": "Grupi juaj tarifor te KESCO. EnergyFlow e llogarit çdo kWh, kulmin mujor dhe energjinë reaktive me tarifat e publikuara të ZRRE-së për të.",
+      "group": "Grupi tarifor",
+      "choose": "Zgjidhni grupin tarifor",
+      "groups": {
+        "commercial_cat_1": "0,4 kV Kategoria I (grupi tarifor 3)",
+        "commercial_cat_2": "0,4 kV Kategoria II (grupi tarifor 4)"
+      },
+      "groupHint": "Faturat e Kategorisë I kanë rreshta për fuqinë e angazhuar dhe energjinë reaktive.",
+      "energy": "Energjia",
+      "energyValue": "{{high}} tarifa e lartë · {{low}} tarifa e ulët",
+      "fixed": "Pagesa fikse",
+      "fixedValue": "{{eur}} në muaj",
+      "engaged": "Fuqia e angazhuar",
+      "engagedValue": "{{eur}} për kW në muaj",
+      "reactive": "Energjia reaktive",
+      "reactiveValue": "{{rate}} €c/kVArh mbi cos φ {{threshold}}",
+      "notCharged": "Nuk paguhet",
+      "source": "Vendimi i ZRRE-së V_2703_2025, tarifat me pakicë, të mbajtura edhe për 2026. Çmimet pa TVSH.",
+      "readOnly": "Vetëm pronarët dhe administratorët mund ta ndryshojnë tarifën.",
+      "custom": "Kompania juaj përdor planin e vet tarifor: {{name}}."
+    },
     "company": {
       "title": "Profili i kompanisë",
       "hint": "Përdoret në raportet e qëndrueshmërisë (VSME B1) dhe për intensitetin e energjisë për punonjës dhe për € qarkullimi.",
@@ -517,6 +540,8 @@
     "badge": "Demo · kompani fiktive",
     "explore": "Eksploro kompaninë demo",
     "exploreHint": "Turne vetëm për lexim në një prodhues fiktiv plastike në Prishtinë.",
+    "opening": "Po hapet kompania demo…",
+    "back": "Kthehu te kreu",
     "director": "Drejtuesi i demos",
     "virtualTime": "Ora virtuale",
     "advanceHour": "+1 orë",
@@ -1972,6 +1997,8 @@
       "features": "Veçoritë",
       "how": "Si funksionon",
       "contact": "Kontakti",
+      "bill": "Kontrolli i faturës",
+      "faq": "Pyetje",
       "login": "Kyçu",
       "signup": "Regjistrohu",
       "menu": "Hap menynë",
@@ -2137,6 +2164,106 @@
         {
           "title": "Dëshmoni dhe raportoni",
           "body": "Ndiqni kursimet e verifikuara dhe CO₂e, dhe shkarkoni raporte për energjinë, karbonin dhe ESG të ndërtuara nga të njëjtat të dhëna."
+        }
+      ]
+    },
+    "showcase": {
+      "eyebrow": "Produkti",
+      "title": "Shikojeni në veprim",
+      "body": "Ekrane të vërteta nga kompania demo, ashtu siç i sheh një përdorues i kyçur.",
+      "items": {
+        "overview": {
+          "tab": "Përmbledhje",
+          "caption": "Fuqia tani, energjia e sotme dhe e këtij muaji, fatura e parashikuar dhe CO₂e, si dhe ngarkesa e sotme krahasuar me një ditë pune tipike.",
+          "alt": "Përmbledhja e EnergyFlow për kompaninë demo: një alarm për punë pas orarit, fuqia tani, energjia sot dhe këtë muaj, fatura e parashikuar, CO₂e dhe ngarkesa e sotme krahasuar me një ditë pune tipike."
+        },
+        "waste": {
+          "tab": "Humbjet",
+          "caption": "Energjia e humbur këtë muaj në kWh, € dhe CO₂e: për ditë, sipas llojit dhe sipas makinerisë.",
+          "alt": "Faqja e humbjeve: energjia e humbur këtë muaj me koston dhe CO₂e, humbjet për ditë dhe ndarja sipas llojit dhe sipas makinerisë."
+        },
+        "carbon": {
+          "tab": "Karboni & ESG",
+          "caption": "Scope 2 nga energjia elektrike e matur, me faktorin e emetimit dhe burimin e tij në ekran, CO₂e për muaj dhe gjendja e Scope 1 dhe 2.",
+          "alt": "Faqja Karboni & ESG: CO₂e nga energjia elektrike me faktorin e emetimit të rrjetit dhe burimin e tij, intensiteti i karbonit, CO₂e e shmangur e verifikuar, CO₂e për muaj dhe gjendja e Scope 1 dhe 2."
+        }
+      },
+      "note": "Kompani demo me makineri të simuluara."
+    },
+    "billCheck": {
+      "eyebrow": "Kontrolli i faturës",
+      "title": "Sa ju kushtojnë fuqia e angazhuar dhe energjia reaktive?",
+      "body": "Shkruani tri numra nga një faturë mujore e energjisë elektrike. EnergyFlow i llogarit me tarifën e publikuar të ZRRE-së, me të njëjtat rregulla si në aplikacion.",
+      "group": "Grupi tarifor",
+      "groupHint": "Faturat e Kategorisë I kanë rreshta për fuqinë e angazhuar dhe energjinë reaktive.",
+      "groups": {
+        "commercial_cat_1": "0,4 kV Kategoria I (grupi tarifor 3)",
+        "commercial_cat_2": "0,4 kV Kategoria II (grupi tarifor 4)"
+      },
+      "kwh": "Energjia aktive e muajit",
+      "kwhHint": "Tarifa e lartë dhe e ulët bashkë",
+      "kvarh": "Energjia reaktive e muajit",
+      "kw": "Fuqia e angazhuar",
+      "kwHint": "Vlera më e lartë 15-minutëshe e maksigrafit",
+      "submit": "Kontrollo faturën",
+      "notCharged": "Kategoria II nuk paguan as fuqi të angazhuar, as energji reaktive: fatura përbëhet nga energjia me tarifë të lartë dhe të ulët dhe një pagesë fikse mujore. EnergyFlow prapë gjen çfarë punon pas orarit ose rri në pritje.",
+      "rulesTitle": "Çfarë llogarit kontrolli",
+      "rules": [
+        {
+          "title": "Energjia reaktive mbi cos φ 0,95",
+          "body": "ZRRE e ngarkon energjinë reaktive mbi një lejim: kVArh e lejuara = kWh × tan(arccos 0,95), rreth një e treta e kWh-ve të muajit."
+        },
+        {
+          "title": "Fuqia e angazhuar sipas maksigrafit",
+          "body": "Maksigrafi e mat fuqinë mesatare për 15 minuta dhe ruan vlerën më të lartë të muajit; fuqia e angazhuar paguhet sipas saj, për çdo kW."
+        }
+      ],
+      "powerFactor": "Faktori i fuqisë: cos φ {{pf}}",
+      "pfBelow": "nën {{threshold}}, prandaj një pjesë e energjisë reaktive paguhet",
+      "pfOk": "{{threshold}} ose më mirë, prandaj energjia reaktive nuk paguhet",
+      "reactive": "Energjia reaktive",
+      "reactiveDetail": "{{billed}} mbi lejimin prej {{allowed}}, me {{rate}} €c/kVArh",
+      "reactiveAdvice": "Kompensimi i fuqisë reaktive që e mban cos φ në {{threshold}} ose më lart e heq këtë pagesë. Madhësinë le ta përcaktojë një elektricist nga një matje e ngarkesës.",
+      "engaged": "Fuqia e angazhuar",
+      "engagedDetail": "{{kw}} × {{rate}} për kW në muaj",
+      "engagedAdvice": "Çdo kW më pak në çerek orën më të ngarkuar të muajit kursen {{eur}} në vit, për shembull kur ngarkesat fleksibile punojnë jashtë çerek orëve më të ngarkuara.",
+      "perMonth": "në muaj",
+      "perYear": "{{eur}} në vit",
+      "cta": "EnergyFlow i mat të dyja çdo muaj dhe tregon cilat makineri i shkaktojnë.",
+      "source": "Vendimi i ZRRE-së V_2703_2025 (16 prill 2025), tarifat me pakicë për 0,4 kV, të mbajtura edhe për 2026 (Bordi i ZRRE-së, 7 maj 2026). Pa TVSH; një vit = ky muaj × 12. Vlerësim, jo faturë."
+    },
+    "faq": {
+      "eyebrow": "Pyetje",
+      "title": "Pyetje të shpeshta",
+      "body": "Përgjigje të drejtpërdrejta për si funksionon EnergyFlow sot. Çdo gjë e papërfunduar shënohet si e tillë.",
+      "items": [
+        {
+          "q": "A duhet t'i ndryshoj makineritë ose instalimin elektrik?",
+          "a": "Jo për t'i monitoruar. Nyja EF-N3 e EnergyFlow kapet rreth kabllove ekzistuese të furnizimit, pa prerë e pa rilidhur asgjë, dhe funksionojnë edhe releja të mençura Shelly Gen2 të mbështetura. Vetëm fikja në distancë lidhet në qarkun e komandës së makinerisë, si kontakt STOP që e vendos një elektricist. Nyja EF-N3 është dizajn prototip, ende jo produkt i certifikuar."
+        },
+        {
+          "q": "A mund ta fikë EnergyFlow një makineri vetë?",
+          "a": "Vetëm kur vendosni ju: një fikje që e konfirmon dikush, ose një rregull që e caktoni vetë, si \"fike 15 minuta pas ndërrimit\". EnergyFlow nuk ndez kurrë një makineri dhe nuk fik kurrë një makineri të shënuar si kritike, ndërsa çdo komandë verifikohet nga matësi."
+        },
+        {
+          "q": "Kush mund t'i shohë të dhënat e kompanisë sime?",
+          "a": "Makineritë, alarmet dhe raportet tuaja u shfaqen vetëm njerëzve në llogarinë e kompanisë suaj, secilit me rolin që ia jep pronari ose administratori. Kompania demo është fiktive dhe çdo vizitor mund ta shfletojë vetëm për lexim."
+        },
+        {
+          "q": "Çfarë ndodh nëse bie lidhja me internetin?",
+          "a": "Makineritë vazhdojnë të punojnë normalisht: EnergyFlow nuk ka nevojë për lidhje që një makineri të mbetet e ndezur. Leximet presin dhe dërgohen sapo të kthehet lidhja: ura për releja të mençura i ruan deri në 24 orë, ndërsa dizajni i EF-N3 ruan disa ditë."
+        },
+        {
+          "q": "Nga vijnë shifrat në € dhe CO₂e?",
+          "a": "Nga leximet e matësve tuaj. Kostot llogariten me tarifat e publikuara të ZRRE-së, të njëjtat si te kontrolli i faturës më lart. CO₂e llogaritet me faktorin e emetimit të rrjetit të Kosovës (Ember, përmes Our World in Data) dhe, për kuponët e karburantit, me faktorët UK DESNZ 2025. Faqja Karboni & ESG tregon faktorin dhe metodologjinë pas çdo shifre."
+        },
+        {
+          "q": "Sa kushton EnergyFlow?",
+          "a": "Ende nuk ka listë çmimesh: EnergyFlow është prototip që po përgatitet për pilotet e para. Modeli që planifikojmë të testojmë atje është një paketë harduerike me pagesë të njëhershme, plus një abonim mujor për çdo nyje matëse. Krijimi i llogarisë dhe shfletimi i demos janë falas."
+        },
+        {
+          "q": "A i shpik numrat asistenti AI?",
+          "a": "Shifrat për kompaninë tuaj vijnë nga të dhënat tuaja dhe kontrollohen me to para se t'i shihni. Pyetjet e përgjithshme për efikasitetin e energjisë, karbonin ose ESG marrin përgjigje nga njohuritë e modelit dhe shënohen si të tilla, ndërsa pyetjet për tema të tjera refuzohen."
         }
       ]
     },

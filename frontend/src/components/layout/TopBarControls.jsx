@@ -49,15 +49,15 @@ function MenuItem({ icon: Icon, selected, onClick, children }) {
   )
 }
 
-/** SQ | EN segmented control. Saves the preference to the account when signed in. */
+/** SQ | EN segmented control. Saves the preference to the account when signed in, except on the shared demo accounts. */
 export function LanguageSwitch() {
   const { t, i18n } = useTranslation()
-  const { user, setSession } = useAuth()
+  const { user, company, setSession } = useAuth()
 
   async function choose(code) {
     if (code === i18n.language) return
     await i18n.changeLanguage(code)
-    if (user) {
+    if (user && !company?.is_demo) {
       try {
         const { data } = await api.patch('/auth/me', { locale: code })
         setSession(data)

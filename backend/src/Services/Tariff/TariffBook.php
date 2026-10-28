@@ -148,7 +148,9 @@ final class TariffBook
             'fixed_monthly_eur' => (float) $this->plan['fixed_monthly_eur'],
             'demand_charge_eur_kw_month' => (float) $this->plan['demand_charge_eur_kw_month'],
             'reactive_charge_eur_kvarh' => (float) $this->plan['reactive_charge_eur_kvarh'],
+            'reactive_pf_threshold' => $this->plan['reactive_pf_threshold'] === null ? null : (float) $this->plan['reactive_pf_threshold'],
             'vat_rate' => (float) $this->plan['vat_rate'],
+            'valid_from' => $this->plan['valid_from'],
             'source_note' => $this->plan['source_note'],
         ];
     }

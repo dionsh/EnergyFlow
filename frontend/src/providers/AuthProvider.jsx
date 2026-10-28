@@ -30,8 +30,9 @@ export function AuthProvider({ children }) {
   const queryClient = useQueryClient()
   const me = useQuery({ queryKey: ME, queryFn: fetchMe, staleTime: 5 * 60_000, retry: 1 })
 
-  // Follow the signed-in user's language preference.
-  const userLocale = me.data?.user?.locale
+  // Follow the signed-in user's language preference. The demo accounts are shared and read-only,
+  // so there each visitor keeps the language they chose themselves.
+  const userLocale = me.data?.company?.is_demo ? null : me.data?.user?.locale
   useEffect(() => {
     if (userLocale && isSupported(userLocale) && userLocale !== i18n.language) {
       i18n.changeLanguage(userLocale)

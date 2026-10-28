@@ -429,6 +429,29 @@
       "company": "Company",
       "account": "Account"
     },
+    "tariff": {
+      "title": "Electricity tariff",
+      "hint": "Your KESCO tariff group. EnergyFlow prices every kWh, the monthly peak and reactive energy with ERO's published rates for it.",
+      "group": "Tariff group",
+      "choose": "Choose your tariff group",
+      "groups": {
+        "commercial_cat_1": "0.4 kV Category I (tariff group 3)",
+        "commercial_cat_2": "0.4 kV Category II (tariff group 4)"
+      },
+      "groupHint": "Category I bills have lines for engaged power and reactive energy.",
+      "energy": "Energy",
+      "energyValue": "{{high}} high · {{low}} low tariff",
+      "fixed": "Fixed fee",
+      "fixedValue": "{{eur}} a month",
+      "engaged": "Engaged power",
+      "engagedValue": "{{eur}} per kW a month",
+      "reactive": "Reactive energy",
+      "reactiveValue": "{{rate}} €c/kVArh above cos φ {{threshold}}",
+      "notCharged": "Not charged",
+      "source": "ERO Decision V_2703_2025, retail tariffs, kept for 2026. Prices excl. VAT.",
+      "readOnly": "Only owners and admins can change the tariff.",
+      "custom": "Your company uses its own tariff plan: {{name}}."
+    },
     "company": {
       "title": "Company profile",
       "hint": "Used in sustainability reports (VSME B1) and for energy intensity per employee and per € of turnover.",
@@ -517,6 +540,8 @@
     "badge": "Demo · fictional company",
     "explore": "Explore the demo company",
     "exploreHint": "Read-only tour of a fictional plastics manufacturer in Prishtina.",
+    "opening": "Opening the demo company…",
+    "back": "Back to the home page",
     "director": "Demo Director",
     "virtualTime": "Virtual time",
     "advanceHour": "+1 hour",
@@ -1972,6 +1997,8 @@
       "features": "Features",
       "how": "How it works",
       "contact": "Contact",
+      "bill": "Bill check",
+      "faq": "FAQ",
       "login": "Log in",
       "signup": "Sign up",
       "menu": "Open menu",
@@ -2137,6 +2164,106 @@
         {
           "title": "Prove and report",
           "body": "Track verified savings and CO₂e, and download energy, carbon and ESG reports built from the same data."
+        }
+      ]
+    },
+    "showcase": {
+      "eyebrow": "The product",
+      "title": "See it in action",
+      "body": "Real screens from the demo company, exactly as a signed-in user sees them.",
+      "items": {
+        "overview": {
+          "tab": "Overview",
+          "caption": "Live power, today's and this month's energy, the projected bill and CO₂e, and today's load against a typical working day.",
+          "alt": "The EnergyFlow overview of the demo company: an after-hours alert, live power, energy today and this month, the estimated bill, CO₂e and today's load against a typical working day."
+        },
+        "waste": {
+          "tab": "Waste",
+          "caption": "Energy wasted this month in kWh, € and CO₂e: per day, by type and by machine.",
+          "alt": "The waste page: energy wasted this month with its cost and CO₂e, waste per day, and a breakdown by type and by machine."
+        },
+        "carbon": {
+          "tab": "Carbon & ESG",
+          "caption": "Scope 2 from metered electricity, with the emission factor and its source on screen, CO₂e per month and the status of Scope 1 and 2.",
+          "alt": "The Carbon & ESG page: CO₂e from electricity with the grid emission factor and its source, carbon intensity, verified avoided CO₂e, CO₂e per month and the status of Scope 1 and 2."
+        }
+      },
+      "note": "Demo company with simulated machines."
+    },
+    "billCheck": {
+      "eyebrow": "Kosovo bill check",
+      "title": "What do engaged power and reactive energy cost you?",
+      "body": "Enter three numbers from one monthly electricity bill. EnergyFlow prices them with ERO's published tariff, using the same rules as in the app.",
+      "group": "Tariff group",
+      "groupHint": "Category I bills have lines for engaged power and reactive energy.",
+      "groups": {
+        "commercial_cat_1": "0.4 kV Category I (tariff group 3)",
+        "commercial_cat_2": "0.4 kV Category II (tariff group 4)"
+      },
+      "kwh": "This month's active energy",
+      "kwhHint": "High and low tariff together",
+      "kvarh": "This month's reactive energy",
+      "kw": "Engaged power",
+      "kwHint": "The maximeter's highest 15-minute value",
+      "submit": "Check my bill",
+      "notCharged": "Category II is billed for neither engaged power nor reactive energy: the bill is energy at the high and low tariff plus a fixed monthly fee. EnergyFlow still finds what runs after hours or sits idle.",
+      "rulesTitle": "What the check applies",
+      "rules": [
+        {
+          "title": "Reactive energy above cos φ 0.95",
+          "body": "ERO charges reactive energy above an allowance: allowed kVArh = kWh × tan(arccos 0.95), about a third of the month's kWh."
+        },
+        {
+          "title": "Engaged power on the maximeter",
+          "body": "The maximeter averages power over 15 minutes and keeps the month's highest value; engaged power is billed on it, per kW."
+        }
+      ],
+      "powerFactor": "Power factor: cos φ {{pf}}",
+      "pfBelow": "below {{threshold}}, so part of the reactive energy is charged",
+      "pfOk": "{{threshold}} or better, so no reactive energy is charged",
+      "reactive": "Reactive energy",
+      "reactiveDetail": "{{billed}} over the allowance of {{allowed}}, at {{rate}} €c/kVArh",
+      "reactiveAdvice": "Power-factor correction that keeps cos φ at {{threshold}} or above removes this charge. Have an electrician size it from a load measurement.",
+      "engaged": "Engaged power",
+      "engagedDetail": "{{kw}} × {{rate}} per kW a month",
+      "engagedAdvice": "Every kW off the month's highest quarter-hour saves {{eur}} a year, for example by running flexible loads outside the busiest quarter-hours.",
+      "perMonth": "a month",
+      "perYear": "{{eur}} a year",
+      "cta": "EnergyFlow measures both every month and shows which machines cause them.",
+      "source": "ERO Decision V_2703_2025 (16 April 2025), retail tariffs for 0.4 kV, kept for 2026 (ERO Board, 7 May 2026). Excl. VAT; a year is this month × 12. An estimate, not an invoice."
+    },
+    "faq": {
+      "eyebrow": "FAQ",
+      "title": "Frequently asked questions",
+      "body": "Straight answers about how EnergyFlow works today. Anything unfinished is marked as such.",
+      "items": [
+        {
+          "q": "Do I need to change my machines or wiring?",
+          "a": "Not to monitor them. EnergyFlow's EF-N3 node clips around the existing supply cables, so nothing is cut or rewired, and supported Shelly Gen2 smart relays work too. Only remote switch-off is wired into the machine's control circuit, as a STOP contact fitted by an electrician. The EF-N3 node is a prototype design, not yet a certified product."
+        },
+        {
+          "q": "Can EnergyFlow switch a machine off by itself?",
+          "a": "Only when you decide: a Turn Off that someone confirms, or a policy you set yourself, such as \"off 15 minutes after the shift\". EnergyFlow never switches a machine on and never switches off one marked critical, and the meter verifies every command."
+        },
+        {
+          "q": "Who can see my company's data?",
+          "a": "Your machines, alerts and reports are shown only to the people in your company account, each with the role an owner or admin gives them. The demo company is fictional, and any visitor can explore it read-only."
+        },
+        {
+          "q": "What happens if the internet connection drops?",
+          "a": "Your machines keep running as normal: EnergyFlow never needs a connection to keep a machine on. Readings wait and are sent once the connection is back: the bridge for smart relays keeps up to 24 hours, and the EF-N3 design stores several days."
+        },
+        {
+          "q": "Where do the € and CO₂e figures come from?",
+          "a": "From your own meter readings. Costs use ERO's published tariffs, the same ones as in the bill check above. CO₂e uses Kosovo's grid emission factor (Ember, via Our World in Data) and, for fuel receipts, the UK DESNZ 2025 factors. The Carbon & ESG page shows the factor and the methodology behind every figure."
+        },
+        {
+          "q": "What does EnergyFlow cost?",
+          "a": "There is no price list yet: EnergyFlow is a prototype getting ready for its first pilots. The model we plan to test there is a one-time hardware kit plus a monthly subscription per metering node. Creating an account and exploring the demo are free."
+        },
+        {
+          "q": "Does the AI assistant make up numbers?",
+          "a": "Figures about your company come from your data and are checked against it before you see them. General questions about energy efficiency, carbon or ESG are answered from the model's knowledge and labelled as such, and questions on other topics are declined."
         }
       ]
     },

@@ -8,6 +8,9 @@ use EnergyFlow\Core\Request;
 use EnergyFlow\Core\Response;
 use EnergyFlow\Core\Validator;
 use EnergyFlow\Models\Company;
+use EnergyFlow\Services\Demo\DemoGuard;
+use EnergyFlow\Services\Tariff\TariffBook;
+use EnergyFlow\Services\Tariff\TariffPlans;
 use EnergyFlow\Utils\Locales;
 
 final class CompanyController
@@ -70,5 +73,26 @@ final class CompanyController
 
         Company::update($request->companyId(), $input);
         return Response::ok(Company::find($request->companyId()));
+    }
+
+    /** The company's tariff and the published tariff groups it can pick. */
+    public function tariff(Request $request, array $params): Response
+    {
+        return Response::ok(self::tariffState($request->companyId()));
+    }
+
+    /** Picks a published tariff group: the company gets its own copy of that template. */
+    public function chooseTariff(Request $request, array $params): Response
+    {
+        DemoGuard::refuse($request->companyId());
+        $input = Validator::validate($request->json(), ['template_id' => ['required', 'int', 'min:1']]);
+        TariffPlans::choose($request->companyId(), $input['template_id']);
+        return Response::ok(self::tariffState($request->companyId()));
+    }
+
+    /** @return array{current: ?array<string, mixed>, templates: list<array<string, mixed>>} */
+    private static function tariffState(int $companyId): array
+    {
+        return ['current' => TariffBook::forCompany($companyId)?->summary(), 'templates' => TariffPlans::templates()];
     }
 }

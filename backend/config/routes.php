@@ -6,6 +6,7 @@ use EnergyFlow\Controllers\AdminController;
 use EnergyFlow\Controllers\AlertController;
 use EnergyFlow\Controllers\AssistantController;
 use EnergyFlow\Controllers\AuthController;
+use EnergyFlow\Controllers\BillCheckController;
 use EnergyFlow\Controllers\CommandController;
 use EnergyFlow\Controllers\CompanyController;
 use EnergyFlow\Controllers\DemoController;
@@ -55,6 +56,9 @@ $router->group('/api/v1', [], static function (Router $r): void {
         $r->post('/auth/demo', [AuthController::class, 'demo']);
         $r->post('/auth/logout', [AuthController::class, 'logout']);
 
+        // The landing page's bill check: published template tariffs only, no sign-in.
+        $r->get('/public/bill-check', [BillCheckController::class, 'check']);
+
         $r->group('', [Authenticate::class], static function (Router $r): void {
             $r->get('/auth/me', [AuthController::class, 'me']);
             $r->patch('/auth/me', [AuthController::class, 'updateMe']);
@@ -64,6 +68,8 @@ $router->group('/api/v1', [], static function (Router $r): void {
             $r->post('/company/workers', [CompanyController::class, 'addWorker'], [new RequireRole('admin')]);
             $r->patch('/company/workers/{id}', [CompanyController::class, 'editWorker'], [new RequireRole('admin')]);
             $r->patch('/company', [CompanyController::class, 'update'], [new RequireRole('admin')]);
+            $r->get('/company/tariff', [CompanyController::class, 'tariff']);
+            $r->patch('/company/tariff', [CompanyController::class, 'chooseTariff'], [new RequireRole('admin')]);
             $r->get('/onboarding', [OnboardingController::class, 'show']);
 
             $r->get('/live', [LiveController::class, 'show']);
