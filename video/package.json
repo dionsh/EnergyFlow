@@ -1,0 +1,24 @@
+{
+  "name": "energyflow-video",
+  "private": true,
+  "version": "0.1.0",
+  "description": "EnergyFlow presentation video, made with Remotion",
+  "scripts": {
+    "audio": "node scripts/make-audio.mjs",
+    "predev": "npm run audio",
+    "dev": "remotion studio src/index.jsx",
+    "prerender": "npm run audio",
+    "render": "remotion render src/index.jsx EnergyFlowPromo out/energyflow-promo.mp4 --codec=h264 --crf=18",
+    "still": "remotion still src/index.jsx EnergyFlowPromo out/still.png"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.539",
+    "@remotion/google-fonts": "^4.0.539",
+    "@remotion/paths": "^4.0.539",
+    "@remotion/transitions": "^4.0.539",
+    "lucide-react": "^1.66.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "remotion": "^4.0.539"
+  }
+}

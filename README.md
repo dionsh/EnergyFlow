@@ -13,6 +13,7 @@ Built for the GPEK **Digital Green Innovation Competition 2026**: Challenge Area
 | `backend/` | PHP 8.4 REST API (plain PHP + PDO, no framework). Deployed on **Render** (Docker). |
 | `frontend/` | React + Tailwind CSS (Vite). Deployed on **Vercel**. |
 | `docs/` | Research, architecture, database, API, UX and roadmap. Start with [`docs/README.md`](docs/README.md). |
+| `video/` | 74-second presentation video with music and sound, made with Remotion. See [`video/README.md`](video/README.md). |
 | `render.yaml` | Render Blueprint for the API |
 | `DEPLOY.md` | Step-by-step free deployment (Aiven → Render → Vercel) |
 
